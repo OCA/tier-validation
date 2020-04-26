@@ -43,7 +43,7 @@ Additional features:
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
    :alt: Try me on Runbot
-   :target: https://runbot.odoo-community.org/runbot/142/11.0
+   :target: https://runbot.odoo-community.org/runbot/142/13.0
 
 Bug Tracker
 ===========
@@ -64,7 +64,7 @@ Images
 Contributors
 ------------
 
-* Lois Rilo <lois.rilo@eficent.com>
+* Lois Rilo <lois.rilo@forgeflow.com>
 * Naglis Jonaitis <naglis@versada.eu>
 * Pedro Gonzalez <pedro.gonzalez@pesol.es>
 
