@@ -4,12 +4,12 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 11.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2023-11-06 21:37+0000\n"
-"Last-Translator: Ivorra78 <informatica@totmaterial.es>\n"
+"PO-Revision-Date: 2023-12-22 19:33+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
-"Language: es\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -19,114 +19,85 @@ msgstr ""
 #. module: purchase_tier_validation
 #: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__can_review
 msgid "Can Review"
-msgstr "Puede Revisar"
+msgstr "Può revisionare"
 
 #. module: purchase_tier_validation
 #: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__has_comment
 msgid "Has Comment"
-msgstr "Tiene Comentario"
+msgstr "Ha commenti"
 
 #. module: purchase_tier_validation
 #: model_terms:ir.ui.view,arch_db:purchase_tier_validation.view_purchase_order_filter
 msgid "My Purchases to review"
-msgstr "Mis Compras a revisar"
+msgstr "I miei acquisti da revisionare"
 
 #. module: purchase_tier_validation
 #: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__need_validation
 msgid "Need Validation"
-msgstr "Necesita validación"
+msgstr "Richiede conferma"
 
 #. module: purchase_tier_validation
 #: model_terms:ir.ui.view,arch_db:purchase_tier_validation.view_purchase_order_filter
 msgid "Needs my Review"
-msgstr "Necesita mi Revisión"
+msgstr "Richiede la mia revisione"
 
 #. module: purchase_tier_validation
 #: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__next_review
 msgid "Next Review"
-msgstr "Siguiente revisión"
+msgstr "Prossima revisione"
 
 #. module: purchase_tier_validation
 #: model_terms:ir.ui.view,arch_db:purchase_tier_validation.view_purchase_order_filter
 msgid "POs validated and ready to be confirmed"
-msgstr "POs validadas y preparadas para ser confirmadas"
+msgstr "Ordini di acquisto approvati e pronti da confermare"
 
 #. module: purchase_tier_validation
 #: model:ir.model,name:purchase_tier_validation.model_purchase_order
 msgid "Purchase Order"
-msgstr "Orden de Compra"
+msgstr "Ordine di acquisto"
 
 #. module: purchase_tier_validation
 #: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__rejected
 msgid "Rejected"
-msgstr "Rechazado"
+msgstr "Rifiutata"
 
 #. module: purchase_tier_validation
 #: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__rejected_message
 msgid "Rejected Message"
-msgstr "Mensaje rechazado"
+msgstr "Messaggio di rifiuto"
 
 #. module: purchase_tier_validation
 #: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__reviewer_ids
 msgid "Reviewers"
-msgstr "Revisores"
+msgstr "Revisori"
 
 #. module: purchase_tier_validation
 #: model:ir.model,name:purchase_tier_validation.model_tier_definition
 msgid "Tier Definition"
-msgstr "Definición del nivel"
+msgstr "Definizione livello"
 
 #. module: purchase_tier_validation
 #: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__to_validate_message
 msgid "To Validate Message"
-msgstr "Para validar el mensaje"
+msgstr "Messaggio per 'Da validare'"
 
 #. module: purchase_tier_validation
 #: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__validated
 #: model_terms:ir.ui.view,arch_db:purchase_tier_validation.view_purchase_order_filter
 msgid "Validated"
-msgstr "Validada"
+msgstr "Validata"
 
 #. module: purchase_tier_validation
 #: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__validated_message
 msgid "Validated Message"
-msgstr "Mensaje validado"
+msgstr "Messaggio per 'Validato'"
 
 #. module: purchase_tier_validation
 #: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__validation_status
 msgid "Validation Status"
-msgstr "Estado de validación"
+msgstr "Stato validazione"
 
 #. module: purchase_tier_validation
 #: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__review_ids
 msgid "Validations"
-msgstr "Validaciones"
-
-#~ msgid ""
-#~ "<i class=\"fa fa-info-circle\"/>This PO needs to be\n"
-#~ "                        validated."
-#~ msgstr ""
-#~ "<i class=\"fa fa-info-circle\"/>Esta PO debe ser\n"
-#~ "                        validada."
-
-#~ msgid "<i class=\"fa fa-thumbs-down\"/> Operation has been <b>rejected</b>."
-#~ msgstr ""
-#~ "<i class=\"fa fa-thumbs-down\"/>La operación ha sido <b>rechazada</b>."
-
-#~ msgid "<i class=\"fa fa-thumbs-up\"/> Operation has been <b>validated</b>!"
-#~ msgstr "<i class=\"fa fa-thumbs-up\"/>La operación ha sido <b>validada</b>!"
-
-#~ msgid "Reject"
-#~ msgstr "Rechazar"
-
-#~ msgid "Request Validation"
-#~ msgstr "Solicitar Validación"
-
-#~ msgid "Restart Validation"
-#~ msgstr "Reiniciar Validación"
-
-#~ msgid "Validate"
-#~ msgstr "Validar"
-
-#~ msgid "Reviews"
-#~ msgstr "Revisiones"
+msgstr "Validazioni"
