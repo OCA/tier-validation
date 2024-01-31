@@ -17,13 +17,6 @@ msgstr ""
 "X-Generator: Weblate 4.14.1\n"
 
 #. module: base_tier_validation
-#. odoo-javascript
-#: code:addons/base_tier_validation/static/src/xml/systray.xml:0
-#, python-format
-msgid "0 Pending"
-msgstr "0 Bekleyen"
-
-#. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_validation_label
 msgid ""
 "<i class=\"fa fa-info-circle\"/>\n"
@@ -68,6 +61,13 @@ msgstr "<span class=\"oe_edit_only\">Adı</span>"
 #. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_definition_view_form
 msgid "<span>Bypassed, if previous tier was validated by same reviewer</span>"
+msgstr ""
+
+#. module: base_tier_validation
+#. odoo-python
+#: code:addons/base_tier_validation/models/tier_validation.py:0
+#, python-format
+msgid "A record to be reviewed has been created by %s."
 msgstr ""
 
 #. module: base_tier_validation
@@ -119,7 +119,7 @@ msgstr "Etkin"
 
 #. module: base_tier_validation
 #. odoo-javascript
-#: code:addons/base_tier_validation/static/src/xml/systray.xml:0
+#: code:addons/base_tier_validation/static/src/components/tier_review_menu/tier_review_menu.xml:0
 #, python-format
 msgid "Activity"
 msgstr "Aktivite"
@@ -163,6 +163,11 @@ msgid "Approved"
 msgstr "Onaylı"
 
 #. module: base_tier_validation
+#: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_definition_view_form
+msgid "Archived"
+msgstr ""
+
+#. module: base_tier_validation
 #: model:ir.model.fields,help:base_tier_validation.field_tier_definition__approve_sequence_bypass
 #: model:ir.model.fields,help:base_tier_validation.field_tier_review__approve_sequence_bypass
 msgid ""
@@ -193,7 +198,7 @@ msgstr "İptal"
 #. odoo-javascript
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_validation.py:0
-#: code:addons/base_tier_validation/static/src/xml/tier_review_template.xml:0
+#: code:addons/base_tier_validation/static/src/components/tier_review_widget/tier_review_widget.xml:0
 #: model:ir.model.fields,field_description:base_tier_validation.field_comment_wizard__comment
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__has_comment
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__has_comment
@@ -250,7 +255,7 @@ msgstr "Tanım Etki Alanı"
 
 #. module: base_tier_validation
 #. odoo-javascript
-#: code:addons/base_tier_validation/static/src/xml/tier_review_template.xml:0
+#: code:addons/base_tier_validation/static/src/components/tier_review_widget/tier_review_widget.xml:0
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__name
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__name
 #, python-format
@@ -276,7 +281,7 @@ msgstr ""
 
 #. module: base_tier_validation
 #. odoo-javascript
-#: code:addons/base_tier_validation/static/src/xml/tier_review_template.xml:0
+#: code:addons/base_tier_validation/static/src/components/tier_review_widget/tier_review_widget.xml:0
 #, python-format
 msgid "Done by"
 msgstr ""
@@ -304,6 +309,11 @@ msgid "Has Comment"
 msgstr "Yorum Var"
 
 #. module: base_tier_validation
+#: model:ir.model.fields,field_description:base_tier_validation.field_tier_validation__hide_reviews
+msgid "Hide Reviews"
+msgstr ""
+
+#. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_comment_wizard__id
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__id
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__id
@@ -320,11 +330,12 @@ msgstr ""
 "ile bilgilendirilecektir."
 
 #. module: base_tier_validation
-#: model:ir.model.fields,field_description:base_tier_validation.field_comment_wizard____last_update
-#: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition____last_update
-#: model:ir.model.fields,field_description:base_tier_validation.field_tier_review____last_update
-msgid "Last Modified on"
-msgstr "Son Düzenleme"
+#: model:ir.model.fields,help:base_tier_validation.field_tier_definition__notify_on_pending
+msgid ""
+"If set, all possible reviewers will be notified by email when this status is "
+"reached.Usefull in an Approve by sequence scenario. An notification request "
+"to review is sent out when it's their turn to review."
+msgstr ""
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_comment_wizard__write_uid
@@ -377,7 +388,7 @@ msgstr "Sonraki: %s"
 
 #. module: base_tier_validation
 #. odoo-javascript
-#: code:addons/base_tier_validation/static/src/xml/systray.xml:0
+#: code:addons/base_tier_validation/static/src/components/tier_review_menu/tier_review_menu.xml:0
 #, python-format
 msgid "No reviews to do."
 msgstr "Yapacak inceleme yok."
@@ -386,6 +397,11 @@ msgstr "Yapacak inceleme yok."
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__notify_on_create
 msgid "Notify Reviewers on Creation"
 msgstr "İncelemeleri Oluşturma Hakkında Bilgilendir"
+
+#. module: base_tier_validation
+#: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__notify_on_pending
+msgid "Notify Reviewers on reaching Pending"
+msgstr ""
 
 #. module: base_tier_validation
 #. odoo-python
@@ -403,17 +419,12 @@ msgstr "İşlem <b>doğrulandı</b>!"
 
 #. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.res_config_settings_view_form_budget
-msgid "Option to forward a tier validation to other reviewer, and backward"
-msgstr ""
-
-#. module: base_tier_validation
-#: model_terms:ir.ui.view,arch_db:base_tier_validation.res_config_settings_view_form_budget
 msgid "Option to use python formula to get reviewers and find documents"
 msgstr ""
 
 #. module: base_tier_validation
 #. odoo-javascript
-#: code:addons/base_tier_validation/static/src/xml/systray.xml:0
+#: code:addons/base_tier_validation/static/src/components/tier_review_menu/tier_review_menu.xml:0
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_review__status__pending
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_validation__validation_status__pending
 #, python-format
@@ -464,7 +475,7 @@ msgstr "İsteyen"
 
 #. module: base_tier_validation
 #. odoo-javascript
-#: code:addons/base_tier_validation/static/src/xml/tier_review_template.xml:0
+#: code:addons/base_tier_validation/static/src/components/tier_review_widget/tier_review_widget.xml:0
 #, python-format
 msgid "Requested by"
 msgstr "İsteyen"
@@ -515,9 +526,8 @@ msgstr "İnceleyenler"
 
 #. module: base_tier_validation
 #. odoo-javascript
-#: code:addons/base_tier_validation/static/src/xml/systray.xml:0
-#: code:addons/base_tier_validation/static/src/xml/systray.xml:0
-#: code:addons/base_tier_validation/static/src/xml/tier_review_template.xml:0
+#: code:addons/base_tier_validation/static/src/components/tier_review_menu/tier_review_menu.xml:0
+#: code:addons/base_tier_validation/static/src/components/tier_review_widget/tier_review_widget.xml:0
 #: model:ir.model.fields,field_description:base_tier_validation.field_res_users__review_ids
 #, python-format
 msgid "Reviews"
@@ -525,9 +535,8 @@ msgstr "İncelemeler"
 
 #. module: base_tier_validation
 #. odoo-javascript
-#: code:addons/base_tier_validation/static/src/xml/tier_review_template.xml:0
+#: code:addons/base_tier_validation/static/src/components/tier_review_widget/tier_review_widget.xml:0
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__sequence
-#: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__sequence
 #, python-format
 msgid "Sequence"
 msgstr "Sıra"
@@ -539,7 +548,7 @@ msgstr "Belirli kullanıcı"
 
 #. module: base_tier_validation
 #. odoo-javascript
-#: code:addons/base_tier_validation/static/src/xml/tier_review_template.xml:0
+#: code:addons/base_tier_validation/static/src/components/tier_review_widget/tier_review_widget.xml:0
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__status
 #, python-format
 msgid "Status"
@@ -585,6 +594,11 @@ msgstr ""
 "Lütfen doğrulama isteğinde bulunun."
 
 #. module: base_tier_validation
+#: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__sequence
+msgid "Tier"
+msgstr "Seviye"
+
+#. module: base_tier_validation
 #: model:ir.actions.act_window,name:base_tier_validation.tier_definition_action
 #: model:ir.model,name:base_tier_validation.model_tier_definition
 #: model:ir.ui.menu,name:base_tier_validation.menu_tier_definition
@@ -595,11 +609,6 @@ msgstr "Seviye Tanımı"
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_res_config_settings__module_base_tier_validation_formula
 msgid "Tier Formula"
-msgstr ""
-
-#. module: base_tier_validation
-#: model:ir.model.fields,field_description:base_tier_validation.field_res_config_settings__module_base_tier_validation_forward
-msgid "Tier Forward & Backward"
 msgstr ""
 
 #. module: base_tier_validation
@@ -654,7 +663,7 @@ msgstr ""
 
 #. module: base_tier_validation
 #. odoo-javascript
-#: code:addons/base_tier_validation/static/src/xml/tier_review_template.xml:0
+#: code:addons/base_tier_validation/static/src/components/tier_review_widget/tier_review_widget.xml:0
 #, python-format
 msgid "Todo by"
 msgstr ""
@@ -698,7 +707,7 @@ msgstr "Doğrulayan"
 
 #. module: base_tier_validation
 #. odoo-javascript
-#: code:addons/base_tier_validation/static/src/xml/tier_review_template.xml:0
+#: code:addons/base_tier_validation/static/src/components/tier_review_widget/tier_review_widget.xml:0
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__reviewed_date
 #, python-format
 msgid "Validation Date"
@@ -720,6 +729,12 @@ msgid "Validations"
 msgstr "Doğrulamalar"
 
 #. module: base_tier_validation
+#: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_review__status__waiting
+#: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_validation__validation_status__waiting
+msgid "Waiting"
+msgstr ""
+
+#. module: base_tier_validation
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_validation__validation_status__no
 msgid "Without validation"
 msgstr ""
@@ -729,5 +744,9 @@ msgstr ""
 msgid "e.g. Tier Validation for..."
 msgstr "ör. Şunun için Seviye Doğrulaması..."
 
-#~ msgid "Tier"
-#~ msgstr "Seviye"
+#, python-format
+#~ msgid "0 Pending"
+#~ msgstr "0 Bekleyen"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Son Düzenleme"
