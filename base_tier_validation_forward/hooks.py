@@ -11,9 +11,14 @@ def uninstall_hook(env):
     env.cr.execute(
         "update tier_review a set status = 'approved' where status = 'forwarded';"
     )
-    env.cr.execute("alter table tier_review drop column name cascade;")
-    env.cr.execute("alter table tier_review drop column review_type cascade;")
-    env.cr.execute("alter table tier_review drop column reviewer_id cascade;")
-    env.cr.execute("alter table tier_review drop column reviewer_group_id cascade;")
-    env.cr.execute("alter table tier_review drop column has_comment cascade;")
-    env.cr.execute("alter table tier_review drop column approve_sequence cascade;")
+
+    columns_to_drop = [
+        "name",
+        "review_type",
+        "reviewer_id",
+        "reviewer_group_id",
+        "has_comment",
+        "approve_sequence",
+    ]
+    drop_sql = ", ".join([f"DROP COLUMN {col} CASCADE" for col in columns_to_drop])
+    env.cr.execute(f"ALTER TABLE tier_review {drop_sql};")
