@@ -7,7 +7,14 @@ class TierReview(models.Model):
     _inherit = "tier.review"
     _order = "sequence"
 
-    name = fields.Char(compute="_compute_definition_data", store=True)
+    # NOTE: Added translate=True because in the compute method we assign:
+    #   rec.name = rec.definition_id.name
+    # And the field `name` in `tier.definition` is translated (translate=True),
+    # so we must match this behavior.
+    # Reference: https://github.com/OCA/server-ux/pull/1065#discussion_r2058502638
+    name = fields.Char(
+        compute="_compute_definition_data", store=True, related=False, translate=True
+    )
     status = fields.Selection(
         selection_add=[("forwarded", "Forwarded")],
     )

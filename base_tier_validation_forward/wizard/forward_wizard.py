@@ -1,6 +1,6 @@
 # Copyright 2020 Ecosoft Co., Ltd. (http://ecosoft.co.th)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo import _, fields, models
+from odoo import fields, models
 
 
 class ValidationForwardWizard(models.TransientModel):
@@ -29,7 +29,11 @@ class ValidationForwardWizard(models.TransientModel):
             self._context.get("comment_id")
         )
         prev_comment.write(
-            {"comment": _(">> %s") % self.forward_reviewer_id.display_name}
+            {
+                "comment": self.env._(
+                    ">> %(reviewer)s", reviewer=self.forward_reviewer_id.display_name
+                )
+            }
         )
         prev_reviews = prev_comment.add_comment()
         review = self.env["tier.review"].create(
