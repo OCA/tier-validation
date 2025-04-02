@@ -156,12 +156,12 @@
                             <div class="oe_grey" colspan="4">
                                 Scheduled date/time to auto correct and/or revert by
                                 <button
-                                    name="%(view_affected_tier_reviews_action)d"
-                                    string="Scheduled Action"
-                                    type="action"
-                                    icon="fa-clock-o"
-                                    class="oe_inline"
-                                />
+                                name="%(view_affected_tier_reviews_action)d"
+                                string="Scheduled Action"
+                                type="action"
+                                icon="fa-clock-o"
+                                class="oe_inline"
+                            />
                             </div>
                             <group>
                                 <group>
@@ -249,5 +249,4 @@
         action="tier_correction_action"
         groups="base_tier_validation_correction.group_tier_correction"
     />
-
 </odoo>

@@ -151,7 +151,7 @@ class TierCorrection(models.Model):
                             {
                                 "res_model": doc._name,
                                 "res_id": doc.id,
-                                "resource_ref": "{},{}".format(doc._name, doc.id),
+                                "resource_ref": f"{doc._name},{doc.id}",
                                 "reference": doc.display_name,
                                 "new_reviewer_ids": [(6, 0, rec.new_reviewer_ids.ids)],
                                 "review_ids": [(6, 0, review_ids)],
