@@ -4,13 +4,21 @@ from datetime import timedelta
 
 from odoo import fields
 from odoo.exceptions import ValidationError
-from odoo.tests.common import tagged
 
 from odoo.addons.base_tier_validation.tests.common import CommonTierValidation
 
 
-@tagged("post_install", "-at_install")
 class TierTierValidation(CommonTierValidation):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        from .tier_validation_tester import TierValidationTester
+
+        cls.loader.update_registry((TierValidationTester,))
+
+        cls.test_record.name = "test"
+
     def test_01_tier_correction(self):
         """With the document in validation,
         - User click on Change Reviewer to creat new correction

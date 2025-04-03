@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -17,8 +17,6 @@ class TierCorrection(models.Model):
     name = fields.Char(
         string="Description",
         required=True,
-        readonly=True,
-        states={"draft": [("readonly", False)]},
     )
     model_id = fields.Many2one(
         comodel_name="ir.model",
@@ -30,8 +28,6 @@ class TierCorrection(models.Model):
                 self.env["tier.definition"]._get_tier_validation_model_names(),
             )
         ],
-        readonly=True,
-        states={"draft": [("readonly", False)]},
     )
     model = fields.Char(related="model_id.model", index=True, store=True)
     correction_type = fields.Selection(
@@ -40,35 +36,25 @@ class TierCorrection(models.Model):
         ],
         default="reviewer",
         required=True,
-        readonly=True,
-        states={"draft": [("readonly", False)]},
     )
     search_name = fields.Char(
         string="Name Search",
-        readonly=True,
-        states={"draft": [("readonly", False)]},
     )
     old_reviewer_ids = fields.Many2many(
         comodel_name="res.users",
         relation="tier_correction_old_reviewer_rel",
         string="Original Reviewer(s)",
-        readonly=True,
-        states={"draft": [("readonly", False)]},
         help="Find documents with tier reviews matching some reviewers",
     )
     new_reviewer_ids = fields.Many2many(
         comodel_name="res.users",
         relation="tier_correction_new_reviewer_rel",
         string="Reassign Reviewer(s)",
-        readonly=True,
-        states={"draft": [("readonly", False)]},
         help="Reassign these reviewers to the tier reviews of the found document",
     )
     item_ids = fields.One2many(
         comodel_name="tier.correction.item",
         inverse_name="correction_id",
-        readonly=True,
-        states={"draft": [("readonly", False)], "prepare": [("readonly", False)]},
     )
     state = fields.Selection(
         selection=[
@@ -79,7 +65,6 @@ class TierCorrection(models.Model):
             ("revert", "Reverted"),
         ],
         string="Status",
-        readonly=True,
         copy=False,
         index=True,
         tracking=1,
@@ -92,28 +77,18 @@ class TierCorrection(models.Model):
     )
     date_schedule_correct = fields.Datetime(
         string="Scheduled Correction Date",
-        readonly=True,
-        states={"draft": [("readonly", False)], "prepare": [("readonly", False)]},
         copy=False,
     )
     date_actual_correct = fields.Datetime(
         string="Actual Correction Date",
-        readonly=True,
         copy=False,
     )
     date_schedule_revert = fields.Datetime(
         string="Scheduled Revert Date",
-        readonly=True,
-        states={
-            "draft": [("readonly", False)],
-            "prepare": [("readonly", False)],
-            "done": [("readonly", False)],
-        },
         copy=False,
     )
     date_actual_revert = fields.Datetime(
         string="Actual Revert Date",
-        readonly=True,
         copy=False,
     )
 
@@ -125,14 +100,16 @@ class TierCorrection(models.Model):
             correct = rec.date_schedule_correct or now
             revert = rec.date_schedule_revert or correct or now
             if not (correct <= revert):
-                raise ValidationError(_("Revert Date should be after Correct Date"))
+                raise ValidationError(
+                    self.env._("Revert Date should be after Correct Date")
+                )
 
     def search_document(self):
         for rec in self:
             rec.item_ids.unlink()
             if rec.correction_type == "reviewer":
-                doc_domain = [("review_ids.status", "=", "pending")]
-                review_domain = [("status", "=", "pending")]
+                doc_domain = [("review_ids.status", "in", ["waiting", "pending"])]
+                review_domain = [("status", "in", ["waiting", "pending"])]
                 if rec.search_name:
                     doc_ids = self.env[rec.model].name_search(rec.search_name)
                     doc_domain += [("id", "in", list(dict(doc_ids).keys()))]
@@ -142,7 +119,9 @@ class TierCorrection(models.Model):
                     ]
                     review_domain += [("reviewer_ids", "in", rec.old_reviewer_ids.ids)]
                 items = []
-                for doc in self.env[rec.model].search(doc_domain):
+                for doc in self.env[rec.model].search_fetch(
+                    doc_domain, ["review_ids", "display_name"]
+                ):
                     review_ids = doc.review_ids.filtered_domain(review_domain).ids
                     items.append(
                         (
@@ -171,7 +150,7 @@ class TierCorrection(models.Model):
         for rec in self:
             if rec.state != "prepare":
                 raise ValidationError(
-                    _("Correction is allowed on state = 'prepare' only")
+                    self.env._("Correction is allowed on state = 'prepare' only")
                 )
             if rec.correction_type == "reviewer":
                 rec.item_ids.correct()
@@ -180,7 +159,9 @@ class TierCorrection(models.Model):
     def do_revert(self):
         for rec in self:
             if rec.state != "done":
-                raise ValidationError(_("Correction is allowed on state = 'done' only"))
+                raise ValidationError(
+                    self.env._("Correction is allowed on state = 'done' only")
+                )
             if rec.correction_type == "reviewer":
                 rec.item_ids.revert()
         self.write({"date_actual_revert": fields.Datetime.now()})
@@ -221,7 +202,7 @@ class TierCorrection(models.Model):
             ]
         )
         to_correct.action_done()
-        _logger.info("Tier Correction - Correction: %s " % to_correct)
+        _logger.info("Tier Correction - Correction: %s", to_correct)
         # To revert
         to_revert = self.search(
             [
@@ -231,7 +212,7 @@ class TierCorrection(models.Model):
             ]
         )
         to_revert.action_revert()
-        _logger.info("Tier Correction - Reversion: %s " % to_revert)
+        _logger.info("Tier Correction - Reversion: %s", to_revert)
 
 
 class TierCorrectionItem(models.Model):
@@ -273,25 +254,23 @@ class TierCorrectionItem(models.Model):
             reviewers = ", ".join(
                 tier_reviews.reviewer_ids.filtered("name").mapped("name")
             )
-            message = _(
+            message = self.env._(
                 "The Correction '%(name)s', "
                 "corrrected reviewers "
-                "on '%(reviews)s' to '%(reviewers)s'"
-            ) % {
-                "name": self.correction_id.name,
-                "reviews": reviews,
-                "reviewers": reviewers,
-            }
+                "on '%(reviews)s' to '%(reviewers)s'",
+                name=self.correction_id.name,
+                reviews=reviews,
+                reviewers=reviewers,
+            )
             if ttype == "revert":
-                message = _(
+                message = self.env._(
                     "The Correction '%(name)s', "
                     "reverted reviewers on '%(reviews)s' "
-                    "back to '%(reviewers)s'"
-                ) % {
-                    "name": self.correction_id.name,
-                    "reviews": reviews,
-                    "reviewers": reviewers,
-                }
+                    "back to '%(reviewers)s'",
+                    name=self.correction_id.name,
+                    reviews=reviews,
+                    reviewers=reviewers,
+                )
             getattr(self.resource_ref.sudo(), post)(
                 subtype_xmlid=(
                     "base_tier_validation_correction.mt_tier_validation_correction"
@@ -301,14 +280,16 @@ class TierCorrectionItem(models.Model):
 
     def correct(self):
         for item in self:
-            # Only pending reviews will gets updated
-            item.review_ids.filtered(lambda l: l.status == "pending").write(
-                {"reviewer_ids": [(6, 0, item.new_reviewer_ids.ids)]}
-            )
+            # Only waiting/pending reviews will gets updated
+            item.review_ids.filtered(
+                lambda record: record.status in ["waiting", "pending"]
+            ).write({"reviewer_ids": [(6, 0, item.new_reviewer_ids.ids)]})
             item._notify_reviewer_change("correct")
 
     def revert(self):
         for item in self:
-            for review in item.review_ids.filtered(lambda l: l.status == "pending"):
+            for review in item.review_ids.filtered(
+                lambda record: record.status in ["waiting", "pending"]
+            ):
                 review.reviewer_ids = review._get_reviewers()
             item._notify_reviewer_change("revert")

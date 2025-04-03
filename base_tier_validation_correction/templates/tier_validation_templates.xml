@@ -11,7 +11,6 @@
                 class="oe_right"
                 icon="fa-male"
                 groups="base_tier_validation_correction.group_tier_correction"
-                context="{'active_id': active_id, 'active_model': active_model}"
             />
         </p>
     </template>

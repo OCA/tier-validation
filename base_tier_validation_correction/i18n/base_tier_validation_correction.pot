@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -140,14 +140,12 @@ msgstr ""
 #. module: base_tier_validation_correction
 #. odoo-python
 #: code:addons/base_tier_validation_correction/models/tier_correction.py:0
-#, python-format
 msgid "Correction is allowed on state = 'done' only"
 msgstr ""
 
 #. module: base_tier_validation_correction
 #. odoo-python
 #: code:addons/base_tier_validation_correction/models/tier_correction.py:0
-#, python-format
 msgid "Correction is allowed on state = 'prepare' only"
 msgstr ""
 
@@ -262,13 +260,6 @@ msgid "Item"
 msgstr ""
 
 #. module: base_tier_validation_correction
-#: model:ir.model.fields,field_description:base_tier_validation_correction.field_affected_tier_reviews____last_update
-#: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction____last_update
-#: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_affected_tier_reviews__write_uid
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__write_uid
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__write_uid
@@ -280,11 +271,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__write_date
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__write_date
 msgid "Last Updated on"
-msgstr ""
-
-#. module: base_tier_validation_correction
-#: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__message_main_attachment_id
-msgid "Main Attachment"
 msgstr ""
 
 #. module: base_tier_validation_correction
@@ -321,11 +307,6 @@ msgstr ""
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__new_reviewer_ids
 msgid "New Reviewers"
-msgstr ""
-
-#. module: base_tier_validation_correction
-#: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__activity_calendar_event_id
-msgid "Next Activity Calendar Event"
 msgstr ""
 
 #. module: base_tier_validation_correction
@@ -432,7 +413,6 @@ msgstr ""
 #. module: base_tier_validation_correction
 #. odoo-python
 #: code:addons/base_tier_validation_correction/models/tier_correction.py:0
-#, python-format
 msgid "Revert Date should be after Correct Date"
 msgstr ""
 
@@ -513,7 +493,6 @@ msgstr ""
 #. module: base_tier_validation_correction
 #. odoo-python
 #: code:addons/base_tier_validation_correction/models/tier_correction.py:0
-#, python-format
 msgid ""
 "The Correction '%(name)s', corrrected reviewers on '%(reviews)s' to "
 "'%(reviewers)s'"
@@ -522,7 +501,6 @@ msgstr ""
 #. module: base_tier_validation_correction
 #. odoo-python
 #: code:addons/base_tier_validation_correction/models/tier_correction.py:0
-#, python-format
 msgid ""
 "The Correction '%(name)s', reverted reviewers on '%(reviews)s' back to "
 "'%(reviewers)s'"
@@ -553,7 +531,6 @@ msgstr ""
 
 #. module: base_tier_validation_correction
 #: model:ir.actions.server,name:base_tier_validation_correction.tier_correction_scheduler_ir_actions_server
-#: model:ir.cron,cron_name:base_tier_validation_correction.tier_correction_scheduler
 msgid "Tier Correction Scheduler"
 msgstr ""
 
