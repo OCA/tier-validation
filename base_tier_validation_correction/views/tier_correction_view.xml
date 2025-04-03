@@ -3,10 +3,10 @@
      License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
     <record id="tier_correction_view_tree" model="ir.ui.view">
-        <field name="name">tier.correction.tree</field>
+        <field name="name">tier.correction.list</field>
         <field name="model">tier.correction</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
                 <field name="correction_type" />
                 <field name="reference" />
@@ -18,7 +18,7 @@
                     decoration-danger="state in 'cancel'"
                     widget="badge"
                 />
-            </tree>
+            </list>
         </field>
     </record>
     <record id="tier_correction_view_form" model="ir.ui.view">
@@ -29,14 +29,14 @@
                 <header>
                     <button
                         name="action_prepare"
-                        states="draft"
+                        invisible="state != 'draft'"
                         type="object"
                         string="Prepare"
                         class="oe_highlight"
                     />
                     <button
                         name="action_done"
-                        states="prepare"
+                        invisible="state != 'prepare'"
                         type="object"
                         string="Make Correcton"
                         class="oe_highlight"
@@ -44,20 +44,20 @@
                     />
                     <button
                         name="action_revert"
-                        states="done"
+                        invisible="state != 'done'"
                         type="object"
                         string="Revert Back"
                         confirm="Are you sure to revert to old reviewer(s) for affected tier reviews?"
                     />
                     <button
                         name="action_draft"
-                        states="prepare"
+                        invisible="state != 'prepare'"
                         type="object"
                         string="Set to Draft"
                     />
                     <button
                         name="action_cancel"
-                        states="draft,prepare"
+                        invisible="state in ['draft', 'prepare']"
                         type="object"
                         string="Cancel"
                     />
@@ -75,14 +75,20 @@
                             <field
                                 name="name"
                                 required="1"
+                                readonly="state != 'draft'"
                                 placeholder="e.g. Correction for..."
                             />
                         </h1>
                     </div>
                     <group>
                         <group>
-                            <field name="correction_type" />
-                            <field name="model_id" required="1" widget="selection" />
+                            <field name="correction_type" readonly="state != 'draft'" />
+                            <field
+                                name="model_id"
+                                required="1"
+                                readonly="state != 'draft'"
+                                widget="selection"
+                            />
                             <field name="model" invisible="1" />
                         </group>
                         <group>
@@ -99,10 +105,11 @@
                             </p>
                             <field
                                 name="old_reviewer_ids"
+                                readonly="state != 'draft'"
                                 widget="many2many_tags"
                                 string="Reviewer(s)"
                             />
-                            <field name="search_name" />
+                            <field name="search_name" readonly="state != 'draft'" />
                         </group>
                         <group name="set_value" string="Reassign to new value">
                             <p class="oe_grey" colspan="2">
@@ -111,17 +118,21 @@
                             </p>
                             <field
                                 name="new_reviewer_ids"
+                                readonly="state != 'draft'"
                                 widget="many2many_tags"
                                 string="Reviewer(s)"
-                                attrs="{'invisible': [('correction_type', '!=', 'reviewer')],
-                                        'required': [('correction_type', '=', 'reviewer')]}"
+                                invisible="correction_type != 'reviewer'"
+                                required="correction_type == 'reviewer'"
                             />
                         </group>
                     </group>
                     <notebook>
                         <page name="correction_item" string="Correction Details">
-                            <field name="item_ids">
-                                <tree create="0" editable="bottom">
+                            <field
+                                name="item_ids"
+                                readonly="state not in ['draft', 'prepare']"
+                            >
+                                <list create="0" editable="bottom">
                                     <field name="resource_ref" />
                                     <field
                                         name="new_reviewer_ids"
@@ -134,7 +145,7 @@
                                         type="action"
                                         icon="fa-list"
                                     />
-                                </tree>
+                                </list>
                                 <form>
                                     <group>
                                         <field name="resource_ref" />
@@ -167,34 +178,35 @@
                                 <group>
                                     <field
                                         name="date_schedule_correct"
+                                        readonly="state not in ['draft', 'prepare']"
                                         string="Scheduled Correct"
                                     />
                                     <field
                                         name="date_actual_correct"
                                         string="Actual Correct"
-                                        attrs="{'invisible': [('date_actual_correct', '=', False)]}"
+                                        invisible="not date_actual_correct"
+                                        readonly="1"
                                     />
                                 </group>
                                 <group>
                                     <field
                                         name="date_schedule_revert"
+                                        readonly="state not in ['draft', 'prepare', 'done']"
                                         string="Scheduled Revert"
                                     />
                                     <field
                                         name="date_actual_revert"
                                         string="Actual Revert"
-                                        attrs="{'invisible': [('date_actual_correct', '=', False)]}"
+                                        invisible="not date_actual_correct"
+                                        readonly="1"
                                     />
                                 </group>
                             </group>
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" />
-                    <field name="activity_ids" />
-                    <field name="message_ids" />
-                </div>
+                <!-- Chatter -->
+                <chatter />
             </form>
         </field>
     </record>
@@ -240,7 +252,7 @@
         <field name="name">Tier Review Correction</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tier.correction</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="context">{}</field>
     </record>
     <menuitem
