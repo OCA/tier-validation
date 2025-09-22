@@ -62,7 +62,7 @@ Credits
 Authors
 -------
 
-* FrogeFlow
+* ForgeFlow
 
 Contributors
 ------------
