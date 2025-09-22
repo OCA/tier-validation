@@ -60,7 +60,6 @@ class TierReview(models.Model):
         offset=0,
         limit=None,
         order=None,
-        access_rights_uid=None,
     ):
         # Rules do not apply to administrator
         if self.env.is_superuser():
@@ -69,16 +68,13 @@ class TierReview(models.Model):
                 offset=offset,
                 limit=limit,
                 order=order,
-                access_rights_uid=access_rights_uid,
             )
         query = super()._search(domain, offset, limit, order)
         ids = self.browse(query).ids
         if not ids:
             return query
 
-        super(
-            TierReview, self.with_user(access_rights_uid or self._uid)
-        ).check_access_rights("read")
+        super().check_access("read")
 
         self.flush_model(["model", "res_id"])
         reviews_to_check = []
@@ -102,14 +98,10 @@ class TierReview(models.Model):
         allowed_ids = set()
         for doc_model, doc_ids in review_to_documents.items():
             doc_operation = "read"
-            DocumentModel = self.env[doc_model].with_user(
-                access_rights_uid or self._uid
-            )
-            right = DocumentModel.check_access_rights(
-                doc_operation, raise_exception=False
-            )
+            DocumentModel = self.env[doc_model].with_user(self._uid)
+            right = DocumentModel.has_access(doc_operation)
             if right:
-                valid_docs = DocumentModel.browse(doc_ids)._filter_access_rules(
+                valid_docs = DocumentModel.browse(doc_ids)._filtered_access(
                     doc_operation
                 )
                 valid_doc_ids = set(valid_docs.ids)
