@@ -24,4 +24,3 @@ repo_slug: tier-validation
 repo_website: https://github.com/OCA/tier-validation
 use_pyproject_toml: true
 use_ruff: true
-
