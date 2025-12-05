@@ -14,12 +14,12 @@
                         title="Tier Validation"
                         name="base_tier_validation_option_setting_container"
                     >
-                        <!--<setting id="module_base_tier_validation_formula">
+                        <setting id="module_base_tier_validation_formula">
                             <field name="module_base_tier_validation_formula" />
                             <div class="text-muted">
                                 Option to use python formula to get reviewers and find documents
                             </div>
-                        </setting>-->
+                        </setting>
                        <setting
                             id="module_base_tier_validation_server_action"
                         >
