@@ -20,7 +20,7 @@
                                 Option to use python formula to get reviewers and find documents
                             </div>
                         </setting>-->
-                        <!-- <setting
+                       <setting
                             id="module_base_tier_validation_server_action"
                         >
                             <field
@@ -29,7 +29,7 @@
                             <div class="text-muted">
                                 Option to trigger server actions on completion of tier reviews
                             </div>
-                        </setting> -->
+                        </setting>
                         <setting
                             id="module_base_tier_validation_forward"
                         >
