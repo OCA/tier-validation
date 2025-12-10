@@ -40,7 +40,6 @@ class TestStockPickingTierValidation(BaseCommon):
         cls.product = cls.product_model.create(
             {
                 "name": "test_product",
-                "categ_id": cls.env.ref("product.product_category_all").id,
                 "type": "consu",
                 "is_storable": True,
                 "standard_price": 1.0,
@@ -64,7 +63,6 @@ class TestStockPickingTierValidation(BaseCommon):
                 "move_ids": [
                     Command.create(
                         {
-                            "name": "Test move",
                             "product_id": self.product.id,
                             "product_uom": self.product.uom_id.id,
                             "product_uom_qty": 3,

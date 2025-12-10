@@ -1,7 +1,7 @@
 # Copyright 2021 Ecosoft Co., Ltd. (http://ecosoft.co.th)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import _, models
+from odoo import models
 from odoo.exceptions import ValidationError
 
 
@@ -21,13 +21,15 @@ class StockPicking(models.Model):
                 rec._validate_tier(reviews)
                 if self.validation_status != "validated":
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "This action needs to be validated for at least "
                             "one record. \nPlease request a validation."
                         )
                     )
-            if rec.review_ids and not rec.validated:
+            if rec.review_ids and rec.validation_status != "validated":
                 raise ValidationError(
-                    _("A validation process is still open for at least one record.")
+                    self.env._(
+                        "A validation process is still open for at least one record."
+                    )
                 )
         return super().button_validate()
