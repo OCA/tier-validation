@@ -24,7 +24,7 @@ class TestAccountPayment(BaseCommon):
             {
                 "name": "John",
                 "login": "test1",
-                "groups_id": [(6, 0, group_ids)],
+                "group_ids": [(6, 0, group_ids)],
                 "email": "test@examlple.com",
             }
         )
@@ -74,7 +74,7 @@ class TestAccountPayment(BaseCommon):
         self.assertEqual(payment.validation_status, "no")
         reviews = payment.with_user(self.env.user.id).request_validation()
         payment.invalidate_model()
-        self.assertEqual(payment.validation_status, "waiting")
+        self.assertEqual(payment.validation_status, "pending")
         self.assertTrue(reviews)
         record = payment.with_user(self.test_user_1.id)
         record.invalidate_model()
