@@ -6,7 +6,7 @@
     "support a tier validation process.",
     "version": "18.0.1.1.1",
     "category": "Purchase Management",
-    "website": "https://github.com/OCA/purchase-workflow",
+    "website": "https://github.com/OCA/tier-validation",
     "author": "ForgeFlow, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "application": False,
