@@ -35,7 +35,7 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_search" />
         <field name="arch" type="xml">
             <search position="inside">
-                <group expand="0" string="Need actions">
+                <group>
                     <filter
                         name="needs_review"
                         string="Needs my Review"
@@ -45,7 +45,7 @@
                     <filter
                         name="tier_validated"
                         string="Validated"
-                        domain="[('validated', '=', True)]"
+                        domain="[('validation_status', '=', 'validated')]"
                         help="Purchase Requests validated and ready to be confirmed"
                     />
                 </group>
