@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 ForgeFlow S.L. (https://www.forgeflow.com)
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <!-- Demo 1: Block validation for high amount purchase orders -->
+    <record id="tier_definition_po_block_demo" model="tier.definition">
+        <field name="name">Purchase Order - Block High Amount</field>
+        <field name="model_id" ref="purchase.model_purchase_order" />
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="purchase.group_purchase_manager" />
+        <field name="definition_domain">[('amount_total', '>', 50000)]</field>
+        <field name="constraint_type">block</field>
+        <field
+            name="constraint_message"
+        >BLOCKED: Purchase orders over 50,000 require special approval process. Please contact CFO.</field>
+    </record>
+
+    <!-- Demo 2: Warning for sale orders without payment terms -->
+    <record id="tier_definition_so_warning_demo" model="tier.definition">
+        <field name="name">Sale Order - Payment Terms Warning</field>
+        <field name="model_id" ref="sale.model_sale_order" />
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="sales_team.group_sale_manager" />
+        <field name="definition_domain">[('payment_term_id', '=', False)]</field>
+        <field name="constraint_type">warning</field>
+        <field
+            name="constraint_message"
+        >WARNING: This sale order has no payment terms defined. Please add payment terms before proceeding.</field>
+    </record>
+
+    <!-- Demo 3: Server action to send notification -->
+    <record id="server_action_po_notification_demo" model="ir.actions.server">
+        <field name="name">Send PO Notification</field>
+        <field name="model_id" ref="purchase.model_purchase_order" />
+        <field name="state">code</field>
+        <field name="code">
+# Post message in chatter
+record.message_post(
+    body="High value purchase order validation requested. Please review urgently.",
+    subject="Validation Request - High Amount",
+    message_type="notification",
+)
+
+# Create activity for CFO
+cfo_user = env.ref('base.user_admin')  # Replace with actual CFO user
+record.activity_schedule(
+    'mail.mail_activity_data_todo',
+    summary='Urgent PO Approval Required',
+    note=f'Purchase Order {record.name} for {record.amount_total} needs immediate approval.',
+    user_id=cfo_user.id,
+)
+        </field>
+    </record>
+
+    <record id="tier_definition_po_server_action_demo" model="tier.definition">
+        <field name="name">Purchase Order - Notify on High Amount</field>
+        <field name="model_id" ref="purchase.model_purchase_order" />
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="purchase.group_purchase_manager" />
+        <field name="definition_domain">[('amount_total', '>', 10000)]</field>
+        <field name="constraint_type">server_action</field>
+        <field name="constraint_server_action_id" ref="server_action_po_notification_demo" />
+    </record>
+
+    <!-- Demo 4: Block invoices without tax -->
+    <record id="tier_definition_invoice_block_demo" model="tier.definition">
+        <field name="name">Invoice - Require Tax</field>
+        <field name="model_id" ref="account.model_account_move" />
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="account.group_account_manager" />
+        <field
+            name="definition_domain"
+        >[('move_type', 'in', ['out_invoice', 'out_refund']), ('amount_tax', '=', 0)]</field>
+        <field name="constraint_type">block</field>
+        <field
+            name="constraint_message"
+        >BLOCKED: Customer invoices must include tax. Please verify tax configuration on invoice lines.</field>
+    </record>
+
+    <!-- Demo 5: Warning for sale orders with large quantity -->
+    <record id="tier_definition_so_quantity_warning_demo" model="tier.definition">
+        <field name="name">Sale Order - Large Quantity Warning</field>
+        <field name="model_id" ref="sale.model_sale_order" />
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="sales_team.group_sale_manager" />
+        <field name="definition_domain">[('amount_total', '>', 20000)]</field>
+        <field name="constraint_type">warning</field>
+        <field
+            name="constraint_message"
+        >WARNING: Large order detected. Please verify:
+- Customer credit limit
+- Stock availability
+- Delivery timeline
+- Special pricing/discounts applied</field>
+    </record>
+
+    <!-- Demo 6: Server action to log external system -->
+    <record id="server_action_log_external_demo" model="ir.actions.server">
+        <field name="name">Log to External System</field>
+        <field name="model_id" ref="purchase.model_purchase_order" />
+        <field name="state">code</field>
+        <field name="code">
+import logging
+_logger = logging.getLogger(__name__)
+
+# Log to external audit system (simulated)
+_logger.info(
+    "AUDIT: Purchase Order %s (Amount: %s) validation requested by user %s",
+    record.name,
+    record.amount_total,
+    env.user.name
+)
+
+# Could also call external API here
+# response = requests.post('https://audit-system.com/api/log', json={...})
+        </field>
+    </record>
+
+    <record id="tier_definition_po_audit_demo" model="tier.definition">
+        <field name="name">Purchase Order - Audit Log</field>
+        <field name="model_id" ref="purchase.model_purchase_order" />
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="purchase.group_purchase_manager" />
+        <field name="definition_domain">[('amount_total', '>', 5000)]</field>
+        <field name="constraint_type">server_action</field>
+        <field name="constraint_server_action_id" ref="server_action_log_external_demo" />
+    </record>
+</odoo>

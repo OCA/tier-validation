@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 ForgeFlow S.L. (https://www.forgeflow.com)
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="tier_definition_view_form" model="ir.ui.view">
+        <field name="name">tier.definition.form.constraint</field>
+        <field name="model">tier.definition</field>
+        <field name="inherit_id" ref="base_tier_validation.tier_definition_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='options']/group" position="inside">
+                <group name="constraint" string="Validation Constraints">
+                    <field name="constraint_type" />
+                    <field
+                        name="constraint_message"
+                        invisible="constraint_type not in ['block', 'warning']"
+                        required="constraint_type in ['block', 'warning']"
+                        placeholder="Error message to display when constraint is triggered..."
+                    />
+                    <field
+                        name="constraint_server_action_id"
+                        invisible="constraint_type != 'server_action'"
+                        required="constraint_type == 'server_action'"
+                    />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

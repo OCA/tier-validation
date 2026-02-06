@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Base Tier Validation - Constraints</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .feature-list li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .constraint-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .constraint-type {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        .constraint-type h3 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .example {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛡️ Base Tier Validation - Constraints</h1>
+        <p>Add business constraints validation before tier validation request</p>
+    </div>
+
+    <div class="section">
+        <h2>📋 Overview</h2>
+        <p>
+            This module extends the base tier validation system to add configurable business constraints
+            that must be satisfied before allowing a validation request. It helps enforce business rules
+            and data quality requirements at the validation request stage.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>✨ Features</h2>
+        <ul class="feature-list">
+            <li>Block or warn users when trying to request validation if conditions are not met</li>
+            <li>Five different constraint types for various business needs</li>
+            <li>Configurable custom error messages per constraint</li>
+            <li>Option to block validation request or only show warning</li>
+            <li>Seamless integration with existing tier validation system</li>
+            <li>Works with any model that uses tier validation</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🔧 Constraint Types</h2>
+        <div class="constraint-types">
+            <div class="constraint-type">
+                <h3>Required Field</h3>
+                <p>Ensure a specific field is filled before requesting validation.</p>
+            </div>
+            <div class="constraint-type">
+                <h3>Minimum Amount</h3>
+                <p>Ensure a monetary/float field meets a minimum threshold value.</p>
+            </div>
+            <div class="constraint-type">
+                <h3>Maximum Amount</h3>
+                <p>Ensure a monetary/float field doesn't exceed a maximum value.</p>
+            </div>
+            <div class="constraint-type">
+                <h3>Domain Constraint</h3>
+                <p>Ensure the record matches a specific Odoo domain expression.</p>
+            </div>
+            <div class="constraint-type">
+                <h3>Python Code</h3>
+                <p>Custom Python logic for complex business rules and validations.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📚 Usage Examples</h2>
+
+        <div class="example">
+            <h3>Example 1: Required Field</h3>
+            <p><strong>Use case:</strong> Ensure customer is selected before validation</p>
+            <ul>
+                <li>Constraint Type: <code>Required Field</code></li>
+                <li>Required Field: <code>partner_id</code></li>
+                <li>Error Message: "Please select a customer before requesting validation"</li>
+            </ul>
+        </div>
+
+        <div class="example">
+            <h3>Example 2: Minimum Amount</h3>
+            <p><strong>Use case:</strong> Block validation for orders below 1000</p>
+            <ul>
+                <li>Constraint Type: <code>Minimum Amount</code></li>
+                <li>Amount Field: <code>amount_total</code></li>
+                <li>Minimum Amount: <code>1000.00</code></li>
+                <li>Error Message: "Orders below 1000 cannot be validated"</li>
+            </ul>
+        </div>
+
+        <div class="example">
+            <h3>Example 3: Python Code</h3>
+            <p><strong>Use case:</strong> Complex validation requiring partner and amount > 5000</p>
+            <ul>
+                <li>Constraint Type: <code>Python Code</code></li>
+                <li>Python Code: <code>result = rec.partner_id and rec.amount_total > 5000</code></li>
+                <li>Error Message: "Validation requires a customer and amount over 5000"</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🎯 Use Cases</h2>
+        <ul>
+            <li><strong>Purchase Orders:</strong> Block validation if total amount exceeds budget</li>
+            <li><strong>Invoices:</strong> Require payment terms before requesting approval</li>
+            <li><strong>Sales Orders:</strong> Ensure delivery date is set before validation</li>
+            <li><strong>HR Requests:</strong> Block validation if required documentation is missing</li>
+            <li><strong>Custom Workflows:</strong> Implement any complex business validation logic</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>⚙️ Configuration</h2>
+        <ol>
+            <li>Go to <strong>Settings > Technical > Tier Validations > Tier Definitions</strong></li>
+            <li>Open or create a Tier Definition</li>
+            <li>Navigate to the <strong>Constraints</strong> tab</li>
+            <li>Select a constraint type and configure the parameters</li>
+            <li>Set whether to block the request or only warn</li>
+            <li>Optionally customize the error message</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>👥 Credits</h2>
+        <p><strong>Authors:</strong> ForgeFlow</p>
+        <p><strong>Contributors:</strong> ForgeFlow team</p>
+        <p><strong>Maintainer:</strong> OCA (Odoo Community Association)</p>
+    </div>
+</body>
+</html>
