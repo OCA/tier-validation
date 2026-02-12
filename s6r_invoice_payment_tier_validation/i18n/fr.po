@@ -1,0 +1,259 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* s6r_invoice_payment_tier_validation
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-12 15:01+0000\n"
+"PO-Revision-Date: 2026-02-12 15:01+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model_terms:ir.ui.view,arch_db:s6r_invoice_payment_tier_validation.view_move_form_inherit_payment_tier_validation
+msgid ""
+"<span>\n"
+"                        Payment is blocked until the vendor bill is <strong>Approved for\n"
+"                        Payment</strong>.\n"
+"                    </span>"
+msgstr ""
+"<span>\n"
+"Le paiement est bloqué jusqu'à ce que la facture fournisseur soit <strong>Bon à payer\n"
+"</strong>.\n"
+"</span>"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:tier.definition,name:s6r_invoice_payment_tier_validation.account_tier_definition_validation
+msgid "Approve the Vendor Bill for Payment"
+msgstr "Approuver la facture fournisseur pour paiement"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state__approved
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state_auto__approved
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state_manual__approved
+msgid "Approved"
+msgstr "Bon à payer"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model_terms:ir.ui.view,arch_db:s6r_invoice_payment_tier_validation.view_account_bill_filter_payment_tier_validation
+msgid "Approved for Payment"
+msgstr "Approuvé pour paiement"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__can_forward
+msgid "Can Forward"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__can_review
+msgid "Can Review"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state__declined
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state_auto__declined
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state_manual__declined
+msgid "Declined"
+msgstr "Paiement bloqué"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__display_name
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_tier_definition__display_name
+msgid "Display Name"
+msgstr "Nom d'affichage"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__has_comment
+msgid "Has Comment"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__hide_reviews
+msgid "Hide Reviews"
+msgstr "Masquer les revues"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__id
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_tier_definition__id
+msgid "ID"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,help:s6r_invoice_payment_tier_validation.field_account_move__has_comment
+msgid "If set, Allow the reviewer to leave a comment on the review."
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state__in_review
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state_auto__in_review
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state_manual__in_review
+msgid "In review"
+msgstr "En cours de validation"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_bank_statement_line__is_intragroup_invoice
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__is_intragroup_invoice
+msgid "Intragroup Invoice"
+msgstr "Facture intragroupe"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_bank_statement_line__invoice_payment_review_state
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__invoice_payment_review_state
+msgid "Invoice Payment Review State"
+msgstr "État de validation paiement"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_bank_statement_line__invoice_payment_review_state_auto
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__invoice_payment_review_state_auto
+msgid "Invoice Payment Review State (Auto)"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_bank_statement_line__invoice_payment_review_state_manual
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__invoice_payment_review_state_manual
+msgid "Invoice Payment Review State (Manual)"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model,name:s6r_invoice_payment_tier_validation.model_account_move
+msgid "Journal Entry"
+msgstr "Pièce comptable"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__need_validation
+msgid "Need Validation"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__next_review
+msgid "Next Review"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state__not_required
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state_auto__not_required
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state_manual__not_required
+msgid "Not required"
+msgstr "Non requis"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model_terms:ir.ui.view,arch_db:s6r_invoice_payment_tier_validation.view_account_bill_filter_payment_tier_validation
+msgid "Payment Declined"
+msgstr "Paiement bloqué"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_bank_statement_line__payment_locked
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__payment_locked
+msgid "Payment Locked"
+msgstr "Paiement bloqué"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:res.groups,name:s6r_invoice_payment_tier_validation.group_payment_review_state_manual_override
+msgid "Payment Review State Manual Override"
+msgstr "Modification manuelle de l’état de validation de paiement"
+
+#. module: s6r_invoice_payment_tier_validation
+#. odoo-python
+#: code:addons/oca-tier-validation/s6r_invoice_payment_tier_validation/models/account_move.py:0
+#: code:addons/s6r_invoice_payment_tier_validation/models/account_move.py:0
+msgid "Payment is not allowed: this vendor bill is not approved for payment."
+msgstr "Paiement non autorisé : cette facture fournisseur n’est pas approuvée pour paiement."
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__rejected
+msgid "Rejected"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__rejected_message
+msgid "Rejected Message"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__reviewer_ids
+msgid "Reviewers"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model,name:s6r_invoice_payment_tier_validation.model_tier_definition
+msgid "Tier Definition"
+msgstr "Définition de niveau"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model_terms:ir.ui.view,arch_db:s6r_invoice_payment_tier_validation.view_account_bill_filter_payment_tier_validation
+msgid "To Review"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__to_validate_message
+msgid "To Validate Message"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state__to_review
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state_auto__to_review
+#: model:ir.model.fields.selection,name:s6r_invoice_payment_tier_validation.selection__account_move__invoice_payment_review_state_manual__to_review
+msgid "To review"
+msgstr "À vérifier"
+
+#. module: s6r_invoice_payment_tier_validation
+#: model_terms:ir.ui.view,arch_db:s6r_invoice_payment_tier_validation.view_account_bill_filter_payment_tier_validation
+msgid "Under Review"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__validated
+msgid "Validated"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__validated_message
+msgid "Validated Message"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__validation_status
+msgid "Validation Status"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__review_ids
+msgid "Validations"
+msgstr ""
+
+#. module: s6r_invoice_payment_tier_validation
+#. odoo-python
+#: code:addons/oca-tier-validation/s6r_invoice_payment_tier_validation/models/account_move.py:0
+#: code:addons/s6r_invoice_payment_tier_validation/models/account_move.py:0
+msgid "You are not allowed to manually change the payment review state."
+msgstr "Vous n’êtes pas autorisé(e) à modifier manuellement l’état de validation de paiement."
+
+#. module: base_tier_validation
+#: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_validation_label
+msgid ""
+"<i class=\"fa fa-lg fa-info-circle\"/>\n"
+"                This Record needs to be\n"
+"                validated."
+msgstr ""
+"<i class=\"fa fa-lg fa-info-circle\"/>\n"
+"                Cet enregistrement requiert une\n"
+"                validation."
+
+#. module: base_tier_validation
+#: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_validation_label
+msgid ""
+"<i class=\"fa fa-lg fa-thumbs-down\"/>\n"
+"                Operation has been\n"
+"                <b>rejected</b>\n"
+"                ."
+msgstr ""
+"<i class=\"fa fa-lg fa-thumbs-down\"/>\n"
+"                L’opération a été\n"
+"                <b>rejetée</b>\n"
+"                ."

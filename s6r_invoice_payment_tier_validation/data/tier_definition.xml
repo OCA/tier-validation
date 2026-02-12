@@ -1,0 +1,12 @@
+<odoo noupdate="0">
+    <record id="account_tier_definition_validation" model="tier.definition">
+        <field name="name">Approve the Vendor Bill for Payment</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="account.group_account_manager"/>
+        <field name="has_comment">True</field>
+        <field name="definition_type">domain</field>
+        <field name="active" eval="True"/>
+        <field name="definition_domain">[["move_type","in",("in_invoice","in_refund")],["state","=","posted"],["invoice_payment_review_state","=","to_review"]]</field>
+    </record>
+</odoo>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_inherit_payment_tier_validation" model="ir.ui.view">
+        <field name="name">account.move.form.payment.tier.validation</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('alert')][1]" position="before">
+
+                <!-- Warning when payment is locked -->
+                <div class="alert alert-warning" role="alert"
+                     invisible="not payment_locked">
+                    <span>
+                        Payment is blocked until the vendor bill is <strong>Approved for
+                        Payment</strong>.
+                    </span>
+                </div>
+            </xpath>
+            <header position="after">
+                <header
+                    invisible="not invoice_payment_review_state"
+                >
+                    <field name="invoice_payment_review_state"
+                           widget="statusbar"
+                           readonly="False"
+                           groups="s6r_invoice_payment_tier_validation.group_payment_review_state_manual_override"
+                           invisible="not invoice_payment_review_state"
+                           options="{'clickable': '1'}"
+                    />
+                    <field name="invoice_payment_review_state"
+                           widget="statusbar"
+                           groups="!s6r_invoice_payment_tier_validation.group_payment_review_state_manual_override"
+                           invisible="not invoice_payment_review_state"
+                    />
+
+                </header>
+            </header>
+            <!-- Hide payment button when locked -->
+
+            <xpath expr="//button[@id='account_invoice_payment_btn']"
+                   position="attributes">
+                <attribute name="invisible">payment_locked or (state != 'posted' or
+                    payment_state not in ('not_paid', 'partial', 'in_payment') or
+                    move_type not in ('out_invoice', 'out_refund', 'in_invoice',
+                    'in_refund', 'out_receipt', 'in_receipt') or invoice_has_outstanding)
+                </attribute>
+            </xpath>
+            <xpath expr="//button[@id='account_invoice_payment_secondary_btn']"
+                   position="attributes">
+                <attribute name="invisible">payment_locked or ( state != 'posted' or
+                    payment_state not in ('not_paid', 'partial', 'in_payment') or
+                    move_type not in ('out_invoice', 'out_refund', 'in_invoice',
+                    'in_refund', 'out_receipt', 'in_receipt') or not
+                    invoice_has_outstanding )
+                </attribute>
+            </xpath>
+
+
+        </field>
+    </record>
+    <!-- List View -->
+    <record id="view_account_bill_tree_payment_tier_validation" model="ir.ui.view">
+        <field name="name">account.invoice.tree.payment.tier.validation</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_in_invoice_bill_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='status_in_payment']" position="after">
+
+                <field name="invoice_payment_review_state"
+                       widget="badge"
+                       decoration-danger="invoice_payment_review_state == 'declined'"
+                       decoration-warning="invoice_payment_review_state == 'in_review'"
+                       decoration-success="invoice_payment_review_state == 'approved'"
+                       decoration-info="invoice_payment_review_state == 'to_review'"
+                       optional="hide"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search filters -->
+    <record id="view_account_bill_filter_payment_tier_validation" model="ir.ui.view">
+        <field name="name">account.invoice.select.payment.tier.validation</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_bill_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='to_check']" position="before">
+                <separator/>
+                <filter string="To Review"
+                        name="filter_payment_to_review"
+                        domain="[('invoice_payment_review_state','=','to_review')]"/>
+                <filter string="Under Review"
+                        name="filter_payment_in_review"
+                        domain="[('invoice_payment_review_state','=','in_review')]"/>
+                <filter string="Payment Declined"
+                        name="filter_payment_declined"
+                        domain="[('invoice_payment_review_state','=','declined')]"/>
+                <filter string="Approved for Payment"
+                        name="filter_payment_approved"
+                        domain="[('invoice_payment_review_state','=','approved')]"/>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>
