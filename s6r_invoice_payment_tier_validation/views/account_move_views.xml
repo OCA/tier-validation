@@ -85,7 +85,6 @@
         <field name="inherit_id" ref="account.view_account_bill_filter"/>
         <field name="arch" type="xml">
             <xpath expr="//filter[@name='to_check']" position="before">
-                <separator/>
                 <filter string="To Review"
                         name="filter_payment_to_review"
                         domain="[('invoice_payment_review_state','=','to_review')]"/>
@@ -98,9 +97,14 @@
                 <filter string="Approved for Payment"
                         name="filter_payment_approved"
                         domain="[('invoice_payment_review_state','=','approved')]"/>
+                <separator/>
+            </xpath>
+            <xpath expr="//group/filter[@name='preferred_payment_method_line']" position="after">
+                <filter string="Invoice Payment Review State"
+                        name="group_invoice_payment_review_state"
+                        context="{'group_by':'invoice_payment_review_state'}"
+                />
             </xpath>
         </field>
     </record>
-
-
 </odoo>

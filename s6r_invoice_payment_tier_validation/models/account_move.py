@@ -57,12 +57,6 @@ class AccountMove(models.Model):
         store=True,
         readonly=True,
     )
-    is_intragroup_invoice = fields.Boolean(
-        string='Intragroup Invoice',
-        compute='_compute_is_intragroup_invoice',
-        store=True,
-        readonly=True,
-    )
 
     @api.depends(
         'state',
@@ -134,17 +128,6 @@ class AccountMove(models.Model):
             required = move._payment_validation_required()
             move.payment_locked = (state == 'declined') or (
                 required and state not in allowed)
-
-    @api.depends('partner_id', 'company_id')
-    def _compute_is_intragroup_invoice(self):
-        """
-        Mark the vendor bill as intragroup when its partner is a company partner.
-        """
-        companies = self.env['res.company'].sudo().search([])
-        company_partner_ids = set(companies.mapped('partner_id').ids)
-        for move in self:
-            move.is_intragroup_invoice = bool(
-                move.partner_id) and move.partner_id.id in company_partner_ids
 
     def action_force_register_payment(self):
         """

@@ -16,6 +16,7 @@ override the review state when needed.
     "depends": [
         "account",
         "base_tier_validation",
+        "s6r_account_invoice_intragroup"
     ],
     "data": [
         "security/security.xml",

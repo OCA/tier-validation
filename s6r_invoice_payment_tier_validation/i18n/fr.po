@@ -43,7 +43,7 @@ msgstr "Bon à payer"
 #. module: s6r_invoice_payment_tier_validation
 #: model_terms:ir.ui.view,arch_db:s6r_invoice_payment_tier_validation.view_account_bill_filter_payment_tier_validation
 msgid "Approved for Payment"
-msgstr "Approuvé pour paiement"
+msgstr "Bon à payer"
 
 #. module: s6r_invoice_payment_tier_validation
 #: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__can_forward
@@ -97,14 +97,9 @@ msgid "In review"
 msgstr "En cours de validation"
 
 #. module: s6r_invoice_payment_tier_validation
-#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_bank_statement_line__is_intragroup_invoice
-#: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__is_intragroup_invoice
-msgid "Intragroup Invoice"
-msgstr "Facture intragroupe"
-
-#. module: s6r_invoice_payment_tier_validation
 #: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_bank_statement_line__invoice_payment_review_state
 #: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__invoice_payment_review_state
+#: model_terms:ir.ui.view,arch_db:s6r_invoice_payment_tier_validation.view_account_bill_filter_payment_tier_validation
 msgid "Invoice Payment Review State"
 msgstr "État de validation paiement"
 
@@ -188,7 +183,7 @@ msgstr "Définition de niveau"
 #. module: s6r_invoice_payment_tier_validation
 #: model_terms:ir.ui.view,arch_db:s6r_invoice_payment_tier_validation.view_account_bill_filter_payment_tier_validation
 msgid "To Review"
-msgstr ""
+msgstr "À vérifier"
 
 #. module: s6r_invoice_payment_tier_validation
 #: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__to_validate_message
@@ -205,7 +200,7 @@ msgstr "À vérifier"
 #. module: s6r_invoice_payment_tier_validation
 #: model_terms:ir.ui.view,arch_db:s6r_invoice_payment_tier_validation.view_account_bill_filter_payment_tier_validation
 msgid "Under Review"
-msgstr ""
+msgstr "En cours de validation"
 
 #. module: s6r_invoice_payment_tier_validation
 #: model:ir.model.fields,field_description:s6r_invoice_payment_tier_validation.field_account_move__validated
@@ -257,3 +252,4 @@ msgstr ""
 "                L’opération a été\n"
 "                <b>rejetée</b>\n"
 "                ."
+
