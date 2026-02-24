@@ -1,0 +1,236 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* base_tier_validation_delegation
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-23 15:01+0000\n"
+"PO-Revision-Date: 2026-02-23 15:01+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: base_tier_validation_delegation
+#: model_terms:ir.actions.server,help:base_tier_validation_delegation.ir_cron_update_holiday_status_ir_actions_server
+msgid ""
+"Automatically activate or deactivate a user's 'On Holiday' status based on "
+"their configured start and end dates."
+msgstr ""
+"Active ou désactive automatiquement le statut « En congé » d'un utilisateur "
+"en fonction des dates de début et de fin configurées."
+
+#. module: base_tier_validation_delegation
+#: model:ir.model.fields,help:base_tier_validation_delegation.field_res_users__on_holiday
+msgid ""
+"Check this box if you are out of office and want to delegate your validation"
+" tasks."
+msgstr ""
+"Cochez cette case si vous êtes absent(e) du bureau et souhaitez déléguer vos "
+"tâches de validation."
+
+#. module: base_tier_validation_delegation
+#: model:ir.model.fields,field_description:base_tier_validation_delegation.field_res_users__validation_replacer_id
+#: model_terms:ir.ui.view,arch_db:base_tier_validation_delegation.view_users_form
+#: model_terms:ir.ui.view,arch_db:base_tier_validation_delegation.view_users_form_simple_modif_delegation
+#: model_terms:ir.ui.view,arch_db:base_tier_validation_delegation.view_users_tree_delegation
+msgid "Default Replacer"
+msgstr "Remplaçant par défaut"
+
+#. module: base_tier_validation_delegation
+#: model:ir.model.fields,field_description:base_tier_validation_delegation.field_tier_review__delegated_by_ids
+#: model_terms:ir.ui.view,arch_db:base_tier_validation_delegation.tier_review_view_form
+msgid "Delegated By"
+msgstr "Délégué par"
+
+#. module: base_tier_validation_delegation
+#: model_terms:ir.ui.view,arch_db:base_tier_validation_delegation.view_users_form
+#: model_terms:ir.ui.view,arch_db:base_tier_validation_delegation.view_users_form_simple_modif_delegation
+msgid "Delegation"
+msgstr "Délégation"
+
+#. module: base_tier_validation_delegation
+#: model_terms:ir.ui.view,arch_db:base_tier_validation_delegation.view_users_search
+msgid "Delegation Active"
+msgstr "Délégation active"
+
+#. module: base_tier_validation_delegation
+#: model:res.groups,name:base_tier_validation_delegation.group_delegation_administrator
+msgid "Delegation Administrator"
+msgstr "Administrateur de délégation"
+
+#. module: base_tier_validation_delegation
+#: model:ir.actions.act_window,name:base_tier_validation_delegation.action_delegation_management
+#: model:ir.ui.menu,name:base_tier_validation_delegation.menu_delegation_management
+msgid "Delegation Management"
+msgstr "Gestion des délégations"
+
+#. module: base_tier_validation_delegation
+#: model:ir.actions.server,name:base_tier_validation_delegation.ir_cron_send_delegation_reminder_ir_actions_server
+msgid "Delegation: Send Holiday Reminder"
+msgstr "Délégation : envoyer un rappel de congé"
+
+#. module: base_tier_validation_delegation
+#: model:ir.actions.server,name:base_tier_validation_delegation.ir_cron_update_holiday_status_ir_actions_server
+msgid "Delegation: Update Holiday Status"
+msgstr "Délégation : mettre à jour le statut de congé"
+
+#. module: base_tier_validation_delegation
+#: model_terms:ir.ui.view,arch_db:base_tier_validation_delegation.view_users_tree_delegation
+msgid "Delegator"
+msgstr "Délégant"
+
+#. module: base_tier_validation_delegation
+#: model:ir.model.fields,field_description:base_tier_validation_delegation.field_res_users__display_name
+#: model:ir.model.fields,field_description:base_tier_validation_delegation.field_tier_review__display_name
+#: model:ir.model.fields,field_description:base_tier_validation_delegation.field_tier_validation__display_name
+msgid "Display Name"
+msgstr "Nom d'affichage"
+
+#. module: base_tier_validation_delegation
+#: model_terms:ir.ui.view,arch_db:base_tier_validation_delegation.view_users_form
+#: model_terms:ir.ui.view,arch_db:base_tier_validation_delegation.view_users_form_simple_modif_delegation
+msgid "Fallback for all validations"
+msgstr "Remplaçant pour toutes les validations"
+
+#. module: base_tier_validation_delegation
+#: model:ir.model.fields,field_description:base_tier_validation_delegation.field_res_users__holiday_end_date
+msgid "Holiday End Date"
+msgstr "Date de fin de congé"
+
+#. module: base_tier_validation_delegation
+#. odoo-python
+#: code:addons/base_tier_validation_delegation/models/res_users.py:0
+#: code:addons/oca-tier-validation/base_tier_validation_delegation/models/res_users.py:0
+msgid "Holiday End Date cannot be before the Start Date."
+msgstr "La date de fin de congé ne peut pas être antérieure à la date de début."
+
+#. module: base_tier_validation_delegation
+#: model:ir.model.fields,field_description:base_tier_validation_delegation.field_res_users__holiday_start_date
+msgid "Holiday Start Date"
+msgstr "Date de début de congé"
+
+#. module: base_tier_validation_delegation
+#: model:ir.model.fields,field_description:base_tier_validation_delegation.field_res_users__id
+#: model:ir.model.fields,field_description:base_tier_validation_delegation.field_tier_review__id
+#: model:ir.model.fields,field_description:base_tier_validation_delegation.field_tier_validation__id
+msgid "ID"
+msgstr "ID"
+
+#. module: base_tier_validation_delegation
+#: model:ir.actions.act_window,name:base_tier_validation_delegation.action_my_delegated_reviews
+#: model:ir.ui.menu,name:base_tier_validation_delegation.menu_my_delegated_reviews
+msgid "My Delegated Reviews"
+msgstr "Mes validations déléguées"
+
+#. module: base_tier_validation_delegation
+#: model_terms:ir.actions.act_window,help:base_tier_validation_delegation.action_my_delegated_reviews
+msgid "No reviews have been delegated by you."
+msgstr "Aucune validation n'a été déléguée par vous."
+
+#. module: base_tier_validation_delegation
+#: model_terms:ir.actions.server,help:base_tier_validation_delegation.ir_cron_send_delegation_reminder_ir_actions_server
+msgid ""
+"Notifies users 3 days before their scheduled holiday if they have not yet "
+"configured a replacer."
+msgstr ""
+"Notifie les utilisateurs 3 jours avant leur congé prévu s'ils n'ont pas "
+"encore configuré de remplaçant."
+
+#. module: base_tier_validation_delegation
+#: model:ir.model.fields,field_description:base_tier_validation_delegation.field_res_users__on_holiday
+msgid "On Holiday"
+msgstr "En congé"
+
+#. module: base_tier_validation_delegation
+#: model:ir.model.fields,help:base_tier_validation_delegation.field_tier_review__delegated_by_ids
+msgid "Original users who delegated this review to the current reviewers."
+msgstr ""
+"Utilisateurs d'origine ayant délégué cette validation aux validateurs "
+"actuels."
+
+#. module: base_tier_validation_delegation
+#: model_terms:ir.ui.view,arch_db:base_tier_validation_delegation.view_users_form
+#: model_terms:ir.ui.view,arch_db:base_tier_validation_delegation.view_users_form_simple_modif_delegation
+msgid "Out of Office / Holiday Delegation"
+msgstr "Absence du bureau / Délégation de congé"
+
+#. module: base_tier_validation_delegation
+#. odoo-python
+#: code:addons/base_tier_validation_delegation/models/tier_review.py:0
+#: code:addons/oca-tier-validation/base_tier_validation_delegation/models/tier_review.py:0
+msgid ""
+"Review task delegated from <strong>%(from_user)s</strong> to "
+"<strong>%(to_user)s</strong>."
+msgstr ""
+"Tâche de validation déléguée de <strong>%(from_user)s</strong> à "
+"<strong>%(to_user)s</strong>."
+
+#. module: base_tier_validation_delegation
+#: model:res.groups,comment:base_tier_validation_delegation.group_delegation_administrator
+msgid ""
+"The delegation administrator can manage the holiday/delegation settings for "
+"any user."
+msgstr ""
+"L'administrateur de délégation peut gérer les paramètres de congé/délégation "
+"de n'importe quel utilisateur."
+
+#. module: base_tier_validation_delegation
+#: model_terms:ir.actions.act_window,help:base_tier_validation_delegation.action_my_delegated_reviews
+msgid "This screen shows the reviews that you have delegated to other users."
+msgstr ""
+"Cet écran affiche les validations que vous avez déléguées à d'autres "
+"utilisateurs."
+
+#. module: base_tier_validation_delegation
+#: model:ir.model.fields,help:base_tier_validation_delegation.field_res_users__validation_replacer_id
+msgid ""
+"This user will receive your validation requests while you are on holiday."
+msgstr ""
+"Cet utilisateur recevra vos demandes de validation pendant votre congé."
+
+#. module: base_tier_validation_delegation
+#: model:ir.model,name:base_tier_validation_delegation.model_tier_review
+msgid "Tier Review"
+msgstr "Revue d'un niveau"
+
+#. module: base_tier_validation_delegation
+#: model:ir.model,name:base_tier_validation_delegation.model_tier_validation
+msgid "Tier Validation (abstract)"
+msgstr "Validation d'un niveau (modèle abstrait)"
+
+#. module: base_tier_validation_delegation
+#: model:ir.model,name:base_tier_validation_delegation.model_res_users
+msgid "User"
+msgstr "Utilisateur"
+
+#. module: base_tier_validation_delegation
+#. odoo-python
+#: code:addons/base_tier_validation_delegation/models/res_users.py:0
+#: code:addons/oca-tier-validation/base_tier_validation_delegation/models/res_users.py:0
+msgid "You cannot create a circular delegation path."
+msgstr "Vous ne pouvez pas créer un circuit de délégation circulaire."
+
+#. module: base_tier_validation_delegation
+#. odoo-python
+#: code:addons/base_tier_validation_delegation/models/res_users.py:0
+#: code:addons/oca-tier-validation/base_tier_validation_delegation/models/res_users.py:0
+msgid "You cannot delegate validation tasks to yourself."
+msgstr "Vous ne pouvez pas vous déléguer vos propres tâches de validation."
+
+#. module: base_tier_validation_delegation
+#. odoo-python
+#: code:addons/base_tier_validation_delegation/models/res_users.py:0
+#: code:addons/oca-tier-validation/base_tier_validation_delegation/models/res_users.py:0
+msgid ""
+"Your holiday is scheduled to start on %s. Please remember to configure a "
+"validation replacer in your preferences to avoid blocking any documents."
+msgstr ""
+"Votre congé est prévu pour commencer le %s. Veuillez penser à configurer un "
+"remplaçant de validation dans vos préférences afin d'éviter de bloquer des "
+"documents."
