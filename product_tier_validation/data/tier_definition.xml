@@ -1,0 +1,11 @@
+<odoo noupdate="1">
+    <record id="product_tier_definition" model="tier.definition">
+        <field name="name">Validate Product Activation</field>
+        <field name="model_id" ref="product.model_product_template" />
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="base.group_user" />
+        <field name="definition_type">domain</field>
+        <field name="active" eval="False" />
+        <field name="definition_domain">[]</field>
+    </record>
+</odoo>

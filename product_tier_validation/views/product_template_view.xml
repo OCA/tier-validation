@@ -1,0 +1,31 @@
+<!-- Copyright 2025 Scalizer (<https://www.scalizer.fr>)
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="product_template_form_tier" model="ir.ui.view">
+        <field name="name">product.template.form.tier</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view" />
+        <field name="arch" type="xml">
+            <field name="product_state_id" position="before">
+                <field name="state" invisible="1" />
+                <!-- Tier Validation UI needs the state field to be in the form -->
+            </field>
+        </field>
+    </record>
+
+    <record id="product_template_search_tier_filter" model="ir.ui.view">
+        <field name="name">product.template.search.tier.filter</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view" />
+        <field name="arch" type="xml">
+            <filter name="filter_to_sell" position="before">
+                <filter
+                    name="needs_review"
+                    string="Needs my Approval"
+                    domain="[('reviewer_ids', 'in', uid), ('state', '=', 'draft')]"
+                    help="Product(s) to Approve"
+                />
+            </filter>
+        </field>
+    </record>
+</odoo>
