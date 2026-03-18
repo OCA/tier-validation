@@ -111,8 +111,7 @@ class AccountMove(models.Model):
             return
         if not self.env.user.has_group(
             's6r_invoice_payment_tier_validation.group_payment_review_state_manual_override'):
-            raise AccessError(
-                _('You are not allowed to manually change the payment review state.'))
+            return
         for move in self:
             move.invoice_payment_review_state_manual = move.invoice_payment_review_state
 

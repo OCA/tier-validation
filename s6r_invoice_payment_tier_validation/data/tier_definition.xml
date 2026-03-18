@@ -6,6 +6,7 @@
         <field name="reviewer_group_id" ref="account.group_account_manager"/>
         <field name="has_comment">True</field>
         <field name="definition_type">domain</field>
+        <field name="company_id" eval="False"/>
         <field name="active" eval="True"/>
         <field name="definition_domain">[["move_type","in",("in_invoice","in_refund")],["state","=","posted"],["invoice_payment_review_state","=","to_review"],["is_intragroup_invoice","=",False]]</field>
     </record>
