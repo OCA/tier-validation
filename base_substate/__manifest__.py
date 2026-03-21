@@ -6,7 +6,7 @@
     "version": "19.0.1.0.1",
     "category": "Tools",
     "author": "Akretion, Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/server-ux",
+    "website": "https://github.com/OCA/tier-validation",
     "license": "AGPL-3",
     "depends": ["base", "mail"],
     "data": [

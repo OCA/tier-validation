@@ -6,7 +6,7 @@
     "name": "Add custom filters for fields via UI",
     "version": "19.0.1.0.0",
     "category": "Usability",
-    "website": "https://github.com/OCA/server-ux",
+    "website": "https://github.com/OCA/tier-validation",
     "author": "Tecnativa, Amitaujas, Odoo Community Association (OCA)",
     "demo": ["demo/demo_ir_ui_custom_field_filter.xml"],
     "data": [

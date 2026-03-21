@@ -5,7 +5,7 @@
     "summary": "Manage all kind of date range",
     "version": "19.0.1.0.0",
     "category": "Uncategorized",
-    "website": "https://github.com/OCA/server-ux",
+    "website": "https://github.com/OCA/tier-validation",
     "author": "ACSONE SA/NV, Odoo Community Association (OCA)",
     "license": "LGPL-3",
     "installable": True,

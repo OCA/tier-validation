@@ -7,7 +7,7 @@
     "author": "Ecosoft,Odoo Community Association (OCA)",
     "category": "Usability",
     "license": "AGPL-3",
-    "website": "https://github.com/OCA/server-ux",
+    "website": "https://github.com/OCA/tier-validation",
     "depends": ["base"],
     "data": [
         "wizard/cancel_confirm.xml",
