@@ -1,9 +1,9 @@
 # Copyright 2018-19 ForgeFlow S.L. (https://www.forgeflow.com)
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
-from odoo_test_helper import FakeModelLoader
 
 from odoo import Command
+from odoo.orm.model_classes import add_to_registry
 from odoo.tests import new_test_user
 
 from odoo.addons.base.tests.common import BaseCommon
