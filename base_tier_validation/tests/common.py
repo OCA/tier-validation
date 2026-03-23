@@ -42,17 +42,17 @@ class CommonTierValidation(BaseCommon):
             cls.registry.__delitem__, TierValidationTesterComputed._name
         )
 
-        self.test_model = self.env[TierValidationTester._name]
-        self.test_model_2 = self.env[TierValidationTester2._name]
-        self.test_model_computed = self.env[TierValidationTesterComputed._name]
+        cls.test_model = cls.env[TierValidationTester._name]
+        cls.test_model_2 = cls.env[TierValidationTester2._name]
+        cls.test_model_computed = cls.env[TierValidationTesterComputed._name]
 
-        self.tester_model = self.env["ir.model"].search(
+        cls.tester_model = cls.env["ir.model"].search(
             [("model", "=", "tier.validation.tester")]
         )
-        self.tester_model_2 = self.env["ir.model"].search(
+        cls.tester_model_2 = cls.env["ir.model"].search(
             [("model", "=", "tier.validation.tester2")]
         )
-        self.tester_model_computed = self.env["ir.model"].search(
+        cls.tester_model_computed = cls.env["ir.model"].search(
             [("model", "=", "tier.validation.tester.computed")]
         )
         # Create a multi-company
@@ -60,13 +60,13 @@ class CommonTierValidation(BaseCommon):
         cls.other_company = cls.env["res.company"].create({"name": "My Company 2"})
 
         models = (
-            self.tester_model,
-            self.tester_model_2,
-            self.tester_model_computed,
+            cls.tester_model,
+            cls.tester_model_2,
+            cls.tester_model_computed,
         )
         for model in models:
             # Access record:
-            self.env["ir.model.access"].create(
+            cls.env["ir.model.access"].create(
                 {
                     "name": f"access {model.name}",
                     "model_id": model.id,
@@ -78,7 +78,7 @@ class CommonTierValidation(BaseCommon):
             )
 
             # Define views to avoid automatic views with all fields.
-            self.env["ir.ui.view"].create(
+            cls.env["ir.ui.view"].create(
                 {
                     "model": model.model,
                     "name": f"Demo view for {model}",
@@ -95,44 +95,44 @@ class CommonTierValidation(BaseCommon):
             )
 
         # Create users:
-        self.test_user_1 = new_test_user(
-            self.env, name="John", login="test1", groups="base.group_system"
+        cls.test_user_1 = new_test_user(
+            cls.env, name="John", login="test1", groups="base.group_system"
         )
-        self.test_user_2 = new_test_user(self.env, name="Mike", login="test2")
-        self.test_user_3_multi_company = new_test_user(
-            self.env,
+        cls.test_user_2 = new_test_user(cls.env, name="Mike", login="test2")
+        cls.test_user_3_multi_company = new_test_user(
+            cls.env,
             name="Jane",
             login="test3",
-            company_ids=[Command.set([self.main_company.id, self.other_company.id])],
+            company_ids=[Command.set([cls.main_company.id, cls.other_company.id])],
         )
         # Create groups
-        self.test_group = self.env["res.groups"].create(
+        cls.test_group = cls.env["res.groups"].create(
             {
                 "name": "TestGroup",
                 "all_user_ids": [(4, cls.test_user_1.id), (4, cls.test_user_2.id)],
             }
         )
         # Create tier definitions:
-        self.tier_def_obj = self.env["tier.definition"]
-        self.tier_definition = self.tier_def_obj.create(
+        cls.tier_def_obj = cls.env["tier.definition"]
+        cls.tier_definition = cls.tier_def_obj.create(
             {
-                "model_id": self.tester_model.id,
+                "model_id": cls.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_id": cls.test_user_1.id,
                 "definition_domain": "[('test_field', '=', 1.0)]",
                 "sequence": 30,
             }
         )
 
-        self.test_record = self.test_model.create({"test_field": 1.0})
-        self.test_record_2 = self.test_model_2.create({"test_field": 1.0})
-        self.test_record_computed = self.test_model_computed.create({"test_field": 1.0})
+        cls.test_record = cls.test_model.create({"test_field": 1.0})
+        cls.test_record_2 = cls.test_model_2.create({"test_field": 1.0})
+        cls.test_record_computed = cls.test_model_computed.create({"test_field": 1.0})
 
-        self.tier_def_obj.create(
+        cls.tier_def_obj.create(
             {
-                "model_id": self.tester_model.id,
+                "model_id": cls.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_id": cls.test_user_1.id,
                 "definition_domain": "[('test_field', '>', 3.0)]",
                 "approve_sequence": True,
                 "notify_on_pending": False,
@@ -140,11 +140,11 @@ class CommonTierValidation(BaseCommon):
                 "name": "Definition for test 19 - sequence - user 1",
             }
         )
-        self.tier_def_obj.create(
+        cls.tier_def_obj.create(
             {
-                "model_id": self.tester_model.id,
+                "model_id": cls.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_2.id,
+                "reviewer_id": cls.test_user_2.id,
                 "definition_domain": "[('test_field', '>', 3.0)]",
                 "approve_sequence": True,
                 "notify_on_pending": True,
@@ -153,11 +153,11 @@ class CommonTierValidation(BaseCommon):
             }
         )
         # Create definition for test 20
-        self.tier_def_obj.create(
+        cls.tier_def_obj.create(
             {
-                "model_id": self.tester_model.id,
+                "model_id": cls.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_id": cls.test_user_1.id,
                 "definition_domain": "[('test_field', '=', 0.9)]",
                 "approve_sequence": False,
                 "notify_on_pending": True,
@@ -166,11 +166,11 @@ class CommonTierValidation(BaseCommon):
             }
         )
 
-        self.tier_def_obj.create(
+        cls.tier_def_obj.create(
             {
-                "model_id": self.tester_model_computed.id,
+                "model_id": cls.tester_model_computed.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_id": cls.test_user_1.id,
                 "definition_domain": "[]",
                 "approve_sequence": True,
                 "notify_on_pending": False,
@@ -181,43 +181,43 @@ class CommonTierValidation(BaseCommon):
 
         # Create definition for test 30, 31
         # Main company tier definition
-        self.tier_def_obj.create(
+        cls.tier_def_obj.create(
             {
-                "model_id": self.tester_model_2.id,
+                "model_id": cls.tester_model_2.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_id": cls.test_user_1.id,
                 "definition_domain": "[('test_field', '>=', 1.0)]",
                 "approve_sequence": True,
                 "notify_on_pending": False,
                 "sequence": 30,
                 "name": "Definition for test 30 - sequence - user 1 - main company",
-                "company_id": self.main_company.id,
+                "company_id": cls.main_company.id,
             }
         )
-        self.tier_def_obj.create(
+        cls.tier_def_obj.create(
             {
-                "model_id": self.tester_model_2.id,
+                "model_id": cls.tester_model_2.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_3_multi_company.id,
+                "reviewer_id": cls.test_user_3_multi_company.id,
                 "definition_domain": "[('test_field', '>=', 1.0)]",
                 "approve_sequence": True,
                 "notify_on_pending": False,
                 "sequence": 20,
                 "name": "Definition for test 30 - sequence - user 3 - main company",
-                "company_id": self.main_company.id,
+                "company_id": cls.main_company.id,
             }
         )
         # Other company tier definition
-        self.tier_def_obj.create(
+        cls.tier_def_obj.create(
             {
-                "model_id": self.tester_model_2.id,
+                "model_id": cls.tester_model_2.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_3_multi_company.id,
+                "reviewer_id": cls.test_user_3_multi_company.id,
                 "definition_domain": "[('test_field', '>=', 1.0)]",
                 "approve_sequence": True,
                 "notify_on_pending": False,
                 "sequence": 30,
                 "name": "Definition for test 30 - sequence - user 3 - other company",
-                "company_id": self.other_company.id,
+                "company_id": cls.other_company.id,
             }
         )

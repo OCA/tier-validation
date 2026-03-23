@@ -1,6 +1,0 @@
-- [Tecnativa](https://www.tecnativa.com):
-  - Carlos Dauden
-  - Pedro M. Baeza
-- [Amitaujas](https://www.amitaujas.com):
-- [Studio73](https://www.studio73.es/)
-  - Sergio Martínez
