@@ -285,7 +285,7 @@ class TierValidation(models.AbstractModel):
                     ("model_name", "=", self._name),
                     ("company_id", "in", [False] + self._get_company().ids),
                     "|",
-                    ("group_ids", "in", self.env.user.groups_ids.ids),
+                    ("group_ids", "in", self.env.user.group_ids.ids),
                     ("group_ids", "=", False),
                     *(extra_domain or []),
                 ]
@@ -470,7 +470,7 @@ class TierValidation(models.AbstractModel):
                 and rec._tier_validation_get_current_state_value()
                 in (self._state_to + [self._cancel_state])
                 and not rec._check_allow_write_after_validation(vals)
-                and not rec.ven.context.get("skip_validation_check")
+                and not rec.env.context.get("skip_validation_check")
             ):
                 (
                     allowed_fields,

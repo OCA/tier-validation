@@ -1,7 +1,6 @@
 # Copyright 2018-19 ForgeFlow S.L. (https://www.forgeflow.com)
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
-
 from odoo import Command
 from odoo.orm.model_classes import add_to_registry
 from odoo.tests import new_test_user
@@ -10,10 +9,10 @@ from odoo.addons.base.tests.common import BaseCommon
 
 
 class CommonTierValidation(BaseCommon):
-    def setUp(self):
-        super().setUp()
-        self.loader = FakeModelLoader(self.env, self.__module__)
-        self.loader.backup_registry()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
         from .tier_validation_tester import (
             TierDefinition,
             TierValidationTester,
@@ -21,13 +20,26 @@ class CommonTierValidation(BaseCommon):
             TierValidationTesterComputed,
         )
 
-        self.loader.update_registry(
-            (
-                TierValidationTester,
-                TierValidationTester2,
-                TierValidationTesterComputed,
-                TierDefinition,
-            )
+        models = [
+            TierDefinition,
+            TierValidationTester,
+            TierValidationTester2,
+            TierValidationTesterComputed,
+        ]
+        model_names = list(map(lambda x: x._name, models))
+
+        add_to_registry(cls.registry, TierValidationTester)
+        add_to_registry(cls.registry, TierValidationTester2)
+        add_to_registry(cls.registry, TierValidationTesterComputed)
+        add_to_registry(cls.registry, TierDefinition)
+
+        cls.registry._setup_models__(cls.env.cr, model_names)
+        cls.registry.init_models(cls.env.cr, model_names, {"models_to_check": True})
+
+        cls.addClassCleanup(cls.registry.__delitem__, TierValidationTester._name)
+        cls.addClassCleanup(cls.registry.__delitem__, TierValidationTester2._name)
+        cls.addClassCleanup(
+            cls.registry.__delitem__, TierValidationTesterComputed._name
         )
 
         self.test_model = self.env[TierValidationTester._name]
@@ -44,8 +56,8 @@ class CommonTierValidation(BaseCommon):
             [("model", "=", "tier.validation.tester.computed")]
         )
         # Create a multi-company
-        self.main_company = self.env.ref("base.main_company")
-        self.other_company = self.env["res.company"].create({"name": "My Company"})
+        cls.main_company = cls.env.ref("base.main_company")
+        cls.other_company = cls.env["res.company"].create({"name": "My Company 2"})
 
         models = (
             self.tester_model,
@@ -97,7 +109,7 @@ class CommonTierValidation(BaseCommon):
         self.test_group = self.env["res.groups"].create(
             {
                 "name": "TestGroup",
-                "users": [(4, self.test_user_1.id), (4, self.test_user_2.id)],
+                "all_user_ids": [(4, cls.test_user_1.id), (4, cls.test_user_2.id)],
             }
         )
         # Create tier definitions:
@@ -209,7 +221,3 @@ class CommonTierValidation(BaseCommon):
                 "company_id": self.other_company.id,
             }
         )
-
-    def tearDown(self):
-        self.loader.restore_registry()
-        super().tearDown()
