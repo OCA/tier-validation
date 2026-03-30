@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="tier_review_delegation_log_view_tree" model="ir.ui.view">
+        <field name="name">tier.review.delegation.log.list</field>
+        <field name="model">tier.review.delegation.log</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="action_date" />
+                <field name="record_ref" />
+                <field name="delegator_id" />
+                <field name="replacer_id" />
+                <field name="action" />
+                <field name="review_id" />
+                <field name="company_id" groups="base.group_multi_company" />
+            </list>
+        </field>
+    </record>
+
+    <record id="tier_review_delegation_log_view_search" model="ir.ui.view">
+        <field name="name">tier.review.delegation.log.search</field>
+        <field name="model">tier.review.delegation.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="delegator_id" />
+                <field name="replacer_id" />
+                <field name="record_ref" />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_delegator"
+                        string="Delegator"
+                        context="{'group_by': 'delegator_id'}"
+                    />
+                    <filter
+                        name="group_by_replacer"
+                        string="Replacer"
+                        context="{'group_by': 'replacer_id'}"
+                    />
+                    <filter
+                        name="group_by_action"
+                        string="Action"
+                        context="{'group_by': 'action'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_tier_review_delegation_log" model="ir.actions.act_window">
+        <field name="name">Delegation Log</field>
+        <field name="res_model">tier.review.delegation.log</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <menuitem
+        id="menu_tier_review_delegation_log"
+        name="Delegation Log"
+        parent="base.menu_users"
+        action="action_tier_review_delegation_log"
+        sequence="101"
+        groups="base_tier_validation_delegation.group_delegation_administrator"
+    />
+</odoo>

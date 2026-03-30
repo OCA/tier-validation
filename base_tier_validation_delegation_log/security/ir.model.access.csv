@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tier_review_delegation_log_admin,tier.review.delegation.log.admin,model_tier_review_delegation_log,base_tier_validation_delegation.group_delegation_administrator,1,0,0,0
