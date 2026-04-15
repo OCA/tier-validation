@@ -29,6 +29,9 @@ class TierReview(models.Model):
         Helper method to get the reviewers as defined on the tier definition,
         bypassing any delegation logic from this module's override of `_get_reviewers`.
         This is a safe copy of the logic from the base `base_tier_validation` module.
+
+        Handles the "expression" review_type added by base_tier_validation_formula
+        via soft dependency (hasattr check on python_reviewer_ids).
         """
         self.ensure_one()
         if self.definition_id.review_type == "individual":
@@ -42,6 +45,10 @@ class TierReview(models.Model):
             )
             if reviewer_field and reviewer_field._name == "res.users":
                 return reviewer_field
+        # Soft dependency: base_tier_validation_formula stores pre-computed
+        # expression-based reviewers in python_reviewer_ids.
+        if hasattr(self, "python_reviewer_ids"):
+            return self.python_reviewer_ids
         return self.env["res.users"]
 
     @api.depends(lambda self: self._get_reviewer_fields())
