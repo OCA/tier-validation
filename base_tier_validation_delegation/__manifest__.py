@@ -11,7 +11,7 @@
     "author": "360 ERP, Odoo Community Association (OCA)",
     "contributor": "Scalizer",
     "license": "AGPL-3",
-    "depends": ["base_tier_validation"],
+    "depends": ["base_tier_validation", "base_tier_validation_formula"],
     "data": [
         "security/delegation_security.xml",
         "data/cron.xml",
