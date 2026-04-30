@@ -484,12 +484,6 @@ is updated <strong>in the database</strong> in method review_user_count, this ca
 make it very inconsistent for databases with a lot of users and
 recurring updates that can change the expected behavior.</p>
 </li>
-<li><p class="first"><strong>Migration to 15.0:</strong></p>
-<p>The parameter _tier_validation_manual_config will become False, on
-14.0, the default value is True, as the change is applied after the
-migration. In order to use the new behavior we need to modify the
-value on our expected model.</p>
-</li>
 </ul>
 </div>
 <div class="section" id="changelog">
@@ -633,8 +627,6 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 </div>
 <div class="section" id="other-credits">
 <h3><a class="toc-backref" href="#toc-entry-23">Other credits</a></h3>
-<p>The migration of this module from 17.0 to 18.0 was financially supported
-by Camptocamp.</p>
 </div>
 <div class="section" id="maintainers">
 <h3><a class="toc-backref" href="#toc-entry-24">Maintainers</a></h3>
