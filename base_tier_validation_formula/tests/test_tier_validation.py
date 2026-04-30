@@ -1,53 +1,16 @@
 # Copyright 2018 ForgeFlow S.L.
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
-from odoo_test_helper import FakeModelLoader
-
 from odoo.exceptions import UserError
+from odoo.fields import Domain
 from odoo.tests.common import tagged
 
-from odoo.addons.base.tests.common import BaseCommon
+from odoo.addons.base_tier_validation.tests.common import CommonTierValidation
 
 
-# Use Base Common
 @tagged("post_install", "-at_install")
-class TierTierValidation(BaseCommon):
-    def setUp(self):
-        super().setUp()
-        self.loader = FakeModelLoader(self.env, self.__module__)
-        self.loader.backup_registry()
-        from odoo.addons.base_tier_validation.tests.tier_validation_tester import (
-            TierValidationTester,
-        )
-
-        self.loader.update_registry((TierValidationTester,))
-        self.test_model = self.env[TierValidationTester._name]
-
-        self.tester_model = self.env["ir.model"].search(
-            [("model", "=", "tier.validation.tester")]
-        )
-
-        # Access record:
-        self.env["ir.model.access"].create(
-            {
-                "name": "access.tester",
-                "model_id": self.tester_model.id,
-                "perm_read": 1,
-                "perm_write": 1,
-                "perm_create": 1,
-                "perm_unlink": 1,
-            }
-        )
-
-        self.test_user_1 = self.env.ref("base.user_admin")
-        self.test_user_2 = self.env.ref("base.user_demo")
-        # Create users:
-        self.test_user_3 = self.env["res.users"].create(
-            {"name": "Mary", "login": "test3", "email": "mary@yourcompany.example.com"}
-        )
-
-        # Create tier definitions:
-        self.tier_def_obj = self.env["tier.definition"]
+class TierTierValidation(CommonTierValidation):
+    def _setup_tier_definitions(self):
         self.tier_def_obj.create(
             {
                 "model_id": self.tester_model.id,
@@ -56,12 +19,6 @@ class TierTierValidation(BaseCommon):
                 "definition_domain": "[('test_field', '>', 1.0)]",
             }
         )
-
-        self.test_record = self.test_model.create({"test_field": 2.5})
-
-    def tearDown(self):
-        self.loader.restore_registry()
-        super().tearDown()
 
     def test_01_reviewer_from_python_expression(self):
         tier_definition = self.tier_def_obj.create(
@@ -83,7 +40,9 @@ class TierTierValidation(BaseCommon):
         tier_definition.onchange_review_type()
         tier_definition.write({"reviewer_expression": "rec.user_id"})
         self.test_record.write({"test_field": 3.5, "user_id": self.test_user_2.id})
-        reviews = self.test_record.with_user(self.test_user_3.id).request_validation()
+        reviews = self.test_record.with_user(
+            self.test_user_3_multi_company.id
+        ).request_validation()
         self.assertTrue(reviews)
         self.assertEqual(len(reviews), 2)
         record = self.test_record.with_user(self.test_user_1.id)
@@ -91,7 +50,7 @@ class TierTierValidation(BaseCommon):
         record.invalidate_recordset()
         self.assertIn(self.test_user_1, record.reviewer_ids)
         self.assertIn(self.test_user_2, record.reviewer_ids)
-        res = self.test_model.search([("reviewer_ids", "in", self.test_user_2.id)])
+        res = self.test_model.search(Domain("reviewer_ids", "in", self.test_user_2.id))
         self.assertTrue(res)
 
     def test_02_wrong_reviewer_expression(self):
@@ -106,7 +65,9 @@ class TierTierValidation(BaseCommon):
             }
         )
         with self.assertRaises(UserError):
-            self.test_record.with_user(self.test_user_3).request_validation()
+            self.test_record.with_user(
+                self.test_user_3_multi_company
+            ).request_validation()
             self.test_record.review_ids.invalidate_recordset()
             self.test_record.review_ids._compute_python_reviewer_ids()
 
@@ -120,7 +81,9 @@ class TierTierValidation(BaseCommon):
             }
         )
         with self.assertRaises(UserError):
-            self.test_record.with_user(self.test_user_3).request_validation()
+            self.test_record.with_user(
+                self.test_user_3_multi_company
+            ).request_validation()
             self.test_record.review_ids.invalidate_recordset()
             self.test_record.review_ids._compute_python_reviewer_ids()
 
@@ -152,5 +115,7 @@ class TierTierValidation(BaseCommon):
             }
         )
         self.test_record.write({"test_field": 3.5, "user_id": self.test_user_2.id})
-        reviews = self.test_record.with_user(self.test_user_3.id).request_validation()
+        reviews = self.test_record.with_user(
+            self.test_user_3_multi_company.id
+        ).request_validation()
         self.assertTrue(reviews)
