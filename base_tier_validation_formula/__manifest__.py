@@ -10,7 +10,7 @@
     "license": "AGPL-3",
     "development_status": "Mature",
     "author": "Creu Blanca,Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/server-ux",
+    "website": "https://github.com/OCA/tier-validation",
     "depends": ["base_tier_validation"],
     "data": ["views/tier_definition_view.xml"],
     "demo": [],

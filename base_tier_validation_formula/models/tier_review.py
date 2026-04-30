@@ -40,7 +40,7 @@ class TierReview(models.Model):
                 )
             except Exception as error:
                 raise UserError(
-                    _("Error evaluating tier validation " "conditions.\n %s") % error
+                    _("Error evaluating tier validation conditions.\n %s") % error
                 ) from error
             # Check if python expression returns 'res.users' recordset
             if (
@@ -48,10 +48,7 @@ class TierReview(models.Model):
                 or reviewer_ids._name != "res.users"
             ):
                 raise UserError(
-                    _(
-                        "Reviewer python expression must return a "
-                        "res.users recordset."
-                    )
+                    _("Reviewer python expression must return a res.users recordset.")
                 )
             else:
                 rec.python_reviewer_ids = reviewer_ids
