@@ -32,7 +32,6 @@ class TierTierValidation(CommonTierValidation):
         self.assertTrue(review)
         record = test_record.with_user(self.test_user_1.id)
         record.invalidate_recordset()
-        record.review_ids[0]._compute_can_review()
         record.validate_tier()
         self.assertFalse(record.can_forward)
         # User 2 forward to user 1
@@ -95,7 +94,10 @@ class TierTierValidation(CommonTierValidation):
         )
         # Create new test record
         test_record = self.test_model.create({"test_field": 2.5})
-        test_record.with_user(self.test_user_2.id).request_validation()
+        reviews = test_record.with_user(self.test_user_2.id).request_validation()
+        self.assertEqual(
+            reviews.filtered(lambda review: review.sequence == 1).status, "pending"
+        )
         self.env.invalidate_all()
         self.assertRecordValues(
             test_record.review_ids,
