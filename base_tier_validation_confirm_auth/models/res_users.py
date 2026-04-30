@@ -4,7 +4,6 @@
 import json
 from functools import wraps
 
-from odoo import _
 from odoo.exceptions import UserError
 from odoo.http import request
 
@@ -22,7 +21,7 @@ def check_authentication(fn):
     @wraps(fn)
     def wrapped(self, *args, **kwargs):
         if not request:
-            raise UserError(_("This method can only be accessed over HTTP"))
+            raise UserError(self.env._("This method can only be accessed over HTTP"))
 
         if self.env.context.get("identity_checked"):
             return fn(self, *args, **kwargs)
@@ -48,7 +47,7 @@ def check_authentication(fn):
             "type": "ir.actions.act_window",
             "res_model": "res.users.identitycheck",
             "res_id": w.id,
-            "name": _("Security Control"),
+            "name": self.env._("Security Control"),
             "target": "new",
             "views": [(False, "form")],
         }

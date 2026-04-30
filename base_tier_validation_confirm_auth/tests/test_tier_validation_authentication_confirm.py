@@ -35,9 +35,8 @@ class TierTierValidationAuthenticationConfirm(CommonTierValidation):
         # Request validation
         review = test_record.with_user(self.test_user_2.id).request_validation()
         self.assertTrue(review)
+        self.assertEqual(review.status, "pending")
 
-        # Let _compute_can_review assign status 'pending' instead of waiting
-        review.flush_recordset()
         record = test_record.with_user(self.test_user_1.id)
         res = record.validate_tier()
         ctx = res.get("context")
@@ -60,8 +59,6 @@ class TierTierValidationAuthenticationConfirm(CommonTierValidation):
             .browse(identity_wiz_id)
             .with_user(self.test_user_1)
         )
-        identity_wiz.sudo().write({"password": "test_user_1"})
-
         # Mock requests to avoid errors outside HTTP request
         with (
             patch("odoo.addons.base.models.res_users.request", MagicMock()),
@@ -70,7 +67,7 @@ class TierTierValidationAuthenticationConfirm(CommonTierValidation):
                 MagicMock(),
             ),
         ):
-            identity_wiz.sudo().run_check()
+            identity_wiz.sudo().with_context(password="test_user_1").run_check()
 
         self.assertTrue(review.status == "approved")
         self.assertTrue(review.done_by == self.test_user_1)
@@ -98,6 +95,7 @@ class TierTierValidationAuthenticationConfirm(CommonTierValidation):
         # Request validation
         review = test_record.with_user(self.test_user_2).request_validation()
         self.assertTrue(review)
+        self.assertEqual(review.status, "pending")
         record = test_record.with_user(self.test_user_1)
 
         # Mock requests to avoid errors outside HTTP request
@@ -116,8 +114,6 @@ class TierTierValidationAuthenticationConfirm(CommonTierValidation):
             .browse(identity_wiz_id)
             .with_user(self.test_user_1)
         )
-        identity_wiz.sudo().write({"password": "test_user_1"})
-
         # Mock requests to avoid errors outside HTTP request
         with (
             patch("odoo.addons.base.models.res_users.request", MagicMock()),
@@ -126,7 +122,7 @@ class TierTierValidationAuthenticationConfirm(CommonTierValidation):
                 MagicMock(),
             ),
         ):
-            identity_wiz.sudo().run_check()
+            identity_wiz.sudo().with_context(password="test_user_1").run_check()
 
         self.assertTrue(review.status == "approved")
         self.assertTrue(review.done_by == self.test_user_1)
@@ -152,9 +148,8 @@ class TierTierValidationAuthenticationConfirm(CommonTierValidation):
         # Request validation
         review = test_record.with_user(self.test_user_2.id).request_validation()
         self.assertTrue(review)
+        self.assertEqual(review.status, "pending")
 
-        # Let _compute_can_review assign status 'pending' instead of waiting
-        review.flush_recordset()
         record = test_record.with_user(self.test_user_1.id)
         res = record.reject_tier()
         ctx = res.get("context")
@@ -178,8 +173,6 @@ class TierTierValidationAuthenticationConfirm(CommonTierValidation):
             .browse(identity_wiz_id)
             .with_user(self.test_user_1)
         )
-        identity_wiz.sudo().write({"password": "test_user_1"})
-
         # Mock requests to avoid errors outside HTTP request
         with (
             patch("odoo.addons.base.models.res_users.request", MagicMock()),
@@ -188,7 +181,7 @@ class TierTierValidationAuthenticationConfirm(CommonTierValidation):
                 MagicMock(),
             ),
         ):
-            identity_wiz.sudo().run_check()
+            identity_wiz.sudo().with_context(password="test_user_1").run_check()
 
         self.assertTrue(review.status == "rejected")
         self.assertTrue(review.done_by == self.test_user_1)
@@ -216,6 +209,7 @@ class TierTierValidationAuthenticationConfirm(CommonTierValidation):
         # Request validation
         review = test_record.with_user(self.test_user_2).request_validation()
         self.assertTrue(review)
+        self.assertEqual(review.status, "pending")
         record = test_record.with_user(self.test_user_1)
 
         # Mock requests to avoid errors outside HTTP request
@@ -234,8 +228,6 @@ class TierTierValidationAuthenticationConfirm(CommonTierValidation):
             .browse(identity_wiz_id)
             .with_user(self.test_user_1)
         )
-        identity_wiz.sudo().write({"password": "test_user_1"})
-
         # Mock requests to avoid errors outside HTTP request
         with (
             patch("odoo.addons.base.models.res_users.request", MagicMock()),
@@ -244,7 +236,7 @@ class TierTierValidationAuthenticationConfirm(CommonTierValidation):
                 MagicMock(),
             ),
         ):
-            identity_wiz.sudo().run_check()
+            identity_wiz.sudo().with_context(password="test_user_1").run_check()
 
         self.assertTrue(review.status == "rejected")
         self.assertTrue(review.done_by == self.test_user_1)
