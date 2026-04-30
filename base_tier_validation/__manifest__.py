@@ -3,7 +3,7 @@
 {
     "name": "Base Tier Validation",
     "summary": "Implement a validation process based on tiers.",
-    "version": "18.0.3.4.0",
+    "version": "19.0.1.0.0",
     "development_status": "Mature",
     "maintainers": ["LoisRForgeFlow"],
     "category": "Tools",
@@ -14,15 +14,19 @@
     "installable": True,
     "depends": ["mail"],
     "data": [
-        "data/cron_data.xml",
-        "data/mail_data.xml",
+        # Security
         "security/ir.model.access.csv",
         "security/tier_validation_security.xml",
-        "views/res_config_settings_views.xml",
+        # Data
+        "data/cron_data.xml",
+        "data/mail_data.xml",
+        # Views
         "views/tier_definition_view.xml",
         "views/tier_review_view.xml",
         "views/tier_validation_exception_view.xml",
+        # Wizards
         "wizard/comment_wizard_view.xml",
+        # Templates
         "templates/tier_validation_templates.xml",
     ],
     "assets": {

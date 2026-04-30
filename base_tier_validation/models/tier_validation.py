@@ -8,7 +8,9 @@ from lxml import etree
 from psycopg2.extensions import AsIs
 
 from odoo import api, fields, models
+from odoo.api import NewId
 from odoo.exceptions import ValidationError
+from odoo.fields import Domain
 from odoo.tools import SQL
 from odoo.tools.misc import frozendict
 
@@ -38,19 +40,11 @@ class TierValidation(models.AbstractModel):
         inverse_name="res_id",
         string="Validations",
         domain=lambda self: [("model", "=", self._name)],
-        auto_join=True,
-    )
-    # TODO: Delete in v19 in favor of validation_status field
-    validated = fields.Boolean(
-        compute="_compute_validated_rejected", search="_search_validated"
+        bypass_search_access=True,
     )
     to_validate_message = fields.Html(compute="_compute_to_validate_message")
     validated_message = fields.Html(compute="_compute_validated_message")
     need_validation = fields.Boolean(compute="_compute_need_validation")
-    # TODO: Delete in v19 in favor of validation_status field
-    rejected = fields.Boolean(
-        compute="_compute_validated_rejected", search="_search_rejected"
-    )
     rejected_message = fields.Html(compute="_compute_rejected_message")
     validation_status = fields.Selection(
         selection=[
@@ -80,6 +74,10 @@ class TierValidation(models.AbstractModel):
     next_review = fields.Char(compute="_compute_next_review")
     hide_reviews = fields.Boolean(compute="_compute_hide_reviews")
 
+    @api.depends_context("uid")
+    @api.depends(
+        "review_ids.has_comment", "review_ids.reviewer_ids", "review_ids.status"
+    )
     def _compute_has_comment(self):
         for rec in self:
             has_comment = rec.review_ids.filtered(
@@ -107,63 +105,68 @@ class TierValidation(models.AbstractModel):
         return sequences
 
     @api.depends_context("uid")
-    @api.depends("review_ids.status")
+    @api.depends(
+        "review_ids.approve_sequence",
+        "review_ids.reviewer_ids",
+        "review_ids.sequence",
+        "review_ids.status",
+    )
     def _compute_can_review(self):
         for rec in self:
             rec.can_review = rec._get_sequences_to_approve(self.env.user)
 
     @api.model
     def _search_can_review(self, operator, value):
-        domain = [
-            ("review_ids.reviewer_ids", "=", self.env.user.id),
-            ("review_ids.status", "in", ["pending", "waiting"]),
-            ("review_ids.can_review", "=", True),
-            ("validation_status", "!=", "rejected"),
-        ]
-        if "active" in self._fields:
-            domain.append(("active", "in", [True, False]))
-        res_ids = self.search(domain).filtered("can_review").ids
-        return [("id", "in", res_ids)]
+        domain = Domain(
+            "review_ids",
+            "any",
+            [
+                ("reviewer_ids", "=", self.env.user.id),
+                ("status", "in", ["pending", "waiting"]),
+                ("can_review", "=", True),
+            ],
+        ) & Domain("validation_status", "!=", "rejected")
+        res_ids = (
+            self.with_context(active_test=False)
+            .search(domain)
+            .filtered("can_review")
+            .ids
+        )
+        return Domain("id", "in", res_ids)
 
-    @api.depends("review_ids")
+    @api.depends("review_ids", "review_ids.reviewer_ids", "review_ids.status")
     def _compute_reviewer_ids(self):
         for rec in self:
             rec.reviewer_ids = rec.review_ids.filtered(
                 lambda r: r.status in ("waiting", "pending")
             ).mapped("reviewer_ids")
 
-    # TODO: delete in 19.0 migration in favor of validation_status field
-    @api.model
-    def _search_validated(self, operator, value):
-        assert operator in ("=", "!="), "Invalid domain operator"
-        assert value in (True, False), "Invalid domain value"
-        operator_equal = (operator == "=" and value) or (operator == "!=" and not value)
-        return [("validation_status", operator_equal and "=" or "!=", "validated")]
-
-    # TODO: delete in 19.0 migration in favor of validation_status field
-    @api.model
-    def _search_rejected(self, operator, value):
-        assert operator in ("=", "!="), "Invalid domain operator"
-        assert value in (True, False), "Invalid domain value"
-        operator_equal = (operator == "=" and value) or (operator == "!=" and not value)
-        return [("validation_status", operator_equal and "=" or "!=", "rejected")]
-
     @api.model
     def _search_reviewer_ids(self, operator, value):
         model_operator = "in"
-        if operator == "=" and value in ("[]", False):
+        # For `reviewer_ids = False`, this search method must return records
+        # that have not started a validation process. We do that by searching
+        # for existing reviews and then returning records whose ids are not in
+        # those review `res_id`s. In Odoo 19, the ORM normalizes this domain
+        # before it reaches the custom search method as `reviewer_ids in [False]`.
+        search_without_validation = operator == "=" and value in ("[]", False)
+        if operator == "in":
+            try:
+                values = list(value)
+            except TypeError:
+                values = []
+            search_without_validation = values == [False]
+        if search_without_validation:
             # Search for records that have not yet been through a validation
             # process.
             operator = "!="
             model_operator = "not in"
-        reviews = self.env["tier.review"].search(
-            [
-                ("model", "=", self._name),
-                ("reviewer_ids", operator, value),
-                ("can_review", "=", True),
-            ]
+        reviews_query = self.env["tier.review"]._search(
+            Domain("model", "=", self._name)
+            & Domain("reviewer_ids", operator, value)
+            & Domain("can_review", "=", True)
         )
-        return [("id", model_operator, list(set(reviews.mapped("res_id"))))]
+        return Domain("id", model_operator, reviews_query.subselect("DISTINCT res_id"))
 
     def _get_to_validate_message_name(self):
         return self._description
@@ -186,13 +189,6 @@ class TierValidation(models.AbstractModel):
             self.env._("Operation has been <b>rejected</b>.")
         }"""
         return self.validation_status == "rejected" and msg or ""
-
-    # TODO: delete in 19.0 migration in favor of validation_status field
-    @api.depends("validation_status")
-    def _compute_validated_rejected(self):
-        for rec in self:
-            for field in ("validated", "rejected"):
-                rec[field] = rec.validation_status == field
 
     @api.depends("validation_status")
     def _compute_to_validate_message(self):
@@ -250,17 +246,15 @@ class TierValidation(models.AbstractModel):
 
     def _compute_need_validation(self):
         for rec in self:
-            if isinstance(rec.id, models.NewId):
+            if isinstance(rec.id, NewId):
                 rec.need_validation = False
                 continue
             tiers = (
                 self.env["tier.definition"]
                 .with_context(active_test=True)
                 .search(
-                    [
-                        ("model", "=", self._name),
-                        ("company_id", "in", [False] + rec._get_company().ids),
-                    ]
+                    Domain("model", "=", self._name)
+                    & Domain("company_id", "in", [False] + rec._get_company().ids)
                 )
             )
             valid_tiers = any([rec.evaluate_tier(tier) for tier in tiers])
@@ -277,19 +271,20 @@ class TierValidation(models.AbstractModel):
 
     def _get_exception_fields(self, extra_domain=None):
         """Return Tier Validation Exception field names that matchs custom domain."""
+        domain = (
+            Domain("model_name", "=", self._name)
+            & Domain("company_id", "in", [False] + self._get_company().ids)
+            & (
+                Domain("group_ids.all_user_ids", "in", self.env.user.ids)
+                | Domain("group_ids", "=", False)
+            )
+        )
+        if extra_domain:
+            domain &= Domain(extra_domain)
         return (
             self.env["tier.validation.exception"]
             .sudo()
-            .search(
-                [
-                    ("model_name", "=", self._name),
-                    ("company_id", "in", [False] + self._get_company().ids),
-                    "|",
-                    ("group_ids", "in", self.env.user.groups_id.ids),
-                    ("group_ids", "=", False),
-                    *(extra_domain or []),
-                ]
-            )
+            .search(domain)
             .mapped("field_ids.name")
         )
 
@@ -311,14 +306,14 @@ class TierValidation(models.AbstractModel):
     def _get_under_validation_exceptions(self):
         """Extend for more field exceptions to be written under validation."""
         return self._get_validation_exceptions(
-            extra_domain=[("allowed_to_write_under_validation", "=", True)]
+            extra_domain=Domain("allowed_to_write_under_validation", "=", True)
         )
 
     @api.model
     def _get_after_validation_exceptions(self):
         """Extend for more field exceptions to be written after validation."""
         return self._get_validation_exceptions(
-            extra_domain=[("allowed_to_write_after_validation", "=", True)]
+            extra_domain=Domain("allowed_to_write_after_validation", "=", True)
         )
 
     def _check_allow_write_under_validation(self, vals):
@@ -441,7 +436,7 @@ class TierValidation(models.AbstractModel):
                 rec.review_ids
                 and rec._check_tier_state_transition(vals)
                 and not rec._check_allow_write_under_validation(vals)
-                and not rec._context.get("skip_validation_check")
+                and not rec.env.context.get("skip_validation_check")
             ):
                 (
                     allowed_fields,
@@ -468,7 +463,7 @@ class TierValidation(models.AbstractModel):
                 and rec._tier_validation_get_current_state_value()
                 in (self._state_to + [self._cancel_state])
                 and not rec._check_allow_write_after_validation(vals)
-                and not rec._context.get("skip_validation_check")
+                and not rec.env.context.get("skip_validation_check")
             ):
                 (
                     allowed_fields,
@@ -783,10 +778,8 @@ class TierValidation(models.AbstractModel):
         for rec in self:
             if rec._check_state_from_condition() and rec.need_validation:
                 tier_definitions = td_obj.search(
-                    [
-                        ("model", "=", self._name),
-                        ("company_id", "in", [False] + rec._get_company().ids),
-                    ],
+                    Domain("model", "=", self._name)
+                    & Domain("company_id", "in", [False] + rec._get_company().ids),
                     order="sequence desc",
                 )
                 sequence = 0
@@ -795,8 +788,16 @@ class TierValidation(models.AbstractModel):
                         sequence += 1
                         vals_list.append(rec._prepare_tier_review_vals(td, sequence))
         created_trs = tr_obj.create(vals_list)
-        if any(self.mapped("can_review")):
+        review_counter = any(self.mapped("can_review"))
+        if review_counter:
             self._update_counter({"review_created": True})
+        # ``request_validation`` creates all reviews as ``waiting``.
+        # If the counter update have not already updated the actionable review status,
+        # do it before notifying reviewers about creation.
+        if not review_counter and created_trs.filtered(
+            "definition_id.notify_on_create"
+        ):
+            created_trs._update_review_status()
         self._notify_review_requested(created_trs)
         return created_trs
 
@@ -851,7 +852,7 @@ class TierValidation(models.AbstractModel):
 
     @api.model
     def _update_counter(self, review_counter):
-        self.review_ids._compute_can_review()
+        self.review_ids._update_review_status()
         channel = "base.tier.validation/updated"
         self.env.user.partner_id._bus_send(channel, review_counter)
 

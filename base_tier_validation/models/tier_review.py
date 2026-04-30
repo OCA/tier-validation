@@ -3,8 +3,6 @@
 
 import logging
 
-import pytz
-
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -84,42 +82,40 @@ class TierReview(models.Model):
 
     @api.depends_context("tz")
     def _compute_reviewed_formated_date(self):
-        timezone = self._context.get("tz") or self.env.user.partner_id.tz or "UTC"
         for review in self:
             if not review.reviewed_date:
                 review.reviewed_formated_date = False
                 continue
-            reviewed_date_utc = pytz.timezone("UTC").localize(review.reviewed_date)
-            reviewed_date_tz = reviewed_date_utc.astimezone(pytz.timezone(timezone))
+            reviewed_date_tz = fields.Datetime.context_timestamp(
+                self, review.reviewed_date
+            )
             review.reviewed_formated_date = reviewed_date_tz.replace(tzinfo=None)
 
-    @api.depends("definition_id.approve_sequence")
+    @api.depends("status", "approve_sequence", "sequence", "model", "res_id")
     def _compute_can_review(self):
-        """Update review status. Called manually from various review operations.
+        for record in self:
+            record.can_review = record._can_review_value()
 
-        To defer recompute, use context key
-        `tier_validation_defer_compute_can_review`. Be sure to explicitely call
-        the method afterwards.
-        """
+    def _update_review_status(self):
+        """Promote reviews that are currently available to pending."""
+        # To defer recompute, use context key
+        # `tier_validation_defer_compute_can_review`.
+        # Be sure to explicitely call the method afterwards.
         if self.env.context.get("tier_validation_defer_compute_can_review"):
             return
         reviews = self.filtered(lambda rev: rev.status in ["waiting", "pending"])
-        if reviews:
-            # get minimum sequence of all to prevent jumps
-            next_seq = min(reviews.mapped("sequence"))
-            for record in reviews:
-                # if approve by sequence, check sequence has been reached
-                if record.approve_sequence:
-                    if record.sequence == next_seq:
-                        record.status = "pending"
-                # if there is no approval sequence go directly to pending state
-                elif not record.approve_sequence:
-                    record.status = "pending"
-                if record.status == "pending":
-                    if record.definition_id.notify_on_pending:
-                        record._notify_pending_status(record)
-        for record in self:
-            record.can_review = record._can_review_value()
+        if not reviews:
+            return
+        next_seq = min(reviews.mapped("sequence"))
+        for record in reviews:
+            if record.status != "waiting":
+                continue
+            if record.approve_sequence and record.sequence != next_seq:
+                continue
+            record.status = "pending"
+            if record.definition_id.notify_on_pending:
+                record._notify_pending_status(record)
+        reviews.flush_recordset(["status", "can_review"])
 
     def _can_review_value(self):
         if self.status not in ("pending", "waiting"):
@@ -135,7 +131,7 @@ class TierReview(models.Model):
 
     @api.model
     def _get_reviewer_fields(self):
-        return ["reviewer_id", "reviewer_group_id", "reviewer_group_id.users"]
+        return ["reviewer_id", "reviewer_group_id", "reviewer_group_id.user_ids"]
 
     @api.depends(lambda self: self._get_reviewer_fields())
     def _compute_reviewer_ids(self):
@@ -158,14 +154,14 @@ class TierReview(models.Model):
             rec.todo_by = todo_by
 
     def _get_reviewers(self):
-        if self.reviewer_id or self.reviewer_group_id.users:
-            return self.reviewer_id + self.reviewer_group_id.users
+        if self.reviewer_id or self.reviewer_group_id.user_ids:
+            return self.reviewer_id + self.reviewer_group_id.user_ids
         if self.reviewer_field_id:
             resource = self.env[self.model].browse(self.res_id)
             reviewer_field = getattr(resource, self.reviewer_field_id.name, False)
             if reviewer_field:
                 if reviewer_field._name == "res.groups":
-                    return reviewer_field.users
+                    return reviewer_field.user_ids
                 elif reviewer_field._name == "res.users":
                     return reviewer_field
                 else:
