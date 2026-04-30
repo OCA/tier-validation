@@ -7,7 +7,7 @@
     "development_status": "Mature",
     "maintainers": ["LoisRForgeFlow"],
     "category": "Tools",
-    "website": "https://github.com/OCA/server-ux",
+    "website": "https://github.com/OCA/tier-validation",
     "author": "ForgeFlow, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "application": False,
