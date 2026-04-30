@@ -2,20 +2,29 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 from datetime import timedelta
 
-from odoo import fields
+from odoo import Command, fields
 from odoo.exceptions import ValidationError
+from odoo.orm.model_classes import add_to_registry
 
 from odoo.addons.base_tier_validation.tests.common import CommonTierValidation
 
 
 class TierTierValidation(CommonTierValidation):
-    def setUp(self):
-        super().setUp()
-
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         from .tier_validation_tester import TierValidationTester
 
-        self.loader.update_registry((TierValidationTester,))
+        add_to_registry(cls.registry, TierValidationTester)
+        cls.registry._setup_models__(cls.env.cr, ["tier.validation.tester"])
+        cls.registry.init_models(
+            cls.env.cr,
+            ["tier.validation.tester"],
+            {"models_to_check": True},
+        )
 
+    def setUp(self):
+        super().setUp()
         self.test_record.name = "test"
 
     def test_01_tier_correction(self):
@@ -27,7 +36,8 @@ class TierTierValidation(CommonTierValidation):
         """
         # User 2, request validation
         doc_user2 = self.test_record.with_user(self.test_user_2.id)
-        doc_user2.request_validation()
+        reviews = doc_user2.request_validation()
+        self.assertEqual(reviews.status, "pending")
         self.assertFalse(doc_user2.can_review)
         # User 1, is the reviewer as specified in the tier.definition
         doc_user1 = self.test_record.with_user(self.test_user_1.id)
@@ -43,8 +53,8 @@ class TierTierValidation(CommonTierValidation):
                 "search_name": res["context"].get("default_search_name"),
                 "model_id": res["context"].get("default_model_id"),
                 "correction_type": res["context"].get("default_correction_type"),
-                "new_reviewer_ids": [self.test_user_2.id],
-                "old_reviewer_ids": [self.test_user_1.id],
+                "new_reviewer_ids": [Command.set(self.test_user_2.ids)],
+                "old_reviewer_ids": [Command.set(self.test_user_1.ids)],
             }
         )
         # Only on state = 'prepare', to allow correction
@@ -96,7 +106,8 @@ class TierTierValidation(CommonTierValidation):
         """
         # User 2, request validation
         doc_user2 = self.test_record.with_user(self.test_user_2.id)
-        doc_user2.request_validation()
+        reviews = doc_user2.request_validation()
+        self.assertEqual(reviews.status, "pending")
         self.assertFalse(doc_user2.can_review)
         # User 1, is the reviewer as specified in the tier.definition
         doc_user1 = self.test_record.with_user(self.test_user_1.id)
@@ -112,31 +123,21 @@ class TierTierValidation(CommonTierValidation):
                 "search_name": res["context"].get("default_search_name"),
                 "model_id": res["context"].get("default_model_id"),
                 "correction_type": res["context"].get("default_correction_type"),
-                "new_reviewer_ids": [self.test_user_2.id],
+                "new_reviewer_ids": [Command.set(self.test_user_2.ids)],
             }
         )
         # Run Schedulder, to correct
         correction.date_schedule_correct = fields.Datetime.now()
-        scheduler = self.env.ref(
-            "base_tier_validation_correction.tier_correction_scheduler"
-        )
         correction.action_prepare()
         self.assertEqual(correction.state, "prepare")
-        scheduler.method_direct_trigger()
-        doc_user2.invalidate_recordset()
+        self.env["tier.correction"]._tier_correction_auto_run()
         self.assertTrue(doc_user2.can_review)
-        doc_user1.invalidate_recordset()
         self.assertFalse(doc_user1.can_review)
         # Run Schedulder, to revert
         with self.assertRaises(ValidationError):
             correction.date_schedule_revert = fields.Datetime.now() - timedelta(days=1)
         correction.date_schedule_revert = fields.Datetime.now()
-        scheduler = self.env.ref(
-            "base_tier_validation_correction.tier_correction_scheduler"
-        )
         self.assertEqual(correction.state, "done")
-        scheduler.method_direct_trigger()
-        doc_user2.invalidate_recordset()
+        self.env["tier.correction"]._tier_correction_auto_run()
         self.assertTrue(doc_user1.can_review)
-        doc_user1.invalidate_recordset()
         self.assertFalse(doc_user2.can_review)
