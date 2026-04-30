@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, exceptions, fields, models
+from odoo.fields import Domain
 
 from .tier_validation import BASE_EXCEPTION_FIELDS
 
@@ -67,10 +68,8 @@ class TierValidationException(models.Model):
             self.env["ir.model.fields"]
             .sudo()
             ._read_group(
-                domain=[
-                    ("model", "in", model_names),
-                    ("name", "not in", BASE_EXCEPTION_FIELDS),
-                ],
+                domain=Domain("model", "in", model_names)
+                & Domain("name", "not in", BASE_EXCEPTION_FIELDS),
                 groupby=["model"],
                 aggregates=["id:array_agg"],
             )

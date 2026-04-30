@@ -13,10 +13,3 @@ improvement will be very valuable.
   is updated **in the database** in method review_user_count, this can
   make it very inconsistent for databases with a lot of users and
   recurring updates that can change the expected behavior.
-
-- **Migration to 15.0:**
-
-  The parameter \_tier_validation_manual_config will become False, on
-  14.0, the default value is True, as the change is applied after the
-  migration. In order to use the new behavior we need to modify the
-  value on our expected model.

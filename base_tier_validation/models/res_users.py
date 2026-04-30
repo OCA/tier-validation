@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models, modules
+from odoo.fields import Domain
 
 
 class Users(models.Model):
@@ -15,11 +16,12 @@ class Users(models.Model):
     def review_user_count(self):
         user_reviews = {}
         user = self.env.user
-        domain = [
-            ("status", "=", "pending"),
-            ("can_review", "=", True),
-            ("id", "in", user.review_ids.ids),
-        ]
+        user.review_ids._update_review_status()
+        domain = (
+            Domain("status", "=", "pending")
+            & Domain("can_review", "=", True)
+            & Domain("id", "in", user.review_ids.ids)
+        )
         review_groups = self.env["tier.review"]._read_group(
             domain=domain,
             groupby=["model"],
@@ -29,11 +31,11 @@ class Users(models.Model):
             Model = self.env[model]
             # Skip Models not having Tier Validation enabled (example: was unistalled)
             if tier_review and hasattr(Model, "can_review"):
-                records_domain = [
-                    ("id", "in", tier_review.mapped("res_id")),
-                    ("validation_status", "!=", "rejected"),
-                    ("can_review", "=", True),
-                ]
+                records_domain = (
+                    Domain("id", "in", tier_review.mapped("res_id"))
+                    & Domain("validation_status", "!=", "rejected")
+                    & Domain("can_review", "=", True)
+                )
                 records = (
                     Model.with_user(user)
                     .with_context(active_test=False)
