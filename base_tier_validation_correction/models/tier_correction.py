@@ -2,8 +2,9 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
 
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.fields import Domain
 
 _logger = logging.getLogger(__name__)
 
@@ -108,32 +109,34 @@ class TierCorrection(models.Model):
         for rec in self:
             rec.item_ids.unlink()
             if rec.correction_type == "reviewer":
-                doc_domain = [("review_ids.status", "in", ["waiting", "pending"])]
-                review_domain = [("status", "in", ["waiting", "pending"])]
+                doc_domain = Domain("review_ids.status", "in", ["waiting", "pending"])
+                review_domain = Domain("status", "in", ["waiting", "pending"])
                 if rec.search_name:
                     doc_ids = self.env[rec.model].name_search(rec.search_name)
-                    doc_domain += [("id", "in", list(dict(doc_ids).keys()))]
+                    doc_domain &= Domain("id", "in", list(dict(doc_ids).keys()))
                 if rec.old_reviewer_ids:
-                    doc_domain += [
-                        ("review_ids.reviewer_ids", "in", rec.old_reviewer_ids.ids)
-                    ]
-                    review_domain += [("reviewer_ids", "in", rec.old_reviewer_ids.ids)]
+                    doc_domain &= Domain(
+                        "review_ids.reviewer_ids", "in", rec.old_reviewer_ids.ids
+                    )
+                    review_domain &= Domain(
+                        "reviewer_ids", "in", rec.old_reviewer_ids.ids
+                    )
                 items = []
                 for doc in self.env[rec.model].search_fetch(
                     doc_domain, ["review_ids", "display_name"]
                 ):
                     review_ids = doc.review_ids.filtered_domain(review_domain).ids
                     items.append(
-                        (
-                            0,
-                            0,
+                        Command.create(
                             {
                                 "res_model": doc._name,
                                 "res_id": doc.id,
                                 "resource_ref": f"{doc._name},{doc.id}",
                                 "reference": doc.display_name,
-                                "new_reviewer_ids": [(6, 0, rec.new_reviewer_ids.ids)],
-                                "review_ids": [(6, 0, review_ids)],
+                                "new_reviewer_ids": [
+                                    Command.set(rec.new_reviewer_ids.ids)
+                                ],
+                                "review_ids": [Command.set(review_ids)],
                             },
                         )
                     )
@@ -189,107 +192,23 @@ class TierCorrection(models.Model):
         self.ensure_one()
         result = self.env["ir.actions.act_window"]._for_xml_id("base.ir_cron_act")
         cron = self.env.ref("base_tier_validation_correction.tier_correction_scheduler")
-        result["domain"] = [("id", "in", cron.id)]
+        result["domain"] = list(Domain("id", "in", cron.ids))
         return result
 
     def _tier_correction_auto_run(self):
         # To correct
         to_correct = self.search(
-            [
-                ("state", "=", "prepare"),
-                ("date_schedule_correct", "!=", False),
-                ("date_schedule_correct", "<=", fields.Datetime.now()),
-            ]
+            Domain("state", "=", "prepare")
+            & Domain("date_schedule_correct", "!=", False)
+            & Domain("date_schedule_correct", "<=", fields.Datetime.now())
         )
         to_correct.action_done()
         _logger.info("Tier Correction - Correction: %s", to_correct)
         # To revert
         to_revert = self.search(
-            [
-                ("state", "=", "done"),
-                ("date_schedule_revert", "!=", False),
-                ("date_schedule_revert", "<=", fields.Datetime.now()),
-            ]
+            Domain("state", "=", "done")
+            & Domain("date_schedule_revert", "!=", False)
+            & Domain("date_schedule_revert", "<=", fields.Datetime.now())
         )
         to_revert.action_revert()
         _logger.info("Tier Correction - Reversion: %s", to_revert)
-
-
-class TierCorrectionItem(models.Model):
-    _name = "tier.correction.item"
-    _description = "Tier Correction Detail"
-
-    correction_id = fields.Many2one(
-        comodel_name="tier.correction",
-        index=True,
-    )
-    res_model = fields.Char(readonly=True)
-    res_id = fields.Integer(readonly=True)
-    resource_ref = fields.Reference(
-        string="Resource",
-        selection=lambda self: [
-            (model.model, model.name) for model in self.env["ir.model"].search([])
-        ],
-        readonly=True,
-    )
-    reference = fields.Char(readonly=True)
-    new_reviewer_ids = fields.Many2many(
-        comodel_name="res.users",
-        relation="tier_correction_item_new_reviewer_rel",
-        string="New Reviewers",
-        help="These reviewers will overwrite the existing reviewer_ids in tier.review",
-    )
-    review_ids = fields.Many2many(
-        comodel_name="tier.review",
-        string="Affected Tier Reviews",
-        help="Tier reivews that will be affected by this correction.",
-    )
-
-    def _notify_reviewer_change(self, ttype="correct"):
-        self.ensure_one()
-        post = "message_post"
-        if hasattr(self.resource_ref, post):
-            tier_reviews = self.review_ids
-            reviews = ", ".join(tier_reviews.filtered("name").mapped("name"))
-            reviewers = ", ".join(
-                tier_reviews.reviewer_ids.filtered("name").mapped("name")
-            )
-            message = self.env._(
-                "The Correction '%(name)s', "
-                "corrrected reviewers "
-                "on '%(reviews)s' to '%(reviewers)s'",
-                name=self.correction_id.name,
-                reviews=reviews,
-                reviewers=reviewers,
-            )
-            if ttype == "revert":
-                message = self.env._(
-                    "The Correction '%(name)s', "
-                    "reverted reviewers on '%(reviews)s' "
-                    "back to '%(reviewers)s'",
-                    name=self.correction_id.name,
-                    reviews=reviews,
-                    reviewers=reviewers,
-                )
-            getattr(self.resource_ref.sudo(), post)(
-                subtype_xmlid=(
-                    "base_tier_validation_correction.mt_tier_validation_correction"
-                ),
-                body=message,
-            )
-
-    def correct(self):
-        for item in self:
-            # Only waiting/pending reviews will gets updated
-            item.review_ids.filtered(
-                lambda record: record.status in ["waiting", "pending"]
-            ).write({"reviewer_ids": [(6, 0, item.new_reviewer_ids.ids)]})
-            item._notify_reviewer_change("correct")
-
-    def revert(self):
-        for item in self:
-            for review in item.review_ids.filtered(
-                lambda record: record.status in ["waiting", "pending"]
-            ):
-                review.reviewer_ids = review._get_reviewers()
-            item._notify_reviewer_change("revert")
