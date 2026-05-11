@@ -1,0 +1,11 @@
+[project]
+name = "odoo-addons-oca-tier-validation"
+version = "19.0.20260511.0"
+dependencies = [
+    "odoo-addon-base_tier_validation==19.0.*",
+]
+classifiers=[
+    "Programming Language :: Python",
+    "Framework :: Odoo",
+    "Framework :: Odoo :: 19.0",
+]
