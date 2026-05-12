@@ -238,9 +238,7 @@ class TierValidation(models.AbstractModel):
             review = rec.review_ids.sorted("sequence").filtered(
                 lambda x: x.status == "pending"
             )[:1]
-            rec.next_review = (
-                self.env._("Next: %s", review.name) if review else False
-            )
+            rec.next_review = self.env._("Next: %s", review.name) if review else False
 
     def _compute_hide_reviews(self):
         for rec in self:
