@@ -579,6 +579,86 @@ class TierTierValidation(CommonTierValidation):
         self.assertTrue(review_2.done_by.id is False)
         self.assertTrue(review_2.reviewed_date is False)
 
+    def test_19a_notify_on_pending_sequence_negative(self):
+        """When ``approve_sequence`` is used, only the first reviewer in the
+        chain must receive a ``notify_on_pending`` notification. The next
+        reviewer must NOT be subscribed and must NOT receive a message until
+        their predecessor has approved.
+        """
+        # Fresh definitions so the test is self-contained: both have
+        # ``notify_on_pending=True`` so the difference between sequence
+        # positions is what is being asserted.
+        TierDefinition = self.env["tier.definition"]
+        test_record = self.test_model.create({"test_field": 5.0})
+        def_first = TierDefinition.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '>', 4.0)]",
+                "approve_sequence": True,
+                "notify_on_pending": True,
+                "sequence": 20,
+                "name": "First in sequence -- user 1",
+            }
+        )
+        def_second = TierDefinition.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_2.id,
+                "definition_domain": "[('test_field', '>', 4.0)]",
+                "approve_sequence": True,
+                "notify_on_pending": True,
+                "sequence": 10,
+                "name": "Second in sequence -- user 2",
+            }
+        )
+
+        reviews = test_record.request_validation()
+        # ``request_validation`` iterates definitions in ``sequence desc``, so
+        # def_first (sequence=20) becomes tier.review.sequence=1 and def_second
+        # (sequence=10) becomes tier.review.sequence=2.
+        review_first = reviews.filtered(lambda r: r.definition_id == def_first)
+        review_second = reviews.filtered(lambda r: r.definition_id == def_second)
+        self.assertEqual(review_first.status, "pending")
+        self.assertEqual(review_second.status, "waiting")
+
+        # Exactly one chatter message must have been posted -- for the first
+        # reviewer reaching ``pending``. The second reviewer must not have been
+        # subscribed yet and must not have been notified.
+        self.assertEqual(len(test_record.message_ids), 1)
+        first_message = test_record.message_ids
+        followers = test_record.message_follower_ids
+        self.assertIn(self.test_user_1.partner_id, followers.mapped("partner_id"))
+        self.assertNotIn(
+            self.test_user_2.partner_id,
+            followers.mapped("partner_id"),
+            "Second-tier reviewer must not be subscribed to the record before "
+            "their turn.",
+        )
+        self.assertNotIn(
+            self.test_user_2.partner_id,
+            first_message.notified_partner_ids,
+            "Second-tier reviewer must not be notified before their "
+            "predecessor has approved.",
+        )
+
+        # Once the first reviewer approves, the second review must reach
+        # ``pending`` AND its reviewer must receive their own notification.
+        test_record.with_user(self.test_user_1).validate_tier()
+        self.assertEqual(review_first.status, "approved")
+        self.assertEqual(review_second.status, "pending")
+        followers = test_record.message_follower_ids
+        self.assertIn(self.test_user_2.partner_id, followers.mapped("partner_id"))
+        new_messages = test_record.message_ids - first_message
+        self.assertTrue(new_messages)
+        self.assertIn(
+            self.test_user_2.partner_id,
+            new_messages.mapped("notified_partner_ids"),
+            "Second-tier reviewer must be notified once promoted to pending.",
+        )
+
     def test_20_no_sequence(self):
         # Create new test record
         tier_review_obj = self.env["tier.review"]
