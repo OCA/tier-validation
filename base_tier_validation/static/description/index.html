@@ -503,6 +503,13 @@ leaving reviews stuck in <tt class="docutils literal">waiting</tt> in every othe
 <li>Coerce <tt class="docutils literal">next_review</tt> to <tt class="docutils literal">False</tt> when no review is pending, so the
 “needs to be validated” banner no longer leaks the empty
 <tt class="docutils literal">tier.review()</tt> recordset repr into its <tt class="docutils literal">Char</tt> field.</li>
+<li>Fix <tt class="docutils literal">_notify_review_available</tt> so the reviewer reached by
+<tt class="docutils literal">notify_on_pending</tt> is actually delivered the message. The
+tier-validation subtypes have <tt class="docutils literal">default=False</tt> so a plain
+<tt class="docutils literal"><span class="pre">message_subscribe(partner_ids=...)</span></tt> left the reviewer subscribed
+only to default subtypes; <tt class="docutils literal">message_post</tt> with the
+<tt class="docutils literal">mt_tier_validation_requested</tt> subtype then routed to nobody. Pass
+<tt class="docutils literal">subtype_ids</tt> explicitly (mirroring <tt class="docutils literal">_notify_review_requested</tt>).</li>
 </ul>
 </div>
 <div class="section" id="section-2">
