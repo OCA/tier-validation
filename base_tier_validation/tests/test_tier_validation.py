@@ -587,15 +587,17 @@ class TierTierValidation(CommonTierValidation):
         """
         # Fresh definitions so the test is self-contained: both have
         # ``notify_on_pending=True`` so the difference between sequence
-        # positions is what is being asserted.
+        # positions is what is being asserted. Use a ``test_field`` value
+        # that does NOT match any definition created by ``common.py`` so
+        # only these two definitions apply.
         TierDefinition = self.env["tier.definition"]
-        test_record = self.test_model.create({"test_field": 5.0})
+        test_record = self.test_model.create({"test_field": 2.5})
         def_first = TierDefinition.create(
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
                 "reviewer_id": self.test_user_1.id,
-                "definition_domain": "[('test_field', '>', 4.0)]",
+                "definition_domain": "[('test_field', '=', 2.5)]",
                 "approve_sequence": True,
                 "notify_on_pending": True,
                 "sequence": 20,
@@ -607,7 +609,7 @@ class TierTierValidation(CommonTierValidation):
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
                 "reviewer_id": self.test_user_2.id,
-                "definition_domain": "[('test_field', '>', 4.0)]",
+                "definition_domain": "[('test_field', '=', 2.5)]",
                 "approve_sequence": True,
                 "notify_on_pending": True,
                 "sequence": 10,
