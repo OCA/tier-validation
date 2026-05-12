@@ -1,6 +1,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class Digest(models.Model):
@@ -42,10 +42,14 @@ class Digest(models.Model):
         groups="base.group_erp_manager",
     )
 
-    # The four computes intentionally do NOT declare ``@api.depends``: KPI
-    # values are point-in-time snapshots called at digest-send time by the
-    # ``available_fields`` machinery and never need ORM cache invalidation.
+    # KPI values are point-in-time snapshots: no ORM data-dependency
+    # (``@api.depends``) is meaningful. They DO depend on the current
+    # user (per-user counts) and -- for the period KPI -- on the digest
+    # window in the context, so the ORM cache must be keyed by those.
+    # Without ``@api.depends_context('uid', ...)`` a second read in the
+    # same transaction would return the first reader's cached value.
 
+    @api.depends_context("uid")
     def _compute_kpi_tier_validation_pending_value(self):
         for record in self:
             user = self.env.user
@@ -59,6 +63,7 @@ class Digest(models.Model):
                 ]
             )
 
+    @api.depends_context("uid")
     def _compute_kpi_tier_validation_waiting_value(self):
         for record in self:
             user = self.env.user
@@ -71,6 +76,7 @@ class Digest(models.Model):
                 ]
             )
 
+    @api.depends_context("uid", "start_datetime", "end_datetime")
     def _compute_kpi_tier_validation_validated_period_value(self):
         for record in self:
             start, end, _companies = record._get_kpi_compute_parameters()
