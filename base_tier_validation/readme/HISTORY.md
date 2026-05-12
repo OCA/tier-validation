@@ -12,6 +12,13 @@ Fixes:
 - Coerce ``next_review`` to ``False`` when no review is pending, so
   the "needs to be validated" banner no longer leaks the empty
   ``tier.review()`` recordset repr into its ``Char`` field.
+- Fix ``_notify_review_available`` so the reviewer reached by
+  ``notify_on_pending`` is actually delivered the message. The
+  tier-validation subtypes have ``default=False`` so a plain
+  ``message_subscribe(partner_ids=...)`` left the reviewer subscribed
+  only to default subtypes; ``message_post`` with the
+  ``mt_tier_validation_requested`` subtype then routed to nobody. Pass
+  ``subtype_ids`` explicitly (mirroring ``_notify_review_requested``).
 
 ## 17.0.1.0.0 (2024-01-10)
 
