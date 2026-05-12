@@ -92,11 +92,14 @@ class Digest(models.Model):
                 ]
             )
 
+    @api.depends_context("uid")
     def _compute_kpi_tier_validation_pending_team_value(self):
         # ``groups`` on the field already restricts read access to managers;
         # non-managers reading this field raise AccessError before the
         # compute runs. The digest's send loop catches that and skips the
-        # KPI for that user.
+        # KPI for that user. ``depends_context('uid')`` keys the cache by
+        # user so two managers in different allowed companies do not see
+        # each other's cached count.
         for record in self:
             _start, _end, companies = record._get_kpi_compute_parameters()
             record.kpi_tier_validation_pending_team_value = self.env[
