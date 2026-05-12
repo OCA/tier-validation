@@ -7,7 +7,7 @@
         <field name="model">tier.validation.exception</field>
         <field name="arch" type="xml">
             <list>
-                <field name="name" />
+                <field name="name" decoration-bf="1" />
                 <field name="model_id" />
                 <field name="field_ids" widget="many2many_tags" optional="show" />
                 <field name="company_id" groups="base.group_multi_company" />
