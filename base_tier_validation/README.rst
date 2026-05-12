@@ -125,6 +125,22 @@ improvement will be very valuable.
 Changelog
 =========
 
+19.0.1.0.1 (2026-05-12)
+-----------------------
+
+Fixes:
+
+- Restore auto-promotion of the lowest-sequence review to ``pending``
+  immediately after ``request_validation`` so the workflow can move
+  forward without an external trigger. The 19.0 migration had moved this
+  side-effect out of ``_compute_can_review`` into a separate
+  ``_update_review_status`` that was only invoked when the requester was
+  themself the first reviewer or when ``notify_on_create`` was set,
+  leaving reviews stuck in ``waiting`` in every other case.
+- Coerce ``next_review`` to ``False`` when no review is pending, so the
+  "needs to be validated" banner no longer leaks the empty
+  ``tier.review()`` recordset repr into its ``Char`` field.
+
 17.0.1.0.0 (2024-01-10)
 -----------------------
 
