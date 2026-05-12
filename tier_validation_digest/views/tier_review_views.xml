@@ -109,7 +109,6 @@
             name="context"
         >{'search_default_group_by_model': 1, 'search_default_group_by_status': 0}</field>
         <field name="search_view_id" ref="tier_review_view_search" />
-        <field name="groups_id" eval="[(4, ref('base.group_erp_manager'))]" />
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No pending tier reviews
