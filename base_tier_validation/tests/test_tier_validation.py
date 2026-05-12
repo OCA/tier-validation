@@ -139,11 +139,9 @@ class TierTierValidation(CommonTierValidation):
                 "has_comment": True,
             }
         )
-        # Request validation
+        # Request validation -- auto-promotes the single review to pending.
         review = test_record.with_user(self.test_user_2.id).request_validation()
         self.assertTrue(review)
-        # Let the normal workflow assign status 'pending' instead of waiting
-        review._update_review_status()
         record = test_record.with_user(self.test_user_1.id)
         res = record.validate_tier()
         ctx = res.get("context")
@@ -550,19 +548,19 @@ class TierTierValidation(CommonTierValidation):
         # Create new test record
         tier_review_obj = self.env["tier.review"]
         test_record = self.test_model.create({"test_field": 3.5})
-        # Request validation
+        # Request validation -- the first review must be promoted to ``pending``
+        # automatically; the second one stays ``waiting`` until its turn.
         review = test_record.request_validation()
 
         self.assertTrue(review)
-        # both reviews should be waiting when created
         review_1 = tier_review_obj.browse(review.ids[0])
         review_2 = tier_review_obj.browse(review.ids[1])
-        self.assertTrue(review_1.status == "waiting")
-        self.assertTrue(review_2.status == "waiting")
-        # and then normal workflow will follow...
         review_1.invalidate_model()
-        review_1._update_review_status()
         self.assertTrue(review_1.status == "pending")
+        # ``next_review`` must contain the pending review's definition name,
+        # not the str-representation of an empty recordset (e.g. ``tier.review()``).
+        test_record.invalidate_recordset(["next_review"])
+        self.assertEqual(test_record.next_review, f"Next: {review_1.name}")
         # first reviewer does not want notifications
         # chatter should be empty
         self.assertFalse(test_record.message_ids)
@@ -585,13 +583,13 @@ class TierTierValidation(CommonTierValidation):
         # Create new test record
         tier_review_obj = self.env["tier.review"]
         test_record2 = self.test_model.create({"test_field": 0.9})
-        # request validation
+        # Request validation -- with no approve_sequence the single review must
+        # be promoted to ``pending`` automatically and ``notify_on_pending``
+        # must trigger a chatter message.
         review = test_record2.request_validation()
         self.assertTrue(review)
         review_1 = tier_review_obj.browse(review.ids[0])
-        self.assertTrue(review_1.status == "waiting")
         review_1.invalidate_model()
-        review_1._update_review_status()
         self.assertTrue(review_1.status == "pending")
         msg2 = test_record2.message_ids[0].body
         request = test_record2._notify_requested_review_body()
@@ -1022,10 +1020,11 @@ class TierTierValidation(CommonTierValidation):
                 # Flush manually to trigger the _write
                 self.test_record_computed.flush_recordset()
         self.assertEqual(self.test_record_computed.state, "draft")
-        # The validation is performed
+        # The validation is performed -- the single review is auto-promoted
+        # to ``pending`` so the reviewer can act on it.
         self.test_record_computed.request_validation()
         self.test_record_computed.invalidate_recordset()
-        self.assertEqual(self.test_record_computed.review_ids.status, "waiting")
+        self.assertEqual(self.test_record_computed.review_ids.status, "pending")
         self.test_record_computed.with_user(self.test_user_1).validate_tier()
         self.test_record_computed.invalidate_recordset()
         self.assertEqual(self.test_record_computed.review_ids.status, "approved")
