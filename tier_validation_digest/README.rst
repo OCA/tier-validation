@@ -101,7 +101,7 @@ Contributors
 Other credits
 -------------
 
-- Sponsored by Forklift Center.
+
 
 Maintainers
 -----------
