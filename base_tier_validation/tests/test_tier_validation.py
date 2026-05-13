@@ -536,6 +536,62 @@ class TierTierValidation(CommonTierValidation):
         result = self.test_user_2.with_user(self.test_user_2).review_user_count()
         self.assertEqual(result, [])
 
+    def test_definition_onchange_warns_when_reviewer_lacks_access(self):
+        """Setting an individual reviewer with no read access on the target
+        model returns a non-blocking onchange warning."""
+        # Sanity: with the default public ACL, no warning.
+        definition = self.tier_def_obj.new(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_2.id,
+            }
+        )
+        self.assertIsNone(definition._onchange_warn_reviewer_access())
+        # Revoke read access on the validated model for non-superadmin users.
+        self.env["ir.model.access"].search(
+            Domain("model_id", "=", self.tester_model.id)
+        ).unlink()
+        warning = definition._onchange_warn_reviewer_access()
+        self.assertIsNotNone(warning)
+        self.assertIn(self.test_user_2.display_name, warning["warning"]["message"])
+
+    def test_definition_onchange_warns_when_group_member_lacks_access(self):
+        """Group reviewer: if any member of the assigned group lacks read
+        access on the target model, the onchange warns and names them."""
+        # Put test_user_2 in a fresh group; revoke the public ACL.
+        group = self.env["res.groups"].create(
+            {"name": "Tier Reviewers", "user_ids": [Command.link(self.test_user_2.id)]}
+        )
+        self.env["ir.model.access"].search(
+            Domain("model_id", "=", self.tester_model.id)
+        ).unlink()
+        definition = self.tier_def_obj.new(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "group",
+                "reviewer_group_id": group.id,
+            }
+        )
+        warning = definition._onchange_warn_reviewer_access()
+        self.assertIsNotNone(warning)
+        self.assertIn(self.test_user_2.display_name, warning["warning"]["message"])
+
+    def test_definition_onchange_skips_field_review_type(self):
+        """The 'field' review type cannot be checked ahead of time -- the
+        reviewer only resolves at validation time -- so the onchange
+        returns no warning even if the ACL would block."""
+        self.env["ir.model.access"].search(
+            Domain("model_id", "=", self.tester_model.id)
+        ).unlink()
+        definition = self.tier_def_obj.new(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "field",
+            }
+        )
+        self.assertIsNone(definition._onchange_warn_reviewer_access())
+
     def test_17_search_records_no_validation(self):
         """Search for records that have no validation process started"""
         records = self.env["tier.validation.tester"].search(
