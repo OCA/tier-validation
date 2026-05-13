@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -88,6 +88,10 @@ msgid "Created on"
 msgstr ""
 
 #. module: base_tier_validation_forward
+#: model:ir.model.fields,field_description:base_tier_validation_forward.field_comment_wizard__display_name
+#: model:ir.model.fields,field_description:base_tier_validation_forward.field_tier_definition__display_name
+#: model:ir.model.fields,field_description:base_tier_validation_forward.field_tier_review__display_name
+#: model:ir.model.fields,field_description:base_tier_validation_forward.field_tier_validation__display_name
 #: model:ir.model.fields,field_description:base_tier_validation_forward.field_tier_validation_forward_wizard__display_name
 msgid "Display Name"
 msgstr ""
@@ -116,6 +120,10 @@ msgid "Forwarded"
 msgstr ""
 
 #. module: base_tier_validation_forward
+#: model:ir.model.fields,field_description:base_tier_validation_forward.field_comment_wizard__id
+#: model:ir.model.fields,field_description:base_tier_validation_forward.field_tier_definition__id
+#: model:ir.model.fields,field_description:base_tier_validation_forward.field_tier_review__id
+#: model:ir.model.fields,field_description:base_tier_validation_forward.field_tier_validation__id
 #: model:ir.model.fields,field_description:base_tier_validation_forward.field_tier_validation_forward_wizard__id
 msgid "ID"
 msgstr ""
