@@ -18,7 +18,7 @@
                     decoration-info="state == 'draft'"
                     decoration-warning="state == 'prepare'"
                     decoration-success="state == 'done'"
-                    decoration-danger="state in 'cancel'"
+                    decoration-danger="state in ['cancel', 'revert']"
                     widget="badge"
                 />
             </list>
@@ -41,7 +41,7 @@
                         name="action_done"
                         invisible="state != 'prepare'"
                         type="object"
-                        string="Make Correcton"
+                        string="Make Correction"
                         class="oe_highlight"
                         confirm="Are you sure to reassign new reviewer(s) for affected tier reviews?"
                     />
@@ -73,7 +73,6 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box" />
                     <div class="oe_title">
-                        <span class="oe_edit_only">Name</span>
                         <h1>
                             <field
                                 name="name"
@@ -106,7 +105,7 @@
                             name="search"
                             string="Find documents with pending reviews by"
                         >
-                            <p class="oe_grey" colspan="2">
+                            <p class="text-muted" colspan="2">
                                 This is optional search criteria to find matched document into Correction Details.
                                 Only document with pending reviews will be listed.
                             </p>
@@ -119,7 +118,7 @@
                             <field name="search_name" readonly="state != 'draft'" />
                         </group>
                         <group name="set_value" string="Reassign to new value">
-                            <p class="oe_grey" colspan="2">
+                            <p class="text-muted" colspan="2">
                                 Default new reviewers to be assigned to the correction. This value can be overwritten in
                                 Correction Detail.
                             </p>
@@ -171,7 +170,7 @@
                             </field>
                         </page>
                         <page string="Scheduled Action">
-                            <div class="oe_grey" colspan="4">
+                            <div class="text-muted" colspan="4">
                                 Scheduled date/time to auto correct and/or revert by
                                 <button
                                 name="%(view_affected_tier_reviews_action)d"
