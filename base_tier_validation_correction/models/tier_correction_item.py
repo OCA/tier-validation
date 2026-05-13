@@ -17,7 +17,18 @@ class TierCorrectionItem(models.Model):
     resource_ref = fields.Reference(
         string="Resource",
         selection=lambda self: [
-            (model.model, model.name) for model in self.env["ir.model"].search([])
+            (model.model, model.name)
+            for model in self.env["ir.model"].search(
+                [
+                    (
+                        "model",
+                        "in",
+                        self.env[
+                            "tier.definition"
+                        ]._get_tier_validation_model_names(),
+                    )
+                ]
+            )
         ],
         readonly=True,
     )
