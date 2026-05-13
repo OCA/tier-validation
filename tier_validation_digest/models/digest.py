@@ -6,9 +6,13 @@ from odoo import api, fields, models
 class Digest(models.Model):
     _inherit = "digest.digest"
 
-    # Per-user: reviews you can act on right now.
+    # Per-user: reviews you can act on right now. Defaults to True so a
+    # freshly-created digest surfaces the recipient's pending pile out of
+    # the box -- this is the one signal every reviewer wants. The other
+    # three KPIs stay opt-in.
     kpi_tier_validation_pending = fields.Boolean(
         string="Tier reviews pending for you",
+        default=True,
     )
     kpi_tier_validation_pending_value = fields.Integer(
         compute="_compute_kpi_tier_validation_pending_value",

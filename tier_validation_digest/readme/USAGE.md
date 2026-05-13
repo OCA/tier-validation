@@ -16,5 +16,10 @@ Pick the tiles you want to receive; the digest cron will include them
 in your next periodic email. Each tile in the email links to the
 matching ``tier.review`` list, pre-filtered.
 
+The *Tier reviews pending for you* tile is enabled out of the box on
+every existing digest at install time and on every digest created
+afterwards. The other three tiles are opt-in -- toggle them on if you
+want them.
+
 You can also reach the same lists directly from the *Tier Validations*
 menu via the *Tier Definition* action (using its search-view filters).

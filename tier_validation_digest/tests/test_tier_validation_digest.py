@@ -130,6 +130,41 @@ class TestTierValidationDigest(CommonTierValidation):
             1,
         )
 
+    def test_default_pending_tile_enabled_on_new_digests(self):
+        """The "pending for you" tile must be enabled out of the box on a
+        freshly-created digest, so users see it on their next periodic
+        email without having to revisit Settings.
+        """
+        digest = self.Digest.create({"name": "fresh digest"})
+        self.assertTrue(digest.kpi_tier_validation_pending)
+        # Other tiles stay opt-in (False by default).
+        self.assertFalse(digest.kpi_tier_validation_waiting)
+        self.assertFalse(digest.kpi_tier_validation_validated_period)
+
+    def test_post_init_hook_enables_pending_on_existing_digests(self):
+        """The post-init hook is what closes the gap for digests that
+        existed before this module was installed. Run it explicitly and
+        confirm a previously-False pending toggle flips to True without
+        touching the other toggles.
+        """
+        from ..hooks import _post_init_hook
+
+        digest = self.Digest.create(
+            {
+                "name": "pre-existing digest",
+                "kpi_tier_validation_pending": False,
+                "kpi_tier_validation_waiting": False,
+                "kpi_tier_validation_validated_period": False,
+            }
+        )
+        self.assertFalse(digest.kpi_tier_validation_pending)
+        _post_init_hook(self.env)
+        digest.invalidate_recordset()
+        self.assertTrue(digest.kpi_tier_validation_pending)
+        # Other toggles untouched.
+        self.assertFalse(digest.kpi_tier_validation_waiting)
+        self.assertFalse(digest.kpi_tier_validation_validated_period)
+
     def test_kpis_actions_wired(self):
         """The digest -> action mapping must include the four new tiles."""
         digest = self._build_digest()

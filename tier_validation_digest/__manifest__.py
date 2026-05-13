@@ -20,4 +20,5 @@
         "views/tier_review_views.xml",
         "views/digest_views.xml",
     ],
+    "post_init_hook": "_post_init_hook",
 }
