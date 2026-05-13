@@ -6,168 +6,174 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-05-13 20:06+0000\n"
+"Last-Translator: Bosd <c5e2fd43-d292-4c90-9d1f-74ff3436329a@anonaddy.me>\n"
 "Language-Team: none\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "<span class=\"oe_edit_only\">Name</span>"
-msgstr ""
+msgstr "<span class=\"oe_edit_only\">Naam</span>"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__message_needaction
 msgid "Action Needed"
-msgstr ""
+msgstr "Actie vereist"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__activity_ids
 msgid "Activities"
-msgstr ""
+msgstr "Activiteiten"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr ""
+msgstr "Activiteit uitzondering decoratie"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__activity_state
 msgid "Activity State"
-msgstr ""
+msgstr "Activiteitsfase"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__activity_type_icon
 msgid "Activity Type Icon"
-msgstr ""
+msgstr "Activiteitstype-icoon"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Actual Correct"
-msgstr ""
+msgstr "Werkelijke correctie"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__date_actual_correct
 msgid "Actual Correction Date"
-msgstr ""
+msgstr "Werkelijke correctiedatum"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Actual Revert"
-msgstr ""
+msgstr "Werkelijke terugdraaiing"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__date_actual_revert
 msgid "Actual Revert Date"
-msgstr ""
+msgstr "Werkelijke terugdraaidatum"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__reference
 msgid "Affected Documents"
-msgstr ""
+msgstr "Betrokken documenten"
 
 #. module: base_tier_validation_correction
 #: model:ir.actions.act_window,name:base_tier_validation_correction.view_affected_tier_reviews_action
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__review_ids
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Affected Tier Reviews"
-msgstr ""
+msgstr "Betrokken niveaubeoordelingen"
 
 #. module: base_tier_validation_correction
 #: model:res.groups,name:base_tier_validation_correction.group_tier_correction
 msgid "Allowed"
-msgstr ""
+msgstr "Toegestaan"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Are you sure to reassign new reviewer(s) for affected tier reviews?"
 msgstr ""
+"Weet u zeker dat u nieuwe beoordelaar(s) wilt toewijzen voor de betrokken "
+"niveaubeoordelingen?"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Are you sure to revert to old reviewer(s) for affected tier reviews?"
 msgstr ""
+"Weet u zeker dat u de oude beoordelaar(s) wilt herstellen voor de betrokken "
+"niveaubeoordelingen?"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__message_attachment_count
 msgid "Attachment Count"
-msgstr ""
+msgstr "Aantal bijlagen"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Cancel"
-msgstr ""
+msgstr "Annuleren"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields.selection,name:base_tier_validation_correction.selection__tier_correction__state__cancel
 msgid "Cancelled"
-msgstr ""
+msgstr "Geannuleerd"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_validation_label_forward
 msgid "Change Reviewer"
-msgstr ""
+msgstr "Beoordelaar wijzigen"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_search
 msgid "Change Reviewers"
-msgstr ""
+msgstr "Beoordelaars wijzigen"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.view_affected_tier_reviews_form
 msgid "Close"
-msgstr ""
+msgstr "Sluiten"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields.selection,name:base_tier_validation_correction.selection__tier_correction__state__done
 msgid "Corrected"
-msgstr ""
+msgstr "Gecorrigeerd"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__correction_id
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_search
 msgid "Correction"
-msgstr ""
+msgstr "Correctie"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Correction Details"
-msgstr ""
+msgstr "Correctiedetails"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__correction_type
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_search
 msgid "Correction Type"
-msgstr ""
+msgstr "Correctietype"
 
 #. module: base_tier_validation_correction
 #. odoo-python
 #: code:addons/base_tier_validation_correction/models/tier_correction.py:0
 msgid "Correction is allowed on state = 'done' only"
-msgstr ""
+msgstr "Correctie is alleen toegestaan bij status = 'gereed'"
 
 #. module: base_tier_validation_correction
 #. odoo-python
 #: code:addons/base_tier_validation_correction/models/tier_correction.py:0
 msgid "Correction is allowed on state = 'prepare' only"
-msgstr ""
+msgstr "Correctie is alleen toegestaan bij status = 'voorbereiden'"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_affected_tier_reviews__create_uid
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__create_uid
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Aangemaakt door"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_affected_tier_reviews__create_date
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__create_date
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Aangemaakt op"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
@@ -175,11 +181,14 @@ msgid ""
 "Default new reviewers to be assigned to the correction. This value can be overwritten in\n"
 "                                Correction Detail."
 msgstr ""
+"Standaard nieuwe beoordelaars die aan de correctie worden toegewezen. Deze "
+"waarde kan worden overschreven in de\n"
+"                                correctiedetails."
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__name
 msgid "Description"
-msgstr ""
+msgstr "Omschrijving"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_affected_tier_reviews__display_name
@@ -187,42 +196,44 @@ msgstr ""
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__display_name
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_validation__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Schermnaam"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields.selection,name:base_tier_validation_correction.selection__tier_correction__state__draft
 msgid "Draft"
-msgstr ""
+msgstr "Concept"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Find documents with pending reviews by"
-msgstr ""
+msgstr "Zoek documenten met openstaande beoordelingen op"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,help:base_tier_validation_correction.field_tier_correction__old_reviewer_ids
 msgid "Find documents with tier reviews matching some reviewers"
 msgstr ""
+"Zoek documenten met niveaubeoordelingen die overeenkomen met bepaalde "
+"beoordelaars"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__message_follower_ids
 msgid "Followers"
-msgstr ""
+msgstr "Volgers"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__message_partner_ids
 msgid "Followers (Partners)"
-msgstr ""
+msgstr "Volgers (Relaties)"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,help:base_tier_validation_correction.field_tier_correction__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr ""
+msgstr "Font Awesome icoon, bijv. fa-tasks"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "Heeft bericht"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_affected_tier_reviews__id
@@ -230,259 +241,262 @@ msgstr ""
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__id
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_validation__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__activity_exception_icon
 msgid "Icon"
-msgstr ""
+msgstr "Icoon"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,help:base_tier_validation_correction.field_tier_correction__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr ""
+msgstr "Icoon om een uitzonderingsactiviteit aan te geven."
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,help:base_tier_validation_correction.field_tier_correction__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr ""
+msgstr "Indien aangevinkt vereisen nieuwe berichten uw aandacht."
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,help:base_tier_validation_correction.field_tier_correction__message_has_error
 msgid "If checked, some messages have a delivery error."
-msgstr ""
+msgstr "Indien aangevinkt hebben sommige berichten een leveringsfout."
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__message_is_follower
 msgid "Is Follower"
-msgstr ""
+msgstr "Is volger"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__item_ids
 msgid "Item"
-msgstr ""
+msgstr "Item"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_affected_tier_reviews__write_uid
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__write_uid
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Laatst bijgewerkt door"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_affected_tier_reviews__write_date
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__write_date
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Laatst bijgewerkt op"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Make Correcton"
-msgstr ""
+msgstr "Correctie uitvoeren"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__message_has_error
 msgid "Message Delivery error"
-msgstr ""
+msgstr "Bericht leveringsfout"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__message_ids
 msgid "Messages"
-msgstr ""
+msgstr "Berichten"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__model
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_search
 msgid "Model"
-msgstr ""
+msgstr "Model"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr ""
+msgstr "Mijn activiteit deadline"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__search_name
 msgid "Name Search"
-msgstr ""
+msgstr "Zoeken op naam"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__new_reviewer_ids
 msgid "New Reviewers"
-msgstr ""
+msgstr "Nieuwe beoordelaars"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr ""
+msgstr "Volgende activiteit deadline"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__activity_summary
 msgid "Next Activity Summary"
-msgstr ""
+msgstr "Volgende activiteit samenvatting"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__activity_type_id
 msgid "Next Activity Type"
-msgstr ""
+msgstr "Volgende activiteitstype"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__message_needaction_counter
 msgid "Number of Actions"
-msgstr ""
+msgstr "Aantal acties"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__message_has_error_counter
 msgid "Number of errors"
-msgstr ""
+msgstr "Aantal fouten"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,help:base_tier_validation_correction.field_tier_correction__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr ""
+msgstr "Aantal berichten die actie vereisen"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,help:base_tier_validation_correction.field_tier_correction__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr ""
+msgstr "Aantal berichten met leveringsfout"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__model_id
 msgid "On Model"
-msgstr ""
+msgstr "Op model"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__old_reviewer_ids
 msgid "Original Reviewer(s)"
-msgstr ""
+msgstr "Oorspronkelijke beoordelaar(s)"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Prepare"
-msgstr ""
+msgstr "Voorbereiden"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields.selection,name:base_tier_validation_correction.selection__tier_correction__state__prepare
 msgid "Preparing"
-msgstr ""
+msgstr "Voorbereiden"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__new_reviewer_ids
 #: model:ir.model.fields.selection,name:base_tier_validation_correction.selection__tier_correction__correction_type__reviewer
 msgid "Reassign Reviewer(s)"
-msgstr ""
+msgstr "Beoordelaar(s) opnieuw toewijzen"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,help:base_tier_validation_correction.field_tier_correction__new_reviewer_ids
 msgid "Reassign these reviewers to the tier reviews of the found document"
 msgstr ""
+"Wijs deze beoordelaars opnieuw toe aan de niveaubeoordelingen van het "
+"gevonden document"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Reassign to new value"
-msgstr ""
+msgstr "Opnieuw toewijzen aan nieuwe waarde"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__reference
 msgid "Reference"
-msgstr ""
+msgstr "Referentie"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__res_id
 msgid "Res"
-msgstr ""
+msgstr "Res"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__res_model
 msgid "Res Model"
-msgstr ""
+msgstr "Res-model"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction_item__resource_ref
 msgid "Resource"
-msgstr ""
+msgstr "Bron"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__activity_user_id
 msgid "Responsible User"
-msgstr ""
+msgstr "Verantwoordelijke gebruiker"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Revert Back"
-msgstr ""
+msgstr "Terugdraaien"
 
 #. module: base_tier_validation_correction
 #. odoo-python
 #: code:addons/base_tier_validation_correction/models/tier_correction.py:0
 msgid "Revert Date should be after Correct Date"
-msgstr ""
+msgstr "De terugdraaidatum moet na de correctiedatum liggen"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields.selection,name:base_tier_validation_correction.selection__tier_correction__state__revert
 msgid "Reverted"
-msgstr ""
+msgstr "Teruggedraaid"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_affected_tier_reviews__review_ids
 msgid "Review"
-msgstr ""
+msgstr "Beoordeling"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_search
 msgid "Reviewer"
-msgstr ""
+msgstr "Beoordelaar"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Reviewer(s)"
-msgstr ""
+msgstr "Beoordelaar(s)"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Scheduled Action"
-msgstr ""
+msgstr "Geplande actie"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Scheduled Correct"
-msgstr ""
+msgstr "Geplande correctie"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__date_schedule_correct
 msgid "Scheduled Correction Date"
-msgstr ""
+msgstr "Geplande correctiedatum"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Scheduled Revert"
-msgstr ""
+msgstr "Geplande terugdraaiing"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__date_schedule_revert
 msgid "Scheduled Revert Date"
-msgstr ""
+msgstr "Geplande terugdraaidatum"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Scheduled date/time to auto correct and/or revert by"
 msgstr ""
+"Geplande datum/tijd voor automatische correctie en/of terugdraaiing door"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Set to Draft"
-msgstr ""
+msgstr "Zet op concept"
 
 #. module: base_tier_validation_correction
 #: model:ir.model,name:base_tier_validation_correction.model_affected_tier_reviews
 msgid "Show Affected Tier Reviews"
-msgstr ""
+msgstr "Toon betrokken niveaubeoordelingen"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__state
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,help:base_tier_validation_correction.field_tier_correction__activity_state
@@ -492,6 +506,10 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
+"Status gebaseerd op activiteiten\n"
+"Te laat: Deadline is al verstreken\n"
+"Vandaag: Activiteitdatum is vandaag\n"
+"Gepland: Toekomstige activiteiten."
 
 #. module: base_tier_validation_correction
 #. odoo-python
@@ -500,6 +518,8 @@ msgid ""
 "The Correction '%(name)s', corrrected reviewers on '%(reviews)s' to "
 "'%(reviewers)s'"
 msgstr ""
+"De correctie '%(name)s' heeft de beoordelaars op '%(reviews)s' gewijzigd "
+"naar '%(reviewers)s'"
 
 #. module: base_tier_validation_correction
 #. odoo-python
@@ -508,12 +528,16 @@ msgid ""
 "The Correction '%(name)s', reverted reviewers on '%(reviews)s' back to "
 "'%(reviewers)s'"
 msgstr ""
+"De correctie '%(name)s' heeft de beoordelaars op '%(reviews)s' teruggezet "
+"naar '%(reviewers)s'"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,help:base_tier_validation_correction.field_tier_correction_item__new_reviewer_ids
 msgid ""
 "These reviewers will overwrite the existing reviewer_ids in tier.review"
 msgstr ""
+"Deze beoordelaars zullen de bestaande reviewer_ids in tier.review "
+"overschrijven"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
@@ -521,21 +545,25 @@ msgid ""
 "This is optional search criteria to find matched document into Correction Details.\n"
 "                                Only document with pending reviews will be listed."
 msgstr ""
+"Dit zijn optionele zoekcriteria om overeenkomende documenten te vinden in de "
+"correctiedetails.\n"
+"                                Alleen documenten met openstaande "
+"beoordelingen worden getoond."
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "Tier Correction"
-msgstr ""
+msgstr "Niveaucorrectie"
 
 #. module: base_tier_validation_correction
 #: model:ir.model,name:base_tier_validation_correction.model_tier_correction_item
 msgid "Tier Correction Detail"
-msgstr ""
+msgstr "Niveaucorrectie detail"
 
 #. module: base_tier_validation_correction
 #: model:ir.actions.server,name:base_tier_validation_correction.tier_correction_scheduler_ir_actions_server
 msgid "Tier Correction Scheduler"
-msgstr ""
+msgstr "Niveaucorrectie planner"
 
 #. module: base_tier_validation_correction
 #: model:ir.actions.act_window,name:base_tier_validation_correction.tier_correction_action
@@ -543,39 +571,39 @@ msgstr ""
 #: model:ir.ui.menu,name:base_tier_validation_correction.menu_tier_correction
 #: model:res.groups.privilege,name:base_tier_validation_correction.privilege_tier_correction
 msgid "Tier Review Correction"
-msgstr ""
+msgstr "Niveaubeoordeling correctie"
 
 #. module: base_tier_validation_correction
 #: model:ir.model,name:base_tier_validation_correction.model_tier_validation
 msgid "Tier Validation (abstract)"
-msgstr ""
+msgstr "Niveauvalidatie (abstract)"
 
 #. module: base_tier_validation_correction
 #: model:mail.message.subtype,name:base_tier_validation_correction.mt_tier_validation_correction
 msgid "Tier Validation Correction"
-msgstr ""
+msgstr "Niveauvalidatie correctie"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,help:base_tier_validation_correction.field_tier_correction_item__review_ids
 msgid "Tier reivews that will be affected by this correction."
-msgstr ""
+msgstr "Niveaubeoordelingen die door deze correctie worden beïnvloed."
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,help:base_tier_validation_correction.field_tier_correction__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr ""
+msgstr "Type van de uitzonderingsactiviteit op het record."
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__website_message_ids
 msgid "Website Messages"
-msgstr ""
+msgstr "Websiteberichten"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,help:base_tier_validation_correction.field_tier_correction__website_message_ids
 msgid "Website communication history"
-msgstr ""
+msgstr "Website communicatiehistorie"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
 msgid "e.g. Correction for..."
-msgstr ""
+msgstr "bijv. Correctie voor..."
