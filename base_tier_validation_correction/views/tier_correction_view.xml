@@ -9,7 +9,10 @@
             <list>
                 <field name="name" />
                 <field name="correction_type" />
+                <field name="model_id" />
                 <field name="reference" />
+                <field name="create_uid" widget="many2one_avatar_user" />
+                <field name="create_date" optional="show" />
                 <field
                     name="state"
                     decoration-info="state == 'draft'"
@@ -92,7 +95,11 @@
                             <field name="model" invisible="1" />
                         </group>
                         <group>
-                            <field name="create_uid" readonly="1" />
+                            <field
+                                name="create_uid"
+                                readonly="1"
+                                widget="many2one_avatar_user"
+                            />
                             <field name="create_date" readonly="1" />
                         </group>
                         <group
@@ -106,7 +113,7 @@
                             <field
                                 name="old_reviewer_ids"
                                 readonly="state != 'draft'"
-                                widget="many2many_tags"
+                                widget="many2many_avatar_user"
                                 string="Reviewer(s)"
                             />
                             <field name="search_name" readonly="state != 'draft'" />
@@ -119,7 +126,7 @@
                             <field
                                 name="new_reviewer_ids"
                                 readonly="state != 'draft'"
-                                widget="many2many_tags"
+                                widget="many2many_avatar_user"
                                 string="Reviewer(s)"
                                 invisible="correction_type != 'reviewer'"
                                 required="correction_type == 'reviewer'"
@@ -136,7 +143,7 @@
                                     <field name="resource_ref" />
                                     <field
                                         name="new_reviewer_ids"
-                                        widget="many2many_tags"
+                                        widget="many2many_avatar_user"
                                     />
                                     <field name="review_ids" widget="many2many_tags" />
                                     <button
@@ -153,7 +160,7 @@
                                     <group>
                                         <field
                                             name="new_reviewer_ids"
-                                            widget="many2many_tags"
+                                            widget="many2many_avatar_user"
                                         />
                                         <field
                                             name="review_ids"
@@ -225,22 +232,60 @@
                     string="Reviewer"
                     filter_domain="['|', ('old_reviewer_ids', 'ilike', self), ('new_reviewer_ids', 'ilike', self)]"
                 />
+                <field name="model_id" />
+                <filter
+                    string="My Corrections"
+                    name="my_corrections"
+                    domain="[('create_uid', '=', uid)]"
+                />
                 <separator />
                 <filter
                     string="Change Reviewers"
                     name="reviewer"
                     domain="[('correction_type', '=', 'reviewer')]"
                 />
+                <separator />
+                <filter
+                    string="Draft"
+                    name="state_draft"
+                    domain="[('state', '=', 'draft')]"
+                />
+                <filter
+                    string="Preparing"
+                    name="state_prepare"
+                    domain="[('state', '=', 'prepare')]"
+                />
+                <filter
+                    string="Corrected"
+                    name="state_done"
+                    domain="[('state', '=', 'done')]"
+                />
+                <filter
+                    string="Cancelled"
+                    name="state_cancel"
+                    domain="[('state', '=', 'cancel')]"
+                />
+                <filter
+                    string="Reverted"
+                    name="state_revert"
+                    domain="[('state', '=', 'revert')]"
+                />
                 <group>
                     <filter
+                        string="Status"
+                        name="group_state"
+                        domain="[]"
+                        context="{'group_by':'state'}"
+                    />
+                    <filter
                         string="Correction Type"
-                        name="correction_type"
+                        name="group_correction_type"
                         domain="[]"
                         context="{'group_by':'correction_type'}"
                     />
                     <filter
                         string="Model"
-                        name="correction_type"
+                        name="group_model"
                         domain="[]"
                         context="{'group_by':'model_id'}"
                     />
@@ -253,7 +298,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tier.correction</field>
         <field name="view_mode">list,form</field>
-        <field name="context">{}</field>
+        <field name="context">{'search_default_group_state': 1}</field>
     </record>
     <menuitem
         id="menu_tier_correction"
