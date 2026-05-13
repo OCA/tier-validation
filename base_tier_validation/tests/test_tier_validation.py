@@ -536,6 +536,52 @@ class TierTierValidation(CommonTierValidation):
         result = self.test_user_2.with_user(self.test_user_2).review_user_count()
         self.assertEqual(result, [])
 
+    def test_request_validation_warns_reviewer_without_access(self):
+        """When request_validation creates reviews for a reviewer who has
+        no read access on the validated model, a chatter message is posted
+        on the document so the requester can see why the workflow won't
+        progress."""
+        test_record = self.test_model.create({"test_field": 2.5})
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_2.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+            }
+        )
+        # Revoke read access on the validated model for non-superadmin users
+        # to put test_user_2 in the "assigned reviewer but no ACL" state.
+        self.env["ir.model.access"].search(
+            Domain("model_id", "=", self.tester_model.id)
+        ).unlink()
+        messages_before = len(test_record.message_ids)
+        test_record.with_user(self.test_user_1).request_validation()
+        messages_after = test_record.message_ids
+        self.assertGreater(len(messages_after), messages_before)
+        # The newest message should name the user without access.
+        body = messages_after[0].body
+        self.assertIn(self.test_user_2.display_name, body)
+        self.assertIn("may not be able to read", body)
+
+    def test_request_validation_no_warning_when_reviewer_has_access(self):
+        """No spurious chatter message when reviewers have model access."""
+        test_record = self.test_model.create({"test_field": 2.5})
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+            }
+        )
+        # Default public ACL is in place; test_user_1 can read the model.
+        messages_before = test_record.message_ids
+        test_record.with_user(self.test_user_2).request_validation()
+        new_messages = test_record.message_ids - messages_before
+        for message in new_messages:
+            self.assertNotIn("may not be able to read", message.body or "")
+
     def test_17_search_records_no_validation(self):
         """Search for records that have no validation process started"""
         records = self.env["tier.validation.tester"].search(
