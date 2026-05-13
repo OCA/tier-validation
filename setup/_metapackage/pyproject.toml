@@ -1,10 +1,11 @@
 [project]
 name = "odoo-addons-oca-tier-validation"
-version = "19.0.20260513.0"
+version = "19.0.20260513.1"
 dependencies = [
     "odoo-addon-account_move_tier_validation==19.0.*",
     "odoo-addon-base_tier_validation==19.0.*",
     "odoo-addon-base_tier_validation_formula==19.0.*",
+    "odoo-addon-base_tier_validation_forward==19.0.*",
 ]
 classifiers=[
     "Programming Language :: Python",

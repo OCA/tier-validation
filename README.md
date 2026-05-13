@@ -24,6 +24,7 @@ addon | version | maintainers | summary
 [account_move_tier_validation](account_move_tier_validation/) | 19.0.1.0.0 |  | Extends the functionality of Account Moves to support a tier validation process.
 [base_tier_validation](base_tier_validation/) | 19.0.1.0.2 | <a href='https://github.com/LoisRForgeFlow'><img src='https://github.com/LoisRForgeFlow.png' width='32' height='32' style='border-radius:50%;' alt='LoisRForgeFlow'/></a> | Implement a validation process based on tiers.
 [base_tier_validation_formula](base_tier_validation_formula/) | 19.0.1.0.0 |  | Formulas for Base tier validation
+[base_tier_validation_forward](base_tier_validation_forward/) | 19.0.1.0.0 | <a href='https://github.com/kittiu'><img src='https://github.com/kittiu.png' width='32' height='32' style='border-radius:50%;' alt='kittiu'/></a> | Forward option for base tiers
 
 [//]: # (end addons)
 
