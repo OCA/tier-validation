@@ -73,6 +73,36 @@ class TierValidation(models.AbstractModel):
     )
     next_review = fields.Char(compute="_compute_next_review")
     hide_reviews = fields.Boolean(compute="_compute_hide_reviews")
+    tier_review_count = fields.Integer(
+        compute="_compute_tier_review_count",
+        string="Tier Reviews",
+    )
+
+    @api.depends("review_ids")
+    def _compute_tier_review_count(self):
+        for rec in self:
+            rec.tier_review_count = len(rec.review_ids)
+
+    def action_view_tier_reviews(self):
+        """Open the tier.review list filtered to this document.
+
+        Used by the smart-button auto-injected on validated records and
+        callable from any bridge module that wants to surface the same
+        link manually.
+        """
+        self.ensure_one()
+        action = self.env["ir.actions.act_window"]._for_xml_id(
+            "base_tier_validation.action_tier_review"
+        )
+        action["domain"] = [
+            ("model", "=", self._name),
+            ("res_id", "=", self.id),
+        ]
+        action["context"] = {
+            "default_model": self._name,
+            "default_res_id": self.id,
+        }
+        return action
 
     @api.depends_context("uid")
     @api.depends(
@@ -880,6 +910,13 @@ class TierValidation(models.AbstractModel):
         new_node = etree.fromstring(str_element)
         return new_node
 
+    def _add_tier_validation_smart_button(self, node, params):
+        str_element = self.env["ir.qweb"]._render(
+            "base_tier_validation.tier_validation_smart_button", params
+        )
+        new_node = etree.fromstring(str_element)
+        return new_node
+
     def _get_tier_validation_readonly_domain(self):
         return "validation_status not in ('no', False)"
 
@@ -913,6 +950,18 @@ class TierValidation(models.AbstractModel):
                 new_arch, new_models = View.postprocess_and_fields(new_node, self._name)
                 new_node = etree.fromstring(new_arch)
                 node.append(new_node)
+                _merge_view_fields(all_models, new_models)
+            for node in doc.xpath("//div[@name='button_box']"):
+                # _add_tier_validation_smart_button process: counter +
+                # link to the underlying tier.review records. Only injected
+                # when the form already has a button_box; we don't conjure
+                # one if the bridge model didn't choose to expose smart
+                # buttons.
+                new_node = self._add_tier_validation_smart_button(node, params)
+                new_arch, new_models = View.postprocess_and_fields(new_node, self._name)
+                new_node = etree.fromstring(new_arch)
+                for new_element in new_node:
+                    node.append(new_element)
                 _merge_view_fields(all_models, new_models)
             excepted_fields = self._get_all_validation_exceptions()
             all_fields = self.fields_get(attributes=("readonly",))

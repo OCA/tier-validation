@@ -73,6 +73,17 @@
             </div>
         </div>
     </template>
+    <template id="tier_validation_smart_button">
+        <button
+            type="object"
+            name="action_view_tier_reviews"
+            class="oe_stat_button"
+            icon="fa-thumbs-up"
+            invisible="not review_ids"
+        >
+            <field name="tier_review_count" widget="statinfo" string="Reviews" />
+        </button>
+    </template>
     <template id="tier_validation_reviews">
         <field
             name="review_ids"

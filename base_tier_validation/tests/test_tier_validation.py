@@ -536,6 +536,27 @@ class TierTierValidation(CommonTierValidation):
         result = self.test_user_2.with_user(self.test_user_2).review_user_count()
         self.assertEqual(result, [])
 
+    def test_action_view_tier_reviews(self):
+        """Smart-button helper returns an action filtered to the current
+        record's reviews."""
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+            }
+        )
+        record = self.test_model.create({"test_field": 2.5})
+        # Before requesting validation: no reviews, counter is zero.
+        self.assertEqual(record.tier_review_count, 0)
+        record.with_user(self.test_user_2).request_validation()
+        self.assertGreater(record.tier_review_count, 0)
+        action = record.action_view_tier_reviews()
+        self.assertEqual(action["res_model"], "tier.review")
+        self.assertIn(("model", "=", record._name), action["domain"])
+        self.assertIn(("res_id", "=", record.id), action["domain"])
+
     def test_17_search_records_no_validation(self):
         """Search for records that have no validation process started"""
         records = self.env["tier.validation.tester"].search(
