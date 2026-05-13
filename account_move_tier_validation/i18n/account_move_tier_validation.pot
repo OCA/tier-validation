@@ -130,6 +130,11 @@ msgid "Rejected Message"
 msgstr ""
 
 #. module: account_move_tier_validation
+#: model:ir.model.fields,field_description:account_move_tier_validation.field_account_move__require_authentication
+msgid "Require Authentication"
+msgstr ""
+
+#. module: account_move_tier_validation
 #: model:ir.model.fields,field_description:account_move_tier_validation.field_account_move__reviewer_ids
 msgid "Reviewers"
 msgstr ""
