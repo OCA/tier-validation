@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -31,6 +31,12 @@ msgid "Credit Note"
 msgstr ""
 
 #. module: account_move_tier_validation
+#: model:ir.model.fields,field_description:account_move_tier_validation.field_account_move__display_name
+#: model:ir.model.fields,field_description:account_move_tier_validation.field_tier_definition__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: account_move_tier_validation
 #: model:ir.model.fields,field_description:account_move_tier_validation.field_account_move__has_comment
 msgid "Has Comment"
 msgstr ""
@@ -38,6 +44,12 @@ msgstr ""
 #. module: account_move_tier_validation
 #: model:ir.model.fields,field_description:account_move_tier_validation.field_account_move__hide_reviews
 msgid "Hide Reviews"
+msgstr ""
+
+#. module: account_move_tier_validation
+#: model:ir.model.fields,field_description:account_move_tier_validation.field_account_move__id
+#: model:ir.model.fields,field_description:account_move_tier_validation.field_tier_definition__id
+msgid "ID"
 msgstr ""
 
 #. module: account_move_tier_validation
@@ -108,11 +120,6 @@ msgid "Refund"
 msgstr ""
 
 #. module: account_move_tier_validation
-#: model:ir.model.fields,field_description:account_move_tier_validation.field_account_move__rejected
-msgid "Rejected"
-msgstr ""
-
-#. module: account_move_tier_validation
 #: model:ir.model.fields,field_description:account_move_tier_validation.field_account_move__rejected_message
 msgid "Rejected Message"
 msgstr ""
@@ -133,7 +140,6 @@ msgid "To Validate Message"
 msgstr ""
 
 #. module: account_move_tier_validation
-#: model:ir.model.fields,field_description:account_move_tier_validation.field_account_move__validated
 #: model_terms:ir.ui.view,arch_db:account_move_tier_validation.view_account_invoice_filter
 msgid "Validated"
 msgstr ""
