@@ -1,7 +1,8 @@
 [project]
 name = "odoo-addons-oca-tier-validation"
-version = "19.0.20260511.1"
+version = "19.0.20260513.0"
 dependencies = [
+    "odoo-addon-account_move_tier_validation==19.0.*",
     "odoo-addon-base_tier_validation==19.0.*",
     "odoo-addon-base_tier_validation_formula==19.0.*",
 ]
