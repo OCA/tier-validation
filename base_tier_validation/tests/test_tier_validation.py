@@ -11,6 +11,7 @@ from odoo.exceptions import AccessError, ValidationError
 from odoo.fields import Domain
 from odoo.tests import Form
 from odoo.tests.common import tagged
+from odoo.tools import mute_logger
 
 from ..models.tier_validation import BASE_EXCEPTION_FIELDS as BEF
 from ..models.tier_validation import TierValidation as TV
@@ -774,6 +775,10 @@ class TierTierValidation(CommonTierValidation):
         self.assertFalse(result)
         self.assertEqual(result._name, "res.users")
 
+    @mute_logger(
+        "odoo.addons.base_tier_validation.models.tier_validation",
+        "odoo.addons.base.models.ir_model",
+    )
     def test_request_validation_warns_reviewer_without_access(self):
         """When request_validation creates reviews for a reviewer who has
         no read access on the validated model, a chatter message is posted
