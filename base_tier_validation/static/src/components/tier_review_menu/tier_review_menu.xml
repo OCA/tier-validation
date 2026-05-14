@@ -68,7 +68,7 @@
                                         </span>
                                         <span
                                             t-if="review.future_count"
-                                            class="btn btn-link py-0 px-2 text-truncate"
+                                            class="btn btn-link py-0 px-2 ms-auto text-truncate"
                                             t-on-click.stop="() => this.openReviewGroup(review, 'future')"
                                         >
                                             <t t-out="review.future_count" /> Future
@@ -77,6 +77,13 @@
                                 </div>
                             </div>
                         </t>
+                    </div>
+                    <div
+                        t-if="store.tierReviewDashboardAction"
+                        class="list-group-item list-group-item-action text-center py-2 cursor-pointer"
+                        t-on-click="() => this.openDashboard()"
+                    >
+                        Show all reviews
                     </div>
                 </div>
             </t>
