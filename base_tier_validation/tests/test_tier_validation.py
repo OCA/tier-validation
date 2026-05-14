@@ -536,10 +536,21 @@ class TierTierValidation(CommonTierValidation):
         result = self.test_user_2.with_user(self.test_user_2).review_user_count()
         self.assertEqual(result, [])
 
+    def _revoke_tester_model_access(self):
+        """Make the tester model unreadable for non-admin users by
+        unlinking its public ACL and clearing the ACL cache so the next
+        check_access actually re-evaluates against the new state."""
+        self.env["ir.model.access"].search(
+            Domain("model_id", "=", self.tester_model.id)
+        ).unlink()
+        self.env["ir.model.access"].call_cache_clearing_methods()
+
     def test_definition_onchange_warns_when_reviewer_lacks_access(self):
         """Setting an individual reviewer with no read access on the target
         model returns a non-blocking onchange warning."""
-        # Sanity: with the default public ACL, no warning.
+        # Revoke first so the per-record check_access cache for test_user_2
+        # never gets populated with a stale "allowed" result.
+        self._revoke_tester_model_access()
         definition = self.tier_def_obj.new(
             {
                 "model_id": self.tester_model.id,
@@ -547,11 +558,6 @@ class TierTierValidation(CommonTierValidation):
                 "reviewer_id": self.test_user_2.id,
             }
         )
-        self.assertIsNone(definition._onchange_warn_reviewer_access())
-        # Revoke read access on the validated model for non-superadmin users.
-        self.env["ir.model.access"].search(
-            Domain("model_id", "=", self.tester_model.id)
-        ).unlink()
         warning = definition._onchange_warn_reviewer_access()
         self.assertIsNotNone(warning)
         self.assertIn(self.test_user_2.display_name, warning["warning"]["message"])
@@ -563,9 +569,7 @@ class TierTierValidation(CommonTierValidation):
         group = self.env["res.groups"].create(
             {"name": "Tier Reviewers", "user_ids": [Command.link(self.test_user_2.id)]}
         )
-        self.env["ir.model.access"].search(
-            Domain("model_id", "=", self.tester_model.id)
-        ).unlink()
+        self._revoke_tester_model_access()
         definition = self.tier_def_obj.new(
             {
                 "model_id": self.tester_model.id,
@@ -581,9 +585,7 @@ class TierTierValidation(CommonTierValidation):
         """The 'field' review type cannot be checked ahead of time -- the
         reviewer only resolves at validation time -- so the onchange
         returns no warning even if the ACL would block."""
-        self.env["ir.model.access"].search(
-            Domain("model_id", "=", self.tester_model.id)
-        ).unlink()
+        self._revoke_tester_model_access()
         definition = self.tier_def_obj.new(
             {
                 "model_id": self.tester_model.id,

@@ -155,12 +155,16 @@ class TierDefinition(models.Model):
         group, ir.rules expose specific records, ...) still save. The
         warning just makes it impossible to misconfigure this silently.
         """
-        if not (self.model and self.review_type):
+        # Read the model name off the m2o directly rather than via the
+        # stored related ``self.model`` -- on ``.new()`` records the
+        # related can still be empty depending on cache state.
+        model_name = self.model_id.model
+        if not (model_name and self.review_type):
             return
         users = self._reviewers_to_check_for_access()
         if not users:
             return
-        no_access = self._reviewers_without_model_access(self.model, users)
+        no_access = self._reviewers_without_model_access(model_name, users)
         if not no_access:
             return
         return {
@@ -175,7 +179,7 @@ class TierDefinition(models.Model):
                     "access at runtime. Make sure these users belong to a "
                     "group with read access on the target model, or pick "
                     "different reviewers.",
-                    model=self.model_id.name or self.model,
+                    model=self.model_id.name or model_name,
                     reviewers=", ".join(no_access.mapped("display_name")),
                 ),
             }
