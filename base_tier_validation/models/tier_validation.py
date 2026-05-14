@@ -179,13 +179,13 @@ class TierValidation(models.AbstractModel):
         }"""
 
     def _get_validated_message(self):
-        msg = f"""<i class="fa fa-thumbs-up"></i> {
+        msg = f"""<i class="fa fa-check"></i> {
             self.env._("Operation has been <b>validated</b>!")
         }"""
         return self.validation_status == "validated" and msg or ""
 
     def _get_rejected_message(self):
-        msg = f"""<i class="fa fa-thumbs-down"></i> {
+        msg = f"""<i class="fa fa-times"></i> {
             self.env._("Operation has been <b>rejected</b>.")
         }"""
         return self.validation_status == "rejected" and msg or ""
