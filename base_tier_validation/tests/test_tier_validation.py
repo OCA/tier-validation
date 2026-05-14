@@ -1457,6 +1457,52 @@ class TierTierValidation(CommonTierValidation):
 
 @tagged("at_install")
 class TierTierValidationView(CommonTierValidation):
+    def test_bulk_validate_approves_eligible_reviews(self):
+        """Reviews on definitions with allow_bulk_approve=True get approved;
+        those without are left untouched."""
+        self.definition_1.allow_bulk_approve = True
+        rec_a = self.test_model.create({"test_field": 1.0})
+        rec_b = self.test_model.create({"test_field": 1.0})
+        rec_a.with_user(self.test_user_2).request_validation()
+        rec_b.with_user(self.test_user_2).request_validation()
+        reviews = (rec_a.review_ids | rec_b.review_ids).with_user(self.test_user_1)
+        self.assertEqual(set(reviews.mapped("status")), {"pending"})
+        reviews.action_bulk_validate()
+        self.assertEqual(set(reviews.mapped("status")), {"approved"})
+        self.assertEqual(rec_a.validation_status, "validated")
+        self.assertEqual(rec_b.validation_status, "validated")
+
+    def test_bulk_validate_skips_definitions_without_flag(self):
+        """A review on a definition without allow_bulk_approve stays pending
+        even when included in a bulk selection."""
+        self.assertFalse(self.definition_1.allow_bulk_approve)
+        rec = self.test_model.create({"test_field": 1.0})
+        rec.with_user(self.test_user_2).request_validation()
+        review = rec.review_ids.with_user(self.test_user_1)
+        review.action_bulk_validate()
+        self.assertEqual(review.status, "pending")
+
+    def test_bulk_validate_skips_other_users_reviews(self):
+        """The action only touches reviews assigned to the current user."""
+        self.definition_1.allow_bulk_approve = True
+        rec = self.test_model.create({"test_field": 1.0})
+        rec.with_user(self.test_user_2).request_validation()
+        review = rec.review_ids.with_user(self.test_user_2)
+        self.assertFalse(review._filter_bulk_validatable())
+        review.action_bulk_validate()
+        self.assertEqual(review.status, "pending")
+
+    def test_bulk_validate_skips_reviews_requiring_comment(self):
+        """A comment-required definition cannot be approved in bulk because
+        no comment can be collected; such reviews are skipped."""
+        self.definition_1.allow_bulk_approve = True
+        self.definition_1.has_comment = True
+        rec = self.test_model.create({"test_field": 1.0})
+        rec.with_user(self.test_user_2).request_validation()
+        review = rec.review_ids.with_user(self.test_user_1)
+        review.action_bulk_validate()
+        self.assertEqual(review.status, "pending")
+
     def test_view_manual(self):
         view = self.env[self.test_record._name].get_view(False, "form")
         with Form(self.test_record) as f:

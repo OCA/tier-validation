@@ -67,6 +67,7 @@ class TierReview(models.Model):
     approve_sequence_bypass = fields.Boolean(
         related="definition_id.approve_sequence_bypass"
     )
+    allow_bulk_approve = fields.Boolean(related="definition_id.allow_bulk_approve")
     last_reminder_date = fields.Datetime(readonly=True)
 
     @api.depends("status")
@@ -212,3 +213,42 @@ class TierReview(models.Model):
             note=self._notify_review_reminder_body(),
             user_id=self.reviewer_ids.id,
         )
+
+    def _filter_bulk_validatable(self):
+        """Return the subset of self that the current user may bulk-approve.
+
+        A review is eligible when its definition opts in via
+        ``allow_bulk_approve``, the review is pending and assigned to the
+        current user, the user is the reviewer-of-the-moment (``can_review``),
+        and the definition does not require a per-review comment (which
+        cannot be collected in a bulk action).
+        """
+        return self.filtered(
+            lambda r: r.allow_bulk_approve
+            and r.status == "pending"
+            and r.can_review
+            and self.env.user in r.reviewer_ids
+            and not r.has_comment
+        )
+
+    def action_bulk_validate(self):
+        """Approve every eligible review in ``self`` in a single call.
+
+        Reviews are grouped by their underlying record so that each record's
+        own ``_validate_tier`` runs once -- preserving notifications, the
+        approve-sequence promotion logic, and the review counter update.
+        Ineligible reviews are skipped silently; the action is meant to be
+        wired to the list view header.
+        """
+        eligible = self._filter_bulk_validatable()
+        if not eligible:
+            return False
+        by_key = {}
+        for review in eligible:
+            by_key.setdefault((review.model, review.res_id), self.browse())
+            by_key[(review.model, review.res_id)] |= review
+        for (model, res_id), reviews in by_key.items():
+            record = self.env[model].browse(res_id)
+            record._validate_tier(reviews)
+            record._update_counter({"review_deleted": True})
+        return True
