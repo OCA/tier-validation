@@ -12,6 +12,22 @@
                 decoration-warning="status=='pending'"
                 decoration-muted="status=='waiting'"
             >
+                <header>
+                    <button
+                        name="action_bulk_validate"
+                        type="object"
+                        string="Validate"
+                        class="btn-success"
+                        icon="fa-check"
+                    />
+                    <button
+                        name="action_bulk_reject"
+                        type="object"
+                        string="Reject"
+                        class="btn-danger"
+                        icon="fa-times"
+                    />
+                </header>
                 <field name="sequence" />
                 <field name="requested_by" widget="many2one_avatar_user" />
                 <field name="review_type" />

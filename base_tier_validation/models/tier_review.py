@@ -68,6 +68,9 @@ class TierReview(models.Model):
     approve_sequence_bypass = fields.Boolean(
         related="definition_id.approve_sequence_bypass"
     )
+    allow_bulk_validation = fields.Boolean(
+        related="definition_id.allow_bulk_validation"
+    )
     last_reminder_date = fields.Datetime(readonly=True)
 
     @api.depends("status")
@@ -316,3 +319,85 @@ class TierReview(models.Model):
             note=self._notify_review_reminder_body(),
             user_id=self.reviewer_ids.id,
         )
+
+    def _filter_bulk_reviewable(self):
+        """Return the reviews of ``self`` the current user may process in bulk:
+        the definition allows bulk validation, the review is pending and it is
+        the user's turn to review it."""
+        return self.filtered(
+            lambda r: r.allow_bulk_validation
+            and r.status == "pending"
+            and r.can_review
+            and self.env.user in r.reviewer_ids
+        )
+
+    def _bulk_process(self, validate_reject, comment=False):
+        """Validate or reject ``self``, one call per document so each document
+        keeps its own notifications and approve-sequence handling."""
+        by_record = defaultdict(lambda: self.browse())
+        for review in self:
+            by_record[(review.model, review.res_id)] |= review
+        done = {}
+        for (model, res_id), reviews in by_record.items():
+            record = self.env[model].browse(res_id)
+            if comment:
+                reviews.write({"comment": comment})
+            if validate_reject == "validate":
+                record._validate_tier(reviews)
+            else:
+                record._rejected_tier(reviews)
+            done[model] = done.get(model, record.browse()) | record
+        # Update the counter once for the whole batch, not once per document:
+        # each update notifies the reviewers, and every notification makes the
+        # systray recount its badge.
+        for records in done.values():
+            records._update_counter({"review_deleted": True})
+
+    def _bulk_result(self, validate_reject, skipped=0):
+        """Notification telling how many reviews were processed and skipped."""
+        if validate_reject == "validate":
+            message = self.env._("%s reviews validated.", len(self))
+        else:
+            message = self.env._("%s reviews rejected.", len(self))
+        if skipped:
+            message += " " + self.env._(
+                "%s skipped: their tier does not allow bulk validation, needs a "
+                "comment, or they are not yours to review yet.",
+                skipped,
+            )
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "type": "warning" if skipped else "success",
+                "message": message,
+                "next": {"type": "ir.actions.client", "tag": "soft_reload"},
+            },
+        }
+
+    def action_bulk_validate(self):
+        """Validate the reviews of the selection that allow it. Reviews whose
+        tier requires a comment are skipped."""
+        eligible = self._filter_bulk_reviewable().filtered(lambda r: not r.has_comment)
+        eligible._bulk_process("validate")
+        return eligible._bulk_result("validate", len(self) - len(eligible))
+
+    def action_bulk_reject(self):
+        """Ask for one comment and reject the reviews of the selection that
+        allow it with that comment."""
+        eligible = self._filter_bulk_reviewable()
+        if not eligible:
+            return eligible._bulk_result("reject", len(self))
+        wizard = self.env.ref("base_tier_validation.view_comment_wizard")
+        return {
+            "name": self.env._("Reject"),
+            "type": "ir.actions.act_window",
+            "res_model": "comment.wizard",
+            "views": [(wizard.id, "form")],
+            "target": "new",
+            "context": {
+                "default_review_ids": eligible.ids,
+                "default_validate_reject": "bulk_reject",
+                "default_bulk_skipped": len(self) - len(eligible),
+            },
+        }
