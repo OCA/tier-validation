@@ -4,9 +4,10 @@
 
 from unittest import mock
 
+from freezegun import freeze_time
 from lxml import etree
 
-from odoo import Command
+from odoo import Command, fields
 from odoo.exceptions import AccessError, ValidationError
 from odoo.fields import Domain
 from odoo.tests import Form
@@ -125,6 +126,64 @@ class TierTierValidation(CommonTierValidation):
             ],
             1,
         )
+
+    def test_systray_counter_late_pending_future_buckets(self):
+        """``review_user_count`` splits the user's reviews into three
+        buckets so the systray can mirror Odoo's activity menu:
+
+        - ``late_count`` -- pending reviews older than the configured
+          ``base_tier_validation.late_after_days`` threshold;
+        - ``pending_count`` -- pending reviews within the threshold;
+        - ``future_count`` -- waiting reviews (sequence-queued).
+
+        Also returns the matching record id lists so the systray click
+        opens exactly those records.
+        """
+        # Two sequenced definitions for the same model: tier 1 = user 1,
+        # tier 2 = user 1 again. Once tier 1 is pending, tier 2 stays in
+        # "waiting" -- that's the future bucket from user 1's POV.
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+                "sequence": 10,
+                "approve_sequence": True,
+            }
+        )
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+                "sequence": 20,
+                "approve_sequence": True,
+            }
+        )
+        record = self.test_model.create({"test_field": 2.5})
+        record.with_user(self.test_user_2).request_validation()
+        # Sanity: the user now has 1 pending review on this record and
+        # 1 waiting one queued behind it.
+        docs = self.test_user_1.with_user(self.test_user_1).review_user_count()
+        tester_doc = next(d for d in docs if d["model"] == "tier.validation.tester")
+        self.assertEqual(tester_doc["late_count"], 0)
+        self.assertEqual(tester_doc["pending_count"], 1)
+        self.assertEqual(tester_doc["future_count"], 1)
+        self.assertIn(record.id, tester_doc["pending_ids"])
+        self.assertIn(record.id, tester_doc["future_ids"])
+        # Push "now" past the late threshold (default 7 days) -- the
+        # still-pending review moves from `pending_count` into
+        # `late_count`. The waiting (future) review is unaffected.
+        later = fields.Datetime.add(fields.Datetime.now(), days=14)
+        with freeze_time(later):
+            docs = self.test_user_1.with_user(self.test_user_1).review_user_count()
+        tester_doc = next(d for d in docs if d["model"] == "tier.validation.tester")
+        self.assertEqual(tester_doc["late_count"], 1)
+        self.assertEqual(tester_doc["pending_count"], 0)
+        self.assertEqual(tester_doc["future_count"], 1)
+        self.assertIn(record.id, tester_doc["late_ids"])
 
     def test_11_add_comment(self):
         # Create new test record

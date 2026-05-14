@@ -24,7 +24,10 @@ export class TierReviewMenu extends Component {
         const groups = await this.orm.call("res.users", "review_user_count");
         let total = 0;
         for (const group of groups) {
-            total += group.pending_count || 0;
+            // Headline counter mirrors what the reviewer must act on
+            // *right now*: late + pending. Future is a heads-up only
+            // and shouldn't inflate the urgency badge.
+            total += (group.late_count || 0) + (group.pending_count || 0);
         }
         this.store.tierReviewCounter = total;
         this.store.tierReviewGroups = groups;
@@ -39,10 +42,25 @@ export class TierReviewMenu extends Component {
         ];
     }
 
-    openReviewGroup(group) {
+    openReviewGroup(group, bucket = "pending") {
         this.dropdown.close();
-        const context = {};
-        const domain = [["can_review", "=", true]];
+        // Per-bucket ids are pre-computed server-side so we just hand
+        // them to the action's domain. Empty buckets are no-ops.
+        const idsByBucket = {
+            late: group.late_ids || [],
+            pending: group.pending_ids || [],
+            future: group.future_ids || [],
+        };
+        const ids = idsByBucket[bucket] || [];
+        if (!ids.length) {
+            return;
+        }
+        const labelByBucket = {
+            late: "Late",
+            pending: "Pending",
+            future: "Future",
+        };
+        const domain = [["id", "in", ids]];
         if (group.active_field) {
             domain.push(["active", "in", [true, false]]);
         }
@@ -50,9 +68,9 @@ export class TierReviewMenu extends Component {
 
         this.action.doAction(
             {
-                context,
+                context: {},
                 domain,
-                name: group.name,
+                name: `${group.name} - ${labelByBucket[bucket] || bucket}`,
                 res_model: group.model,
                 search_view_id: [false],
                 type: "ir.actions.act_window",
