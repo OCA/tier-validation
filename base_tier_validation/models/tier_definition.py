@@ -105,6 +105,12 @@ class TierDefinition(models.Model):
         default=False,
         help="Approval order by the specified sequence number",
     )
+    allow_bulk_approve = fields.Boolean(
+        default=False,
+        help="When set, reviewers can approve several reviews at once from the "
+        "tier review list view. Reviews whose definition does not have this "
+        "flag are skipped from a bulk selection.",
+    )
     approve_sequence_bypass = fields.Boolean(
         help="Bypassed (auto validated), if previous tier was validated "
         "by same reviewer",
