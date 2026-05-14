@@ -42,7 +42,7 @@
                             <div
                                 class="o-mail-ActivityGroup list-group-item list-group-item-action d-flex p-2 cursor-pointer"
                                 t-att-data-model_name="review.model"
-                                t-on-click="() => this.openReviewGroup(review)"
+                                t-on-click="() => this.openReviewGroup(review, 'pending')"
                             >
                                 <img alt="Review" t-att-src="review.icon" />
                                 <div class="flex-grow-1 overflow-hidden">
@@ -53,11 +53,26 @@
                                     />
                                     <div class="d-flex">
                                         <span
-                                            t-attf-class="#{review.pending_count ? 'btn btn-link' : 'text-muted'} py-0 px-2 text-truncate"
-                                            t-on-click.stop="() => this.openReviewGroup(review)"
+                                            t-attf-class="#{review.late_count ? 'btn btn-link text-danger' : 'text-muted'} py-0 px-2 text-truncate"
+                                            t-on-click.stop="() => this.openReviewGroup(review, 'late')"
                                         >
-                                        <t t-out="review.pending_count" /> Pending
-                                    </span>
+                                            <t t-out="review.late_count or 0" /> Late
+                                        </span>
+                                        <span
+                                            t-attf-class="#{review.pending_count ? 'btn btn-link' : 'text-muted'} py-0 px-2 text-truncate"
+                                            t-on-click.stop="() => this.openReviewGroup(review, 'pending')"
+                                        >
+                                            <t
+                                            t-out="review.pending_count or 0"
+                                        /> Pending
+                                        </span>
+                                        <span
+                                            t-if="review.future_count"
+                                            class="btn btn-link py-0 px-2 text-truncate"
+                                            t-on-click.stop="() => this.openReviewGroup(review, 'future')"
+                                        >
+                                            <t t-out="review.future_count" /> Future
+                                        </span>
                                     </div>
                                 </div>
                             </div>
