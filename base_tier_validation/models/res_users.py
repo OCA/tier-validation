@@ -143,3 +143,13 @@ class Users(models.Model):
                 "future_ids": future_records.ids,
             }
         return list(user_reviews.values())
+
+    @api.model
+    def tier_review_dashboard_action(self):
+        """Optional hook returning the action a downstream module wants the
+        systray's "Show all reviews" footer link to open. Default is
+        ``False`` so no link is rendered. ``base_tier_validation_board``
+        (and any other dashboard module) overrides this to point at its
+        global review dashboard, matching the pattern of Odoo's
+        "View all activities" footer in the activity systray."""
+        return False

@@ -185,6 +185,38 @@ class TierTierValidation(CommonTierValidation):
         self.assertEqual(tester_doc["future_count"], 1)
         self.assertIn(record.id, tester_doc["late_ids"])
 
+    def test_systray_counter_skips_when_no_acl(self):
+        """When the reviewer has no read access on the validated model,
+        ``review_user_count`` swallows the AccessError and drops the
+        model from the systray rather than crashing the dropdown."""
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_2.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+            }
+        )
+        record = self.test_model.create({"test_field": 2.5})
+        record.with_user(self.test_user_1).request_validation()
+        # Restrict the model's ACL to admins; test_user_2 keeps the
+        # tier review but loses read access on the validated record.
+        self.env["ir.model.access"].search(
+            Domain("model_id", "=", self.tester_model.id)
+        ).write({"group_id": self.env.ref("base.group_system").id})
+        self.env["ir.model.access"].call_cache_clearing_methods()
+        # The endpoint must not raise and must drop the inaccessible
+        # model from its output.
+        docs = self.test_user_2.with_user(self.test_user_2).review_user_count()
+        self.assertNotIn("tier.validation.tester", [d["model"] for d in docs])
+
+    def test_tier_review_dashboard_action_stub(self):
+        """The base module exposes ``tier_review_dashboard_action`` as an
+        optional hook for downstream dashboard modules. Without an
+        override it returns ``False`` so the systray omits its
+        "Show all reviews" footer link."""
+        self.assertFalse(self.env["res.users"].tier_review_dashboard_action())
+
     def test_11_add_comment(self):
         # Create new test record
         test_record = self.test_model.create({"test_field": 2.5})
