@@ -589,8 +589,67 @@ class TierTierValidation(CommonTierValidation):
         messages_before = test_record.message_ids
         test_record.with_user(self.test_user_2).request_validation()
         new_messages = test_record.message_ids - messages_before
-        for message in new_messages:
-            self.assertNotIn("may not be able to read", message.body or "")
+        bodies = " ".join(message.body or "" for message in new_messages)
+        self.assertNotIn("may not be able to read", bodies)
+
+    def test_warn_reviewers_lacking_access_short_circuits(self):
+        """Direct exercise of the helper's defensive branches: no
+        reviewers and no access-issue early exits, without going through
+        the full ``request_validation`` flow."""
+        # No reviews -> empty for-loop, no chatter.
+        self.test_record._warn_reviewers_lacking_access(self.env["tier.review"])
+        # Real reviews but reviewer has access -> `if not no_access`
+        # exit, again no chatter.
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+            }
+        )
+        record = self.test_model.create({"test_field": 2.5})
+        reviews = record.with_user(self.test_user_2).request_validation()
+        messages_before = record.message_ids
+        record._warn_reviewers_lacking_access(reviews)
+        new_messages = record.message_ids - messages_before
+        bodies = " ".join(msg.body or "" for msg in new_messages)
+        self.assertNotIn("may not be able to read", bodies)
+
+    @mute_logger(
+        "odoo.addons.base_tier_validation.models.tier_validation",
+        "odoo.addons.base.models.ir_model",
+    )
+    def test_request_validation_warning_without_mail_thread(self):
+        """Models without mail.thread can't accept ``message_post``. The
+        warning helper must still log the issue but skip the chatter
+        post without raising. Covers the ``hasattr(rec, "message_post")``
+        False branch."""
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model_2.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_2.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+            }
+        )
+        # Restrict the model's ACL so the reviewer (user_2) loses read
+        # access and triggers the warning branch.
+        self.env["ir.model.access"].search(
+            Domain("model_id", "=", self.tester_model_2.id)
+        ).write({"group_id": self.env.ref("base.group_system").id})
+        self.env["ir.model.access"].call_cache_clearing_methods()
+        # Create a fresh record whose field actually matches the
+        # tier-definition domain (the shared fixture's test_field is 1.0
+        # which does not trigger the > 1.0 rule).
+        record = self.test_model_2.create({"test_field": 2.5})
+        # `tier.validation.tester2` does not inherit ``mail.thread``;
+        # the helper must not crash trying to post a chatter message
+        # on it.
+        reviews = record.with_user(self.test_user_1).request_validation()
+        self.assertTrue(reviews)
+        # Sanity: no chatter on a non-mail.thread model.
+        self.assertFalse(hasattr(record, "message_ids"))
 
     def test_17_search_records_no_validation(self):
         """Search for records that have no validation process started"""
