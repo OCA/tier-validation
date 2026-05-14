@@ -594,6 +594,47 @@ class TierTierValidation(CommonTierValidation):
         )
         self.assertIsNone(definition._onchange_warn_reviewer_access())
 
+    def test_definition_onchange_returns_nothing_when_no_problem(self):
+        """The onchange must stay silent when there's nothing to warn
+        about. Covers the three early-return branches:
+
+        - no model selected yet (``model_id`` empty);
+        - no reviewer set yet on a model that has one;
+        - reviewer has model access (default ACL in place).
+        """
+        # No model -> early return on `if not (model_name and ...):`.
+        definition = self.tier_def_obj.new({"review_type": "individual"})
+        self.assertIsNone(definition._onchange_warn_reviewer_access())
+        # No reviewer -> early return on `if not users:`.
+        definition = self.tier_def_obj.new(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+            }
+        )
+        self.assertIsNone(definition._onchange_warn_reviewer_access())
+        # Reviewer with access (default public ACL is in place) -> the
+        # access check finds nothing to flag and the onchange returns
+        # None at the `if not no_access:` exit.
+        definition = self.tier_def_obj.new(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_2.id,
+            }
+        )
+        self.assertIsNone(definition._onchange_warn_reviewer_access())
+
+    def test_reviewers_without_model_access_unknown_model(self):
+        """When the target model name doesn't resolve (e.g. a stale
+        reference after an uninstall), the helper returns an empty
+        res.users recordset without raising."""
+        result = self.tier_def_obj._reviewers_without_model_access(
+            "this.model.does.not.exist", self.test_user_2
+        )
+        self.assertFalse(result)
+        self.assertEqual(result._name, "res.users")
+
     def test_17_search_records_no_validation(self):
         """Search for records that have no validation process started"""
         records = self.env["tier.validation.tester"].search(
