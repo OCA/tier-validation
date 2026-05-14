@@ -40,6 +40,51 @@ class TierTierValidation(CommonTierValidation):
         record.validate_tier()
         self.assertEqual(record.validation_status, "validated")
 
+    def test_allow_reject_false_hides_reject_button(self):
+        """When the matching tier definition has ``allow_reject=False``
+        the validated record reports ``can_reject=False`` while
+        ``can_review`` is still True. The form template binds the
+        Reject button's visibility to ``can_reject`` so the button is
+        hidden for sign-off tiers."""
+        # Override the default definition created in CommonTierValidation
+        # to forbid rejection.
+        self.tier_definition.write({"allow_reject": False})
+        self.test_record.with_user(self.test_user_2).request_validation()
+        record = self.test_record.with_user(self.test_user_1)
+        self.assertTrue(record.can_review)
+        self.assertFalse(record.can_reject)
+
+    def test_reject_tier_skips_definitions_with_allow_reject_false(self):
+        """``reject_tier`` ignores reviews whose definition forbids
+        rejection -- so a reviewer assigned to a mix of sign-off and
+        regular tiers can still reject the regular ones but the
+        sign-off ones stay pending."""
+        # Two definitions for user 1: tier 1 = sign-off (no reject),
+        # tier 2 = regular. Sequence configured so both reviews
+        # surface as pending at the same time.
+        self.tier_definition.write({"allow_reject": False, "sequence": 10})
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '=', 1.0)]",
+                "sequence": 20,
+                "allow_reject": True,
+            }
+        )
+        self.test_record.with_user(self.test_user_2).request_validation()
+        record = self.test_record.with_user(self.test_user_1)
+        self.assertTrue(record.can_reject)
+        record.reject_tier()
+        # The sign-off review stays in `pending`; the regular review
+        # transitions to `rejected`.
+        statuses = {
+            r.definition_id.allow_reject: r.status for r in self.test_record.review_ids
+        }
+        self.assertEqual(statuses[False], "pending")
+        self.assertEqual(statuses[True], "rejected")
+
     def test_04_request_validation_rejected(self):
         """Request validation, rejection and reset."""
         self.assertFalse(self.test_record.review_ids)

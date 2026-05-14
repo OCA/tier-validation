@@ -39,7 +39,7 @@
                 <button
                     name="reject_tier"
                     string="Reject"
-                    invisible="not can_review"
+                    invisible="not can_reject"
                     type="object"
                     class="btn-icon btn-danger"
                     icon="fa-thumbs-down"

@@ -91,6 +91,7 @@
                                 <span
                                 >Bypass, if previous tier was validated by same reviewer</span>
                             </div>
+                            <field name="allow_reject" />
                         </group>
                     </group>
                     <notebook>
