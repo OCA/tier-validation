@@ -73,7 +73,10 @@ export class TierReviewMenu extends Component {
         this.fetchRunning = true;
         this.lastFetch = Date.now();
         try {
-            const groups = await this.orm.call("res.users", "review_user_count");
+            const [groups, dashboardAction] = await Promise.all([
+                this.orm.call("res.users", "review_user_count"),
+                this.orm.call("res.users", "tier_review_dashboard_action"),
+            ]);
             let total = 0;
             for (const group of groups) {
                 // Headline counter mirrors what the reviewer must act on
@@ -83,6 +86,10 @@ export class TierReviewMenu extends Component {
             }
             this.store.tierReviewCounter = total;
             this.store.tierReviewGroups = groups;
+            // ``dashboardAction`` is False when no downstream module exposes
+            // a global review dashboard (default); a serialised action dict
+            // when one does (e.g. ``base_tier_validation_board``).
+            this.store.tierReviewDashboardAction = dashboardAction || null;
         } finally {
             this.fetchRunning = false;
         }
@@ -90,6 +97,15 @@ export class TierReviewMenu extends Component {
             this.fetchPending = false;
             await this.fetchSystrayReviewer();
         }
+    }
+
+    openDashboard() {
+        const action = this.store.tierReviewDashboardAction;
+        if (!action) {
+            return;
+        }
+        this.dropdown.close();
+        this.action.doAction(action, {clearBreadcrumbs: true});
     }
 
     availableViews() {
