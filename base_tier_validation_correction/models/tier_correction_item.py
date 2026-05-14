@@ -23,9 +23,7 @@ class TierCorrectionItem(models.Model):
                     (
                         "model",
                         "in",
-                        self.env[
-                            "tier.definition"
-                        ]._get_tier_validation_model_names(),
+                        self.env["tier.definition"]._get_tier_validation_model_names(),
                     )
                 ]
             )
