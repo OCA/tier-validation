@@ -120,6 +120,14 @@ class TierDefinition(models.Model):
         "Only meaningful for review_type='group'; the form hides this "
         "field for the other review types.",
     )
+    allow_reject = fields.Boolean(
+        string="Allow Rejection",
+        default=True,
+        help="When unchecked, reviewers of this tier can only validate "
+        "the record, not reject it. Use this to model 'sign-off' / "
+        "informational tiers where the reviewer is expected to "
+        "acknowledge but not block the workflow.",
+    )
 
     @api.onchange("review_type")
     def onchange_review_type(self):
