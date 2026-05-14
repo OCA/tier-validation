@@ -820,7 +820,7 @@ class TierValidation(models.AbstractModel):
         """
         Model = self.env[self._name]
         for rec in self:
-            rec_reviews = reviews.filtered(lambda r: r.res_id == rec.id)
+            rec_reviews = reviews.filtered(lambda r, rec=rec: r.res_id == rec.id)
             reviewers = rec_reviews.mapped("reviewer_ids")
             if not reviewers:
                 continue

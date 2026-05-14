@@ -550,11 +550,16 @@ class TierTierValidation(CommonTierValidation):
                 "definition_domain": "[('test_field', '>', 1.0)]",
             }
         )
-        # Revoke read access on the validated model for non-superadmin users
-        # to put test_user_2 in the "assigned reviewer but no ACL" state.
+        # Restrict the tester model's read access to base.group_system so
+        # the requester (test_user_1, in group_system) keeps access while
+        # the reviewer (test_user_2, only base.group_user) loses it. This
+        # is the "assigned reviewer but no ACL" state the chatter warning
+        # exists to surface.
         self.env["ir.model.access"].search(
             Domain("model_id", "=", self.tester_model.id)
-        ).unlink()
+        ).write({"group_id": self.env.ref("base.group_system").id})
+        # Ensure the ACL cache picks up the change before the helper checks.
+        self.env["ir.model.access"].call_cache_clearing_methods()
         messages_before = len(test_record.message_ids)
         test_record.with_user(self.test_user_1).request_validation()
         messages_after = test_record.message_ids
