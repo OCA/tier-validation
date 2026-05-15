@@ -533,6 +533,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/base_tier_validation/static/src/components/tier_review_menu/tier_review_menu.xml:0
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__account_move__validation_status__pending
+#: model:ir.model.fields.selection,name:base_tier_validation.selection__purchase_order__validation_status__pending
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_review__status__pending
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_validation__validation_status__pending
 msgid "Pending"
@@ -550,6 +551,7 @@ msgstr "Reddet"
 
 #. module: base_tier_validation
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__account_move__validation_status__rejected
+#: model:ir.model.fields.selection,name:base_tier_validation.selection__purchase_order__validation_status__rejected
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_review__status__rejected
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_validation__validation_status__rejected
 msgid "Rejected"
@@ -796,6 +798,7 @@ msgstr "Reddetmeyi Doğrula"
 
 #. module: base_tier_validation
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__account_move__validation_status__validated
+#: model:ir.model.fields.selection,name:base_tier_validation.selection__purchase_order__validation_status__validated
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_validation__validation_status__validated
 msgid "Validated"
 msgstr "Doğrulandı"
@@ -841,6 +844,7 @@ msgstr "Doğrulamalar"
 
 #. module: base_tier_validation
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__account_move__validation_status__waiting
+#: model:ir.model.fields.selection,name:base_tier_validation.selection__purchase_order__validation_status__waiting
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_review__status__waiting
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_validation__validation_status__waiting
 msgid "Waiting"
@@ -848,6 +852,7 @@ msgstr "Bekleyenler"
 
 #. module: base_tier_validation
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__account_move__validation_status__no
+#: model:ir.model.fields.selection,name:base_tier_validation.selection__purchase_order__validation_status__no
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_validation__validation_status__no
 msgid "Without validation"
 msgstr "Doğrulama olmadan"
