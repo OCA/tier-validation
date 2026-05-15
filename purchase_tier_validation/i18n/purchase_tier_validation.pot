@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -14,8 +14,19 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: purchase_tier_validation
+#: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__can_forward
+msgid "Can Forward"
+msgstr ""
+
+#. module: purchase_tier_validation
 #: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__can_review
 msgid "Can Review"
+msgstr ""
+
+#. module: purchase_tier_validation
+#: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__display_name
+#: model:ir.model.fields,field_description:purchase_tier_validation.field_tier_definition__display_name
+msgid "Display Name"
 msgstr ""
 
 #. module: purchase_tier_validation
@@ -26,6 +37,12 @@ msgstr ""
 #. module: purchase_tier_validation
 #: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__hide_reviews
 msgid "Hide Reviews"
+msgstr ""
+
+#. module: purchase_tier_validation
+#: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__id
+#: model:ir.model.fields,field_description:purchase_tier_validation.field_tier_definition__id
+msgid "ID"
 msgstr ""
 
 #. module: purchase_tier_validation
@@ -64,13 +81,13 @@ msgid "Purchase Order"
 msgstr ""
 
 #. module: purchase_tier_validation
-#: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__rejected
-msgid "Rejected"
+#: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__rejected_message
+msgid "Rejected Message"
 msgstr ""
 
 #. module: purchase_tier_validation
-#: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__rejected_message
-msgid "Rejected Message"
+#: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__require_authentication
+msgid "Require Authentication"
 msgstr ""
 
 #. module: purchase_tier_validation
@@ -89,7 +106,6 @@ msgid "To Validate Message"
 msgstr ""
 
 #. module: purchase_tier_validation
-#: model:ir.model.fields,field_description:purchase_tier_validation.field_purchase_order__validated
 #: model_terms:ir.ui.view,arch_db:purchase_tier_validation.view_purchase_order_filter
 msgid "Validated"
 msgstr ""
