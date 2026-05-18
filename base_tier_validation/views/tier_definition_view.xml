@@ -160,7 +160,9 @@
     <menuitem
         id="menu_tier_confirmation"
         name="Tier Validations"
-        parent="base.menu_custom"
+        groups="base_tier_validation.group_tier_validation_manager"
+        web_icon="base_tier_validation,static/description/icon.png"
+        sequence="80"
     />
     <menuitem
         id="menu_tier_definition"

@@ -7,9 +7,9 @@ from unittest import mock
 from lxml import etree
 
 from odoo import Command
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.fields import Domain
-from odoo.tests import Form
+from odoo.tests import Form, new_test_user
 from odoo.tests.common import tagged
 
 from ..models.tier_validation import BASE_EXCEPTION_FIELDS as BEF
@@ -1453,6 +1453,38 @@ class TierTierValidation(CommonTierValidation):
 
         # Review_ids should not be copied when duplicating a user
         self.assertFalse(new_user.review_ids.ids)
+
+    def test_35_manager_group_can_configure_without_technical(self):
+        """A trusted key user holding only the Tier Validation
+        Administrator group (no system / erp_manager / Technical) can
+        manage tier definitions; a plain internal user cannot; and the
+        system admin implies the manager group for back-compat."""
+        manager = new_test_user(
+            self.env,
+            name="Tier Manager",
+            login="tier_manager",
+            groups="base.group_user,base_tier_validation.group_tier_validation_manager",
+        )
+        plain = new_test_user(
+            self.env, name="Plain", login="plain_user", groups="base.group_user"
+        )
+        vals = {
+            "model_id": self.tester_model.id,
+            "review_type": "individual",
+            "reviewer_id": self.test_user_1.id,
+            "definition_domain": "[('test_field', '=', 1.0)]",
+        }
+        definition = self.env["tier.definition"].with_user(manager).create(dict(vals))
+        self.assertTrue(definition.id)
+        definition.with_user(manager).write({"sequence": 99})
+        with self.assertRaises(AccessError):
+            self.env["tier.definition"].with_user(plain).create(dict(vals))
+        # Back-compat: system administrators implicitly get the new group.
+        self.assertTrue(
+            self.test_user_1.has_group(
+                "base_tier_validation.group_tier_validation_manager"
+            )
+        )
 
 
 @tagged("at_install")
