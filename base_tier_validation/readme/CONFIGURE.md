@@ -1,9 +1,15 @@
 To configure this module, you need to:
 
-1.  Go to *Settings \> Technical \> Tier Validations \> Tier
-    Definition*.
+1.  Go to *Tier Validations \> Tier Definition* (top-level menu, no
+    Settings / Technical access required).
 2.  Create as many tiers as you want for any model having tier
     validation functionality.
+
+The *Tier Validations* menu is gated by the **Tier Validation
+Administrator** group. Assign it to trusted key users (Settings \>
+Users \> *Tier Validation* category) so they can manage definitions and
+exceptions **without** granting them Settings / Technical access.
+System administrators receive this group automatically.
 
 **Note:**
 
