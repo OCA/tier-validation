@@ -1454,6 +1454,127 @@ class TierTierValidation(CommonTierValidation):
         # Review_ids should not be copied when duplicating a user
         self.assertFalse(new_user.review_ids.ids)
 
+    def test_36_tier_summary_is_human_readable(self):
+        """The computed summary names the document, the condition and the
+        reviewer in plain language."""
+        summary = self.definition_1.tier_summary
+        self.assertTrue(summary)
+        self.assertIn(self.definition_1.model_id.name, summary)
+        self.assertIn(self.test_user_1.display_name, summary)
+        self.assertIn("Tier", summary)
+        # The condition is rendered with the human field label, not the
+        # technical name -- that is the whole point of the summary.
+        test_field_label = self.test_model._fields["test_field"].string
+        self.assertIn(test_field_label, summary)
+
+    def test_37_invalid_definition_domain_is_blocked(self):
+        """A malformed domain is rejected at save time (not only later at
+        request_validation)."""
+        with self.assertRaises(ValidationError):
+            self.tier_def_obj.create(
+                {
+                    "model_id": self.tester_model.id,
+                    "review_type": "individual",
+                    "reviewer_id": self.test_user_1.id,
+                    "definition_domain": "this is not a domain",
+                }
+            )
+
+    def test_38_empty_domain_onchange_warns(self):
+        definition = self.tier_def_obj.new(
+            {"model_id": self.tester_model.id, "definition_domain": ""}
+        )
+        res = definition._onchange_definition_domain_warn_empty()
+        self.assertIn("warning", res)
+
+    def test_39_form_requires_reviewer_for_its_type(self):
+        """The matching reviewer is required in the form when a review type
+        is chosen, but plain create() stays unconstrained so bridge
+        modules can still create a definition and set the reviewer later."""
+        # Form save without the reviewer for the chosen type must fail.
+        form = Form(self.tier_def_obj)
+        form.model_id = self.tester_model
+        form.review_type = "individual"
+        with self.assertRaises(AssertionError):
+            form.save()
+        # Programmatic create stays allowed (no reviewer yet).
+        definition = self.tier_def_obj.create(
+            {"model_id": self.tester_model.id, "review_type": "individual"}
+        )
+        self.assertTrue(definition.id)
+
+    def test_40_summary_helpers_cover_all_branches(self):
+        """Exercise every branch of the summary / lint helpers."""
+        # _describe_domain: every rendering path (use new() so the domain
+        # constraint does not block the intentionally odd values).
+        cases = {
+            "": "all records",
+            "[]": "all records",
+            "garbage": "where",
+            "1": "all records",
+            "['&']": "where",
+            "[('test_field', '>', 1.0)]": "Test Field",
+            "[('unknown_field', '=', 1)]": "unknown_field",
+        }
+        for raw, expected in cases.items():
+            definition = self.tier_def_obj.new(
+                {"model_id": self.tester_model.id, "definition_domain": raw}
+            )
+            self.assertIn(expected, definition._describe_domain())
+
+        # _describe_reviewer + summary for the group review type.
+        group_def = self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "group",
+                "reviewer_group_id": self.test_group.id,
+                "definition_domain": "[]",
+            }
+        )
+        self.assertIn(self.test_group.display_name, group_def.tier_summary)
+
+        # _describe_reviewer + summary for the field review type.
+        user_field = self.env["ir.model.fields"].search(
+            [("model", "=", "tier.validation.tester"), ("name", "=", "user_id")],
+            limit=1,
+        )
+        field_def = self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "field",
+                "reviewer_field_id": user_field.id,
+                "definition_domain": "[]",
+            }
+        )
+        self.assertIn(
+            user_field.field_description or user_field.name,
+            field_def.tier_summary,
+        )
+
+        # _compute_tier_summary: definition without a model -> empty summary.
+        no_model = self.tier_def_obj.create({"name": "No model rule"})
+        self.assertEqual(no_model.tier_summary, "")
+
+        # _check_definition_domain: a parseable but non-list value is rejected.
+        with self.assertRaises(ValidationError):
+            self.tier_def_obj.create(
+                {
+                    "model_id": self.tester_model.id,
+                    "review_type": "individual",
+                    "reviewer_id": self.test_user_1.id,
+                    "definition_domain": "1",
+                }
+            )
+
+        # Onchange "no warning" path for a non-empty domain.
+        ok_domain = self.tier_def_obj.new(
+            {
+                "model_id": self.tester_model.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+            }
+        )
+        self.assertFalse(ok_domain._onchange_definition_domain_warn_empty())
+
 
 @tagged("at_install")
 class TierTierValidationView(CommonTierValidation):

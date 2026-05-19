@@ -1,3 +1,23 @@
+## 19.0.2.0.0 (2026-05-19)
+
+Improvements:
+
+- Tier definitions now show a plain-language **Summary** (on the form
+  and in the list) describing in one sentence which documents the rule
+  applies to and who must validate.
+- Added inline help to the model, filter, reviewer-field, sequence and
+  approval fields, with a concrete domain example.
+- The Tier Definition list now opens grouped by document type, in
+  sequence order, so the full ordered tier chain per model is visible
+  at a glance. In multi-company databases definitions are ordered by
+  company first (and the Company column is shown by default) so each
+  company's tiers stay together instead of being interleaved.
+- A malformed filter (domain) is now reported with a clear error when
+  the definition is saved, instead of only failing later when
+  validation is requested. The reviewer (user, group or field) is now
+  required in the form once a "Validated by" type is chosen, and the
+  form warns when a rule has no filter.
+
 ## 19.0.1.0.1 (2026-05-12)
 
 Fixes:
