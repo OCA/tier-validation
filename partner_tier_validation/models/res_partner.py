@@ -8,7 +8,7 @@ class ResPartner(models.Model):
     _name = "res.partner"
     _inherit = ["res.partner", "tier.validation"]
 
-    _tier_validation_buttons_xpath = "/form/header/field[@name='state']"
+    _tier_validation_buttons_xpath = "/form/header/field[@name='stage_id']"
     _state_from = ["draft", "cancel"]
     _state_to = ["confirmed"]
     _cancel_state = ["inactive"]
@@ -22,7 +22,7 @@ class ResPartner(models.Model):
         Other can be added extending this method.
         """
         # IDEA: make it a System Parameter?
-        return [
+        return {
             "company_type",
             "parent_id",
             "vat",
@@ -31,12 +31,15 @@ class ResPartner(models.Model):
             "property_account_position_id",
             "property_account_receivable_id",
             "property_account_payable_id",
-        ]
+        }
+
+    def _get_tier_validation_readonly_domain(self):
+        return "validation_status not in ('no', 'validated', False)"
 
     def write(self, vals):
         # Changing certain fields requires a new validation process
         revalidate_fields = self._partner_tier_revalidation_fields(vals)
-        if any(x in revalidate_fields for x in vals.keys()):
+        if set(vals.keys()) & revalidate_fields:
             vals["stage_id"] = self._get_default_stage_id().id
         # Tier Validation does not work with Stages, only States :-(
         # Workaround is to signal state transition adding it to the write values
@@ -45,6 +48,6 @@ class ResPartner(models.Model):
             stage = self.env["res.partner.stage"].browse(stage_id)
             vals["state"] = stage.state
         res = super().write(vals)
-        if "stage_id" in vals and vals.get("stage_id") in self._state_from:
+        if "stage_id" in vals and vals.get("state") in self._state_from:
             self.restart_validation()
         return res

@@ -1,4 +1,4 @@
-Before using, check Contact Stages configuration, to ensure that the
+Before using, check Contact Stages configuration to ensure that the
 default stage has the "Related State" field set to "To Approve". For
 example, having the "Draft" stage the default ensures this.
 
@@ -18,7 +18,7 @@ The approver reviews Contacts to approve:
 2.  Open the Contact form to approve. It will display a "This Records
     needs to be validated" banner, with "Validate" and "Reject" options.
 3.  The approver can change the state to "Active". This will
-    automatically unarchive the record and make it available to be used.
+    make the record available to be used.
 
 The Approve/Reject actions do not automatically change the State. This
 could be a future improvement.

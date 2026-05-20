@@ -3,8 +3,8 @@
 {
     "name": "Partner Tier Validation",
     "summary": "Support a tier validation process for Contacts",
-    "version": "18.0.1.0.0",
-    "website": "https://github.com/OCA/partner-contact",
+    "version": "19.0.1.0.0",
+    "website": "https://github.com/OCA/tier-validation",
     "category": "Contact",
     "author": "Open Source Integrators, Odoo Community Association (OCA)",
     "license": "AGPL-3",

@@ -20,14 +20,14 @@ Partner Tier Validation
 .. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
-.. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fpartner--contact-lightgray.png?logo=github
-    :target: https://github.com/OCA/partner-contact/tree/18.0/partner_tier_validation
-    :alt: OCA/partner-contact
+.. |badge3| image:: https://img.shields.io/badge/github-OCA%2Ftier--validation-lightgray.png?logo=github
+    :target: https://github.com/OCA/tier-validation/tree/19.0/partner_tier_validation
+    :alt: OCA/tier-validation
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/partner-contact-18-0/partner-contact-18-0-partner_tier_validation
+    :target: https://translation.odoo-community.org/projects/tier-validation-19-0/tier-validation-19-0-partner_tier_validation
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/partner-contact&target_branch=18.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/tier-validation&target_branch=19.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
@@ -59,7 +59,7 @@ This module depends on ``base_tier_validation``. You can find it at
 Usage
 =====
 
-Before using, check Contact Stages configuration, to ensure that the
+Before using, check Contact Stages configuration to ensure that the
 default stage has the "Related State" field set to "To Approve". For
 example, having the "Draft" stage the default ensures this.
 
@@ -77,8 +77,8 @@ The approver reviews Contacts to approve:
    Approval"
 2. Open the Contact form to approve. It will display a "This Records
    needs to be validated" banner, with "Validate" and "Reject" options.
-3. The approver can change the state to "Active". This will
-   automatically unarchive the record and make it available to be used.
+3. The approver can change the state to "Active". This will make the
+   record available to be used.
 
 The Approve/Reject actions do not automatically change the State. This
 could be a future improvement.
@@ -86,10 +86,10 @@ could be a future improvement.
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/OCA/partner-contact/issues>`_.
+Bugs are tracked on `GitHub Issues <https://github.com/OCA/tier-validation/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/partner-contact/issues/new?body=module:%20partner_tier_validation%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/tier-validation/issues/new?body=module:%20partner_tier_validation%0Aversion:%2019.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -131,6 +131,6 @@ Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
 
 |maintainer-dreispt| 
 
-This module is part of the `OCA/partner-contact <https://github.com/OCA/partner-contact/tree/18.0/partner_tier_validation>`_ project on GitHub.
+This module is part of the `OCA/tier-validation <https://github.com/OCA/tier-validation/tree/19.0/partner_tier_validation>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
