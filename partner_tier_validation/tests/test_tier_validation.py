@@ -2,34 +2,26 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
 from odoo.exceptions import ValidationError
-from odoo.tests import common, tagged
+from odoo.tests import tagged
+
+from odoo.addons.base.tests.common import BaseCommon, new_test_user
 
 
 @tagged("-at_install", "post_install")
-class TestPartnerTierValidation(common.TransactionCase):
+class TestPartnerTierValidation(BaseCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         # Create users
-        group_user = cls.env.ref("base.group_user")
-        group_contacts = cls.env.ref("base.group_partner_manager")
-        group_approver = cls.env.ref("base.group_no_one")
-        User = cls.env["res.users"]
-        cls.user_employee = User.create(
-            {
-                "name": "Employee",
-                "login": "empl1",
-                "email": "empl1@example.com",
-                "groups_id": (group_user | group_contacts).ids,
-            }
+        cls.user_employee = new_test_user(
+            env=cls.env,
+            login="empl1",
+            groups="base.group_user,base.group_partner_manager",
         )
-        cls.user_approver = User.create(
-            {
-                "name": "Approver",
-                "login": "aprov1",
-                "email": "approv1@example.com",
-                "groups_id": (group_user | group_contacts | group_approver).ids,
-            }
+        cls.user_approver = new_test_user(
+            env=cls.env,
+            login="aprov1",
+            groups="base.group_user,base.group_partner_manager,base.group_no_one",
         )
 
         # Create tier definition: example where only Company needs validation
@@ -49,6 +41,7 @@ class TestPartnerTierValidation(common.TransactionCase):
         cls.stage_draft = Stage.search([("state", "=", "draft")], limit=1)
         cls.stage_draft.is_default = True
         cls.stage_confirmed = Stage.search([("state", "=", "confirmed")], limit=1)
+        cls.stage_cancel = Stage.search([("state", "=", "cancel")], limit=1)
 
     def test_tier_validation_model_name(self):
         self.assertIn(
@@ -59,9 +52,9 @@ class TestPartnerTierValidation(common.TransactionCase):
         """
         Case where new Contact requires validation
         """
-        Partner = self.env["res.partner"]
+        partner_obj = self.env["res.partner"]
         contact_vals = {"name": "Company for test", "company_type": "company"}
-        contact = Partner.with_user(self.user_employee).create(contact_vals)
+        contact = partner_obj.with_user(self.user_employee).create(contact_vals)
         self.assertEqual(contact.state, "draft")
 
         # Assert an error shows if trying to make it active
@@ -87,10 +80,44 @@ class TestPartnerTierValidation(common.TransactionCase):
         """
         Case where new Contact does not require validation
         """
-        Partner = self.env["res.partner"]
+        partner_obj = self.env["res.partner"]
         contact_vals = {"name": "Company for test", "company_type": "person"}
-        contact = Partner.with_user(self.user_employee).create(contact_vals)
+        contact = partner_obj.with_user(self.user_employee).create(contact_vals)
         self.assertEqual(contact.state, "draft")
         # Can move to confirmed state without approval
         contact.write({"stage_id": self.stage_confirmed.id})
         self.assertEqual(contact.state, "confirmed")
+
+    def test_validation_res_partner_restarted(self):
+        """
+        Case where new Contact validation is removed upon restart because of stage
+        changed to draft
+        """
+        Partner = self.env["res.partner"]
+        contact_vals = {"name": "Company for test", "company_type": "company"}
+        contact = Partner.with_user(self.user_employee).create(contact_vals)
+        self.assertEqual(contact.state, "draft")
+        self.assertEqual(contact.validation_status, "no")
+        self.assertFalse(contact.review_ids.status)
+        # Request and validate partner
+        contact.request_validation()
+        contact._invalidate_cache()
+        self.assertEqual(contact.validation_status, "pending")
+        self.assertEqual(contact.review_ids.status, "pending")
+        contact.with_user(self.user_approver).validate_tier()
+        self.assertEqual(contact.validation_status, "validated")
+        self.assertEqual(contact.review_ids.status, "approved")
+        # change stage to confirmed
+        contact.with_user(self.user_approver).write(
+            {"stage_id": self.stage_confirmed.id}
+        )
+        self.assertEqual(contact.state, "confirmed")
+        # validation didn't change
+        self.assertEqual(contact.validation_status, "validated")
+        self.assertEqual(contact.review_ids.status, "approved")
+        # change stage to draft
+        contact.with_user(self.user_approver).write({"stage_id": self.stage_draft.id})
+        self.assertEqual(contact.state, "draft")
+        # validation removed by restart
+        self.assertEqual(contact.validation_status, "no")
+        self.assertFalse(contact.review_ids.status)
