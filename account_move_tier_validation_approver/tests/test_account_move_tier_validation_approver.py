@@ -1,43 +1,47 @@
 # Copyright 2021 ForgeFlow (http://www.forgeflow.com)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from odoo import Command
 from odoo.exceptions import ValidationError
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import new_test_user, tagged
 
-from odoo.addons.base.tests.common import DISABLED_MAIL_CONTEXT
+from odoo.addons.base.tests.common import BaseCommon
 
 
-class TestAccountMoveTierValidationApprover(TransactionCase):
-    def setUp(self):
-        super().setUp()
-        self.env = self.env(context=dict(self.env.context, **DISABLED_MAIL_CONTEXT))
-        self.res_partner_1 = self.env["res.partner"].create(
+@tagged("post_install", "-at_install")
+class TestAccountMoveTierValidationApprover(BaseCommon):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.res_partner_1 = cls.env["res.partner"].create(
             {"name": "Wood Corner", "email": "example@yourcompany.com"}
         )
-        self.product_1 = self.env["product.product"].create(
-            {"name": "Desk Combination"}
+        cls.product_1 = cls.env["product.product"].create({"name": "Desk Combination"})
+        cls.currency_usd = cls.env["res.currency"].search([("name", "=", "USD")])
+        cls.test_user_1 = new_test_user(
+            cls.env,
+            login="test1",
+            email="example@yourcompany.com",
+            groups="base.group_system,account.group_account_manager",
         )
-        self.currency_usd = self.env["res.currency"].search([("name", "=", "USD")])
-        self.test_user_1 = self.env["res.users"].create(
-            {"name": "User", "login": "test1", "email": "example@yourcompany.com"}
+        cls.test_approver = new_test_user(
+            cls.env,
+            login="test2",
+            email="example@yourcompany.com",
+            groups="base.group_system,account.group_account_manager",
         )
-        self.test_approver = self.env["res.users"].create(
-            {"name": "Approver", "login": "test2", "email": "example@yourcompany.com"}
-        )
-        self.vendor_bill = self.env["account.move"].create(
+        cls.vendor_bill = cls.env["account.move"].create(
             [
                 {
                     "move_type": "in_invoice",
-                    "partner_id": self.res_partner_1.id,
-                    "currency_id": self.currency_usd.id,
-                    "approver_id": self.test_approver.id,
+                    "partner_id": cls.res_partner_1.id,
+                    "currency_id": cls.currency_usd.id,
+                    "approver_id": cls.test_approver.id,
                     "invoice_line_ids": [
-                        (
-                            0,
-                            None,
+                        Command.create(
                             {
-                                "product_id": self.product_1.id,
-                                "product_uom_id": self.product_1.uom_id.id,
+                                "product_id": cls.product_1.id,
+                                "product_uom_id": cls.product_1.uom_id.id,
                                 "quantity": 12,
                                 "price_unit": 1000,
                             },
@@ -46,10 +50,10 @@ class TestAccountMoveTierValidationApprover(TransactionCase):
                 }
             ]
         )
-        self.model_id = self.env["ir.model"].search(
+        cls.model_id = cls.env["ir.model"].search(
             [("model", "=", "account.move")], limit=1
         )
-        self.field_id = self.env["ir.model.fields"].search(
+        cls.field_id = cls.env["ir.model.fields"].search(
             [("name", "=", "approver_id")], limit=1
         )
 

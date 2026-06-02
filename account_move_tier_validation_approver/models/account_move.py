@@ -27,6 +27,13 @@ class AccountMove(models.Model):
             else:
                 rec.approver_id = False
 
+    def _get_under_validation_exceptions(self):
+        # `made_sequence_gap` is a technical field that account.move recomputes
+        # as a side effect (date -> highest_name -> name -> _update_sequence_made_gap).
+        # In v19 this recompute can be flushed while the move is under validation,
+        # so it must be allowed to avoid blocking unrelated technical writes.
+        return super()._get_under_validation_exceptions() + ["made_sequence_gap"]
+
     def _post(self, soft=True):
         for move in self:
             require_approver_in_vendor_bills = (
@@ -39,7 +46,9 @@ class AccountMove(models.Model):
             ):
                 raise UserError(
                     self.env._(
-                        "It is mandatory to indicate a Responsible for Approval (in {})"
-                    ).format(move.name)
+                        "It is mandatory to indicate a Responsible for"
+                        " Approval (in %s)",
+                        move.name,
+                    )
                 )
         return super()._post(soft)
