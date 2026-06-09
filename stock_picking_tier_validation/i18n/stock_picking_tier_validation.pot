@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -20,8 +20,19 @@ msgid "A validation process is still open for at least one record."
 msgstr ""
 
 #. module: stock_picking_tier_validation
+#: model:ir.model.fields,field_description:stock_picking_tier_validation.field_stock_picking__can_forward
+msgid "Can Forward"
+msgstr ""
+
+#. module: stock_picking_tier_validation
 #: model:ir.model.fields,field_description:stock_picking_tier_validation.field_stock_picking__can_review
 msgid "Can Review"
+msgstr ""
+
+#. module: stock_picking_tier_validation
+#: model:ir.model.fields,field_description:stock_picking_tier_validation.field_stock_picking__display_name
+#: model:ir.model.fields,field_description:stock_picking_tier_validation.field_tier_definition__display_name
+msgid "Display Name"
 msgstr ""
 
 #. module: stock_picking_tier_validation
@@ -32,6 +43,12 @@ msgstr ""
 #. module: stock_picking_tier_validation
 #: model:ir.model.fields,field_description:stock_picking_tier_validation.field_stock_picking__hide_reviews
 msgid "Hide Reviews"
+msgstr ""
+
+#. module: stock_picking_tier_validation
+#: model:ir.model.fields,field_description:stock_picking_tier_validation.field_stock_picking__id
+#: model:ir.model.fields,field_description:stock_picking_tier_validation.field_tier_definition__id
+msgid "ID"
 msgstr ""
 
 #. module: stock_picking_tier_validation
@@ -55,13 +72,13 @@ msgid "Next Review"
 msgstr ""
 
 #. module: stock_picking_tier_validation
-#: model:ir.model.fields,field_description:stock_picking_tier_validation.field_stock_picking__rejected
-msgid "Rejected"
+#: model:ir.model.fields,field_description:stock_picking_tier_validation.field_stock_picking__rejected_message
+msgid "Rejected Message"
 msgstr ""
 
 #. module: stock_picking_tier_validation
-#: model:ir.model.fields,field_description:stock_picking_tier_validation.field_stock_picking__rejected_message
-msgid "Rejected Message"
+#: model:ir.model.fields,field_description:stock_picking_tier_validation.field_stock_picking__require_authentication
+msgid "Require Authentication"
 msgstr ""
 
 #. module: stock_picking_tier_validation
@@ -103,7 +120,6 @@ msgid "Transfers validated and ready to be done"
 msgstr ""
 
 #. module: stock_picking_tier_validation
-#: model:ir.model.fields,field_description:stock_picking_tier_validation.field_stock_picking__validated
 #: model_terms:ir.ui.view,arch_db:stock_picking_tier_validation.view_picking_internal_search
 msgid "Validated"
 msgstr ""
