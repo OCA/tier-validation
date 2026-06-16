@@ -6,25 +6,28 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-06-16 14:24+0000\n"
+"Last-Translator: Vincent Hatakeyama <vincent+github@hatakeyama.fr>\n"
 "Language-Team: none\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: base_tier_validation_forward
 #. odoo-python
 #: code:addons/base_tier_validation_forward/wizard/forward_wizard.py:0
+#, fuzzy
 msgid ">> %(reviewer)s"
-msgstr ""
+msgstr ">> %(reviewer)s"
 
 #. module: base_tier_validation_forward
 #. odoo-python
 #: code:addons/base_tier_validation_forward/models/tier_validation.py:0
 msgid "A review was forwarded by %(user_name)s."
-msgstr ""
+msgstr "Une revue a été transféré par %(user_name)s."
 
 #. module: base_tier_validation_forward
 #. odoo-python
