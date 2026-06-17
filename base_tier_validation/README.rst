@@ -125,6 +125,32 @@ improvement will be very valuable.
 Changelog
 =========
 
+19.0.1.1.0 (2026-05-13)
+-----------------------
+
+UI improvements:
+
+- Tier Definition search view: add an explicit *Archived* filter so
+  archived definitions can be surfaced in one click. The existing *All*
+  filter is preserved.
+- Tier Definition form view: render ``reviewer_id`` (individual review
+  type) with the ``many2one_avatar_user`` widget so the reviewer's
+  avatar is shown next to the name, matching the rest of Odoo.
+- Tier Definition list view: same ``many2one_avatar_user`` widget on
+  ``reviewer_id``.
+- Tier Definition *More Options* tab renamed to *Notifications &
+  Options* and split into two clearly-titled columns: *Notify reviewers
+  when* (all ``notify_*`` flags + ``notify_reminder_delay``) and *Review
+  options* (``has_comment``). The previous flat group mixed conceptually
+  different settings.
+- Tier Review list view: render ``requested_by`` and ``done_by`` with
+  ``many2one_avatar_user``. Add ``decoration-warning`` for pending rows
+  and ``decoration-muted`` for waiting rows so the row state is visible
+  at a glance, matching the existing decorations for rejected and
+  approved.
+- Tier Definition action: add a helpful empty-state message explaining
+  what tier definitions are and how to chain them.
+
 19.0.1.0.1 (2026-05-12)
 -----------------------
 
