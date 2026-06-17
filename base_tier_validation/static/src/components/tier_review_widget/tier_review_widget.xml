@@ -3,7 +3,7 @@
     <t t-name="base_tier_validation.Collapse">
         <div class="o_form_sheet panel-group">
             <div class="panel panel-default">
-                <div class="panel-heading">
+                <div class="panel-heading o_tier_validation_progress_header">
                     <h4 class="panel-title">
                         <a
                             class="o_info_btn"
@@ -15,6 +15,21 @@
                             Reviews
                         </a>
                     </h4>
+                    <div
+                        class="progress o_tier_validation_progress"
+                        t-if="_getReviewData().length"
+                        role="progressbar"
+                        t-att-aria-valuenow="getValidationProgress()"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                    >
+                        <div
+                            class="progress-bar bg-success"
+                            t-att-style="`width: ${getValidationProgress()}%;`"
+                        >
+                            <t t-out="getValidationProgress()" />%
+                        </div>
+                    </div>
                 </div>
                 <div id="collapse1" class="panel-collapse collapse active">
                     <div class="panel-body o_review">

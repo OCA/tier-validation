@@ -536,6 +536,39 @@ class TierTierValidation(CommonTierValidation):
         result = self.test_user_2.with_user(self.test_user_2).review_user_count()
         self.assertEqual(result, [])
 
+    def test_validation_progress(self):
+        """validation_progress is approved / total reviews * 100,
+        rounded to an integer."""
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+            }
+        )
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_2.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+            }
+        )
+        record = self.test_model.create({"test_field": 2.5})
+        # No reviews yet -> 0%.
+        self.assertEqual(record.validation_progress, 0)
+        record.with_user(self.test_user_1).request_validation()
+        # Two reviews assigned, none approved -> 0%.
+        self.assertEqual(record.validation_progress, 0)
+        # User 1 approves their tier.
+        record.with_user(self.test_user_1).validate_tier()
+        # One of two -> 50%.
+        self.assertEqual(record.validation_progress, 50)
+        # User 2 approves -> 100%.
+        record.with_user(self.test_user_2).validate_tier()
+        self.assertEqual(record.validation_progress, 100)
+
     def test_17_search_records_no_validation(self):
         """Search for records that have no validation process started"""
         records = self.env["tier.validation.tester"].search(

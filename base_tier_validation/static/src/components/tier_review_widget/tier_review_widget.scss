@@ -27,6 +27,23 @@ ul.o_review {
     display: block;
 }
 
+.o_tier_validation_progress_header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .panel-title {
+        flex: 0 0 auto;
+    }
+}
+
+.o_tier_validation_progress {
+    flex: 1 1 auto;
+    max-width: 320px;
+    height: 1rem;
+    margin-right: 24px; // leave room for the rotating caret arrow
+}
+
 .panel-heading a:before {
     font-family: FontAwesome;
     content: "\f0d7";
