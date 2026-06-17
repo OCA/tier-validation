@@ -76,6 +76,7 @@
                                 options="{'no_create': True}"
                             />
                             <field name="sequence" />
+                            <field name="allow_bulk_approve" />
                             <field name="approve_sequence" />
                             <label
                                 for="approve_sequence_bypass"
