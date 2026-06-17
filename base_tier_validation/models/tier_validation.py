@@ -67,6 +67,14 @@ class TierValidation(models.AbstractModel):
     can_review = fields.Boolean(
         compute="_compute_can_review", search="_search_can_review"
     )
+    can_reject = fields.Boolean(
+        compute="_compute_can_reject",
+        help="True when the current user can act on this record AND at "
+        "least one of their actionable tier reviews has "
+        "``tier.definition.allow_reject`` set. Drives the visibility "
+        "of the Reject button on the validation banner so that "
+        "sign-off / informational tiers don't expose a Reject action.",
+    )
     has_comment = fields.Boolean(
         compute="_compute_has_comment",
         help="If set, Allow the reviewer to leave a comment on the review.",
@@ -114,6 +122,29 @@ class TierValidation(models.AbstractModel):
     def _compute_can_review(self):
         for rec in self:
             rec.can_review = rec._get_sequences_to_approve(self.env.user)
+
+    @api.depends_context("uid")
+    @api.depends(
+        "review_ids.approve_sequence",
+        "review_ids.reviewer_ids",
+        "review_ids.sequence",
+        "review_ids.status",
+        "review_ids.definition_id.allow_reject",
+    )
+    def _compute_can_reject(self):
+        user = self.env.user
+        for rec in self:
+            sequences = rec._get_sequences_to_approve(user)
+            if not sequences:
+                rec.can_reject = False
+                continue
+            # The user has actionable tiers; check whether at least one
+            # of them is configured to allow rejection.
+            rec.can_reject = any(
+                r.definition_id.allow_reject
+                for r in rec.review_ids
+                if r.sequence in sequences
+            )
 
     @api.model
     def _search_can_review(self, operator, value):
@@ -639,6 +670,13 @@ class TierValidation(models.AbstractModel):
         self.ensure_one()
         sequences = self._get_sequences_to_approve(self.env.user)
         reviews = self.review_ids.filtered(lambda x: x.sequence in sequences)
+        # Honor per-definition ``allow_reject``: tiers flagged as
+        # sign-off / informational only let the reviewer validate, not
+        # reject. Filter them out so calling reject_tier on a mixed
+        # batch only rejects the tiers that actually permit it.
+        reviews = reviews.filtered(lambda r: r.definition_id.allow_reject)
+        if not reviews:
+            return
         if self.has_comment:
             return self._add_comment("reject", reviews)
         self._rejected_tier(reviews)
