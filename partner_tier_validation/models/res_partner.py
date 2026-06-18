@@ -33,9 +33,6 @@ class ResPartner(models.Model):
             "property_account_payable_id",
         }
 
-    def _get_tier_validation_readonly_domain(self):
-        return "validation_status not in ('no', 'validated', False)"
-
     def write(self, vals):
         # Changing certain fields requires a new validation process
         revalidate_fields = self._partner_tier_revalidation_fields(vals)

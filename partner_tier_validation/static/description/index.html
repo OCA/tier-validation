@@ -408,6 +408,8 @@ approved.</p>
 <p>Before using, check Contact Stages configuration to ensure that the
 default stage has the “Related State” field set to “To Approve”. For
 example, having the “Draft” stage the default ensures this.</p>
+<p>A validation exception needs to be defined if you want to be able to
+change the stage after validation and then make the contact available.</p>
 <p>A regular user creates a new Contact and sends it for approval:</p>
 <ol class="arabic simple">
 <li>Create a Contact triggering at least one “Tier Definition”. The
@@ -422,7 +424,7 @@ pending reviews and their status.</li>
 Approval”</li>
 <li>Open the Contact form to approve. It will display a “This Records
 needs to be validated” banner, with “Validate” and “Reject” options.</li>
-<li>The approver can change the state to “Active”. This will make the
+<li>The approver can change the stage to “Active”. This will make the
 record available to be used.</li>
 </ol>
 <p>The Approve/Reject actions do not automatically change the State. This
