@@ -129,6 +129,29 @@ class TierReview(models.Model):
         sequence = min(reviews.mapped("sequence"))
         return self.sequence == sequence
 
+    def write(self, vals):
+        res = super().write(vals)
+        if "status" in vals:
+            # ``can_review`` is stored, but ``_can_review_value`` reads the
+            # *other* reviews of the same record (it checks which review holds
+            # the lowest pending sequence). That cross-review dependency cannot
+            # be expressed with ``@api.depends`` over the generic
+            # ``(model, res_id)`` reference, so a status change here would
+            # otherwise leave the siblings' ``can_review`` stale -- e.g. a later
+            # tier stays hidden in the reviewer's systray after its predecessor
+            # is approved. Mark the siblings for recomputation explicitly.
+            can_review = self._fields["can_review"]
+            Review = self.env["tier.review"].sudo()
+            for model in set(self.mapped("model")):
+                res_ids = self.filtered(
+                    lambda r, m=model: r.model == m
+                ).mapped("res_id")
+                siblings = Review.search(
+                    [("model", "=", model), ("res_id", "in", res_ids)]
+                )
+                self.env.add_to_compute(can_review, siblings)
+        return res
+
     @api.model
     def _get_reviewer_fields(self):
         return ["reviewer_id", "reviewer_group_id", "reviewer_group_id.user_ids"]

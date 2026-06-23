@@ -718,6 +718,62 @@ class TierTierValidation(CommonTierValidation):
         self.assertEqual(test_record.message_follower_ids, followers_before)
         self.assertEqual(test_record.message_ids, messages_before)
 
+    def test_19d_can_review_recomputes_on_sibling_status_change(self):
+        """``can_review`` is stored but its value reads sibling reviews' status
+        (which review holds the lowest pending sequence). A change to one
+        review's status must therefore recompute its siblings' ``can_review``;
+        otherwise a later tier stays ``can_review=False`` -- hidden from its
+        reviewer's systray -- even after its predecessor is approved.
+        """
+        TierDefinition = self.env["tier.definition"]
+        test_record = self.test_model.create({"test_field": 2.5})
+        def_first = TierDefinition.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '=', 2.5)]",
+                "approve_sequence": True,
+                "sequence": 20,
+                "name": "First in sequence -- user 1",
+            }
+        )
+        def_second = TierDefinition.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_2.id,
+                "definition_domain": "[('test_field', '=', 2.5)]",
+                "approve_sequence": True,
+                "sequence": 10,
+                "name": "Second in sequence -- user 2",
+            }
+        )
+        reviews = test_record.request_validation()
+        review_first = reviews.filtered(lambda r: r.definition_id == def_first)
+        review_second = reviews.filtered(lambda r: r.definition_id == def_second)
+
+        # Put the later review into ``pending`` while its predecessor is still
+        # pending (the stale state this guards against). Its ``can_review`` is
+        # correctly False -- it is not the lowest pending sequence.
+        review_second.status = "pending"
+        review_second.flush_recordset()
+        review_second.invalidate_recordset(["can_review"])
+        self.assertFalse(review_second.can_review)
+
+        # Approving the first review changes a *sibling's* status. The second
+        # review's stored ``can_review`` must be recomputed to True even though
+        # its own fields did not change.
+        test_record.with_user(self.test_user_1).validate_tier()
+        review_first.flush_recordset()
+        review_second.invalidate_recordset(["can_review"])
+        self.assertEqual(review_first.status, "approved")
+        self.assertTrue(
+            review_second.can_review,
+            "can_review must be recomputed when a sibling review's status "
+            "changes (a stored field whose value depends on sibling reviews).",
+        )
+
     def test_20_no_sequence(self):
         # Create new test record
         tier_review_obj = self.env["tier.review"]
