@@ -16,8 +16,18 @@ export class TierReviewMenu extends Component {
         this.orm = useService("orm");
         this.store = useState(useService("mail.store"));
         this.action = useService("action");
+        this.busService = useService("bus_service");
         this.dropdown = useDropdownState();
         this.fetchSystrayReviewer();
+        // Keep the badge live and correct: re-fetch the authoritative count
+        // whenever a tier review changes server-side, instead of nudging a
+        // running +/- delta. The absolute value is a len() and so can never go
+        // negative, which a delta could when an update reaches a user for whom
+        // the review was never part of their pending count.
+        this.busService.subscribe("base.tier.validation/updated", () =>
+            this.fetchSystrayReviewer()
+        );
+        this.busService.start();
     }
 
     async fetchSystrayReviewer() {
