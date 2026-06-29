@@ -9,3 +9,6 @@ access_tier_definition_settings,tier.definition.settings,model_tier_definition,b
 access_comment_wizard,access.comment.wizard,model_comment_wizard,base.group_user,1,1,1,1
 access_tier_validation_exceptions_all,tier.validation.exceptions,model_tier_validation_exception,base.group_user,1,0,0,0
 access_tier_validation_exceptions_settings,tier.validation.exceptions,model_tier_validation_exception,base.group_system,1,1,1,1
+access_tier_definition_manager,tier.definition.manager,model_tier_definition,base_tier_validation.group_tier_validation_manager,1,1,1,1
+access_tier_validation_exceptions_manager,tier.validation.exceptions.manager,model_tier_validation_exception,base_tier_validation.group_tier_validation_manager,1,1,1,1
+access_tier_review_manager,tier.review.manager,model_tier_review,base_tier_validation.group_tier_validation_manager,1,1,1,1
