@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-06-26 17:46+0000\n"
+"PO-Revision-Date: 2026-06-29 12:46+0000\n"
 "Last-Translator: intero-chd <c.dominiak@intero-technologies.de>\n"
 "Language-Team: none\n"
 "Language: de\n"
@@ -23,6 +23,9 @@ msgid ""
 "                This Record needs to be\n"
 "                validated."
 msgstr ""
+"<i class=\"fa fa-lg fa-info-circle\"/>\n"
+"                Dieser Datensatz benötigt\n"
+"                eine Bestätigung."
 
 #. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_validation_label
@@ -32,6 +35,10 @@ msgid ""
 "                <b>rejected</b>\n"
 "                ."
 msgstr ""
+"<i class=\"fa fa-lg fa-thumbs-down\"/>\n"
+"                Der Vorgang wurde\n"
+"                <b>abgelehnt</b>\n"
+"                ."
 
 #. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_validation_label
@@ -41,64 +48,71 @@ msgid ""
 "                <b>validated</b>\n"
 "                !"
 msgstr ""
+"<i class=\"fa fa-lg fa-thumbs-up\"/>\n"
+"                Der Vorgang wurde\n"
+"                <b>bestätigt</b>\n"
+"                !"
 
 #. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_definition_view_form
 msgid "<span class=\"oe_edit_only\">Name</span>"
-msgstr ""
+msgstr "<span class=\"oe_edit_only\">Name</span>"
 
 #. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_definition_view_form
 msgid "<span>Bypass, if previous tier was validated by same reviewer</span>"
 msgstr ""
+"<span>Überspringen, wenn die vorherige Stufe vom selben Genehmiger bestätigt "
+"wurde</span>"
 
 #. module: base_tier_validation
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_validation.py:0
 msgid "A record to be reviewed has been created by %s."
 msgstr ""
+"Es wurde ein Datensatz von %s erstellt, welcher eine Überprüfung benötigt."
 
 #. module: base_tier_validation
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_review.py:0
 msgid "A review has been requested %s days ago."
-msgstr ""
+msgstr "Vor %s Tagen wurde eine Überprüfung angefordert."
 
 #. module: base_tier_validation
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_validation.py:0
 msgid "A review has been requested by %s."
-msgstr ""
+msgstr "Eine Überprüfung wurde von %s angefragt."
 
 #. module: base_tier_validation
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_validation.py:0
 msgid "A review was accepted"
-msgstr ""
+msgstr "Eine Überprüfung wurde akzeptiert"
 
 #. module: base_tier_validation
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_validation.py:0
 msgid "A review was accepted. (%s)"
-msgstr ""
+msgstr "Eine Überprüfung wurde akzeptiert. (%s)"
 
 #. module: base_tier_validation
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_validation.py:0
 msgid "A review was rejected by %(user)s. (%(comment)s)"
-msgstr ""
+msgstr "Eine Überprüfung wurde von %(user)s abgelehnt. (%(comment)s)"
 
 #. module: base_tier_validation
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_validation.py:0
 msgid "A review was rejected by %s."
-msgstr ""
+msgstr "Eine Überprüfung wurde von %s abgelehnt."
 
 #. module: base_tier_validation
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_validation.py:0
 msgid "A validation process is still open for at least one record."
-msgstr ""
+msgstr "Für mindestens einen Datensatz läuft noch ein Validierungsprozess."
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__active
@@ -113,40 +127,40 @@ msgstr "Alle"
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__allow_write_for_reviewer
 msgid "Allow Write For Reviewers"
-msgstr ""
+msgstr "Schreibrechte für Genehmiger gewähren"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,help:base_tier_validation.field_tier_validation_exception__group_ids
 msgid "Allowed groups to use this Tier Validation Exception"
-msgstr ""
+msgstr "Gruppen, die diese Ausnahme bei der Stufenvalidierung nutzen dürfen"
 
 #. module: base_tier_validation
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_definition__review_type__group
 msgid "Any user in a specific group"
-msgstr ""
+msgstr "Jeder Benutzer einer bestimmten Gruppe"
 
 #. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_definition_view_form
 msgid "Apply On"
-msgstr ""
+msgstr "Anwenden auf"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,help:base_tier_validation.field_tier_definition__approve_sequence
 #: model:ir.model.fields,help:base_tier_validation.field_tier_review__approve_sequence
 msgid "Approval order by the specified sequence number"
-msgstr ""
+msgstr "Genehmigungsanordnung nach der angegebenen Sequenznummer"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__approve_sequence_bypass
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__approve_sequence_bypass
 msgid "Approve Sequence Bypass"
-msgstr ""
+msgstr "Überspringen von Sequenzen erlauben"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__approve_sequence
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__approve_sequence
 msgid "Approve by sequence"
-msgstr ""
+msgstr "Nach Reihenfolge genehmigen"
 
 #. module: base_tier_validation
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_review__status__approved
@@ -165,6 +179,8 @@ msgid ""
 "At least one of these fields must be checked! Write under Validation, Write "
 "after Validation"
 msgstr ""
+"Mindestens eines dieser Felder muss angekreuzt werden! Vor der Validierung "
+"schreiben, nach der Validierung schreiben"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,help:base_tier_validation.field_tier_definition__approve_sequence_bypass
@@ -172,12 +188,14 @@ msgstr ""
 msgid ""
 "Bypassed (auto validated), if previous tier was validated by same reviewer"
 msgstr ""
+"Übersprungen (automatisch validiert), wenn die vorherige Stufe vom selben "
+"Genehmiger bestätigt wurde"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__can_review
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_validation__can_review
 msgid "Can Review"
-msgstr ""
+msgstr "kann prüfen"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,help:base_tier_validation.field_tier_review__can_review
@@ -207,7 +225,7 @@ msgstr "Kommentar"
 #. module: base_tier_validation
 #: model:ir.model,name:base_tier_validation.model_comment_wizard
 msgid "Comment Wizard"
-msgstr ""
+msgstr "Kommentar-Assistent"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__comment
@@ -225,7 +243,7 @@ msgstr "Unternehmen"
 #. module: base_tier_validation
 #: model_terms:ir.actions.act_window,help:base_tier_validation.tier_validation_exception_action
 msgid "Create a new Validation Exception!"
-msgstr ""
+msgstr "Erstellen Sie eine neue Validierungsausnahme!"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_comment_wizard__create_uid
@@ -274,28 +292,28 @@ msgstr "Anzeigename"
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__display_status
 msgid "Display Status"
-msgstr ""
+msgstr "Anzeigestatus"
 
 #. module: base_tier_validation
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_definition__definition_type__domain
 msgid "Domain"
-msgstr ""
+msgstr "Bereich"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__done_by
 msgid "Done By"
-msgstr ""
+msgstr "Erledigt von"
 
 #. module: base_tier_validation
 #. odoo-javascript
 #: code:addons/base_tier_validation/static/src/components/tier_review_widget/tier_review_widget.xml:0
 msgid "Done by"
-msgstr ""
+msgstr "Erledigt von"
 
 #. module: base_tier_validation
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_definition__review_type__field
 msgid "Field in related record"
-msgstr ""
+msgstr "Feld im zugehörigen Datensatz"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_validation_exception__field_ids
@@ -306,22 +324,22 @@ msgstr "Felder"
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_review.py:0
 msgid "Group %s"
-msgstr ""
+msgstr "Gruppe %s"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_validation_exception__group_ids
 msgid "Groups"
-msgstr ""
+msgstr "Gruppen"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_validation__has_comment
 msgid "Has Comment"
-msgstr ""
+msgstr "hat einen Kommentar"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_validation__hide_reviews
 msgid "Hide Reviews"
-msgstr ""
+msgstr "Überprüfungen ausblenden"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_comment_wizard__id
@@ -337,6 +355,8 @@ msgstr "ID"
 #: model:ir.model.fields,help:base_tier_validation.field_tier_validation__has_comment
 msgid "If set, Allow the reviewer to leave a comment on the review."
 msgstr ""
+"Wenn diese Option aktiviert ist, kann der Genehmiger einen Kommentar zur "
+"Prüfung hinterlassen."
 
 #. module: base_tier_validation
 #: model:ir.model.fields,help:base_tier_validation.field_tier_definition__notify_on_create
@@ -344,6 +364,8 @@ msgid ""
 "If set, all possible reviewers will be notified by email when this "
 "definition is triggered."
 msgstr ""
+"Wenn diese Option aktiviert ist, werden alle möglichen Genehmiger per E-Mail "
+"benachrichtigt, sobald diese Option ausgelöst wird."
 
 #. module: base_tier_validation
 #: model:ir.model.fields,help:base_tier_validation.field_tier_definition__notify_on_pending
@@ -352,6 +374,11 @@ msgid ""
 "reached.Usefull in an Approve by sequence scenario. An notification request "
 "to review is sent out when it's their turn to review."
 msgstr ""
+"Wenn diese Option aktiviert ist, werden alle möglichen Genehmiger per E-Mail "
+"benachrichtigt, sobald dieser Status erreicht ist. Dies ist nützlich in "
+"einem Szenario mit einer „Genehmigung durch“-Abfolge. Eine Benachrichtigung "
+"mit der Aufforderung zur Überprüfung wird versendet, sobald die jeweilige "
+"Person an der Reihe ist, die Überprüfung durchzuführen."
 
 #. module: base_tier_validation
 #: model:ir.model.fields,help:base_tier_validation.field_tier_definition__notify_on_accepted
@@ -359,6 +386,8 @@ msgid ""
 "If set, reviewers will be notified by email when a review related to this "
 "definition is accepted."
 msgstr ""
+"Wenn diese Option aktiviert ist, werden die Genehmiger per E-Mail "
+"benachrichtigt, sobald eine Überprüfung zu dieser Option angenommen wurde."
 
 #. module: base_tier_validation
 #: model:ir.model.fields,help:base_tier_validation.field_tier_definition__notify_on_rejected
@@ -366,6 +395,9 @@ msgid ""
 "If set, reviewers will be notified by email when a review related to this "
 "definition is rejected."
 msgstr ""
+"Wenn diese Option aktiviert ist, werden die Genehmiger per E-Mail "
+"benachrichtigt, sobald eine zu dieser Option gehörende Überprüfung abgelehnt "
+"wurde."
 
 #. module: base_tier_validation
 #: model:ir.model.fields,help:base_tier_validation.field_tier_definition__notify_on_restarted
@@ -373,21 +405,24 @@ msgid ""
 "If set, reviewers will be notified by email when a reviews related to this "
 "definition are restarted."
 msgstr ""
+"Wenn diese Option aktiviert ist, werden die Genehmiger per E-Mail "
+"benachrichtigt, sobald eine mit dieser Option verbundene Prüfung wieder "
+"aufgenommen wurde."
 
 #. module: base_tier_validation
 #: model_terms:ir.actions.act_window,help:base_tier_validation.tier_validation_exception_action
 msgid "It's fully validated"
-msgstr ""
+msgstr "Es ist vollständig genehmigt"
 
 #. module: base_tier_validation
 #: model_terms:ir.actions.act_window,help:base_tier_validation.tier_validation_exception_action
 msgid "It's in the validation process"
-msgstr ""
+msgstr "Es befindet sich im Validierungsprozess"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__last_reminder_date
 msgid "Last Reminder Date"
-msgstr ""
+msgstr "Letztes Erinnerungsdatum"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_comment_wizard__write_uid
@@ -395,7 +430,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__write_uid
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_validation_exception__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Zuletzt geändert von"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_comment_wizard__write_date
@@ -403,7 +438,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__write_date
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_validation_exception__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Zuletzt geändert am"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__model
@@ -411,71 +446,71 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_definition_view_search
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_validation_exception_search
 msgid "Model"
-msgstr ""
+msgstr "Modell"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_validation_exception__model_name
 msgid "Model Name"
-msgstr ""
+msgstr "Modellname"
 
 #. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_definition_view_form
 msgid "More Options"
-msgstr ""
+msgstr "Weitere Optionen"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__name
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_validation_exception__name
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_validation__need_validation
 msgid "Need Validation"
-msgstr ""
+msgstr "Genehmigung erforderlich"
 
 #. module: base_tier_validation
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_definition.py:0
 msgid "New Tier Validation"
-msgstr ""
+msgstr "Neue Genehmigungsstufe"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_validation__next_review
 msgid "Next Review"
-msgstr ""
+msgstr "Nächste Überprüfung"
 
 #. module: base_tier_validation
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_validation.py:0
 msgid "Next: %s"
-msgstr ""
+msgstr "Weiter: %s"
 
 #. module: base_tier_validation
 #. odoo-javascript
 #: code:addons/base_tier_validation/static/src/components/tier_review_menu/tier_review_menu.xml:0
 msgid "No reviews to do."
-msgstr ""
+msgstr "Keine Überprüfungen zu erledigen."
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__notify_on_accepted
 msgid "Notify Reviewers on Accepted"
-msgstr ""
+msgstr "Genehmiger bei Annahme benachrichtigen"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__notify_on_create
 msgid "Notify Reviewers on Creation"
-msgstr ""
+msgstr "Genehmiger bei der Erstellung benachrichtigen"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__notify_on_rejected
 msgid "Notify Reviewers on Rejected"
-msgstr ""
+msgstr "Genehmiger bei der Ablehnung benachrichtigen"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__notify_on_restarted
 msgid "Notify Reviewers on Restarted"
-msgstr ""
+msgstr "Genehmiger bei Neustart benachrichtigen"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__notify_on_pending
