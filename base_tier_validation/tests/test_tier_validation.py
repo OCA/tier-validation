@@ -718,6 +718,55 @@ class TierTierValidation(CommonTierValidation):
         self.assertEqual(test_record.message_follower_ids, followers_before)
         self.assertEqual(test_record.message_ids, messages_before)
 
+    def test_19c_to_validate_message_names_assignee(self):
+        """The ``to_validate_message`` Html field -- which the banner
+        template renders above the document -- must surface *who* the
+        record is pending on (using ``tier.review.todo_by``) rather
+        than the generic "This Record needs to be validated".
+        """
+        # Use a value that matches only the common.py definition_3 (sequence
+        # 10, reviewer test_user_2) -- and definition_2 (sequence 20,
+        # reviewer test_user_1). After ``_update_review_status`` only the
+        # lowest-sequence review is promoted to ``pending``.
+        test_record = self.test_model.create({"test_field": 3.5})
+        reviews = test_record.request_validation()
+        self.assertTrue(reviews)
+        # Manually promote (since common.py's test_user_1 is not the
+        # requester, request_validation in 19.0 leaves the reviews in
+        # ``waiting`` unless ``notify_on_create`` triggers it).
+        reviews._update_review_status()
+        pending = reviews.filtered(lambda r: r.status == "pending")
+        self.assertEqual(len(pending), 1)
+        test_record.invalidate_recordset(["to_validate_message"])
+        msg = test_record.to_validate_message or ""
+        # The banner must name the pending assignee...
+        self.assertIn(pending.todo_by, msg)
+        # ...and must not fall back to the generic record-name phrasing.
+        self.assertNotIn("needs to be validated", msg)
+
+    def test_19d_to_validate_message_falls_back_when_no_pending(self):
+        """When no review has reached ``pending`` (e.g. the defensive
+        ``waiting`` edge case), the banner must fall back to the
+        model-name phrasing so the document still has something useful.
+        """
+        # Force-create a review row directly and leave it ``waiting`` so
+        # the pending filter is empty. (``request_validation`` would
+        # auto-promote one in normal flow.)
+        test_record = self.test_model.create({"test_field": 3.5})
+        self.env["tier.review"].create(
+            {
+                "model": self.test_model._name,
+                "res_id": test_record.id,
+                "definition_id": self.definition_2.id,
+                "sequence": 1,
+                "status": "waiting",
+            }
+        )
+        test_record.invalidate_recordset(["to_validate_message"])
+        msg = test_record.to_validate_message or ""
+        self.assertIn("needs to be validated", msg)
+        self.assertIn(self.test_model._description, msg)
+
     def test_20_no_sequence(self):
         # Create new test record
         tier_review_obj = self.env["tier.review"]
