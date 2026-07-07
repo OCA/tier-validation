@@ -70,9 +70,10 @@ class TestSaleTierValidation(BaseCommon):
         self.assertEqual(self.sale_order.state, "sale")
 
     def test_block_print_unvalidated_sale_order(self):
-        self.sale_order.company_id.sale_report_print_block = True
         report = self.env["report.sale.report_saleorder"]
         # Attempt to render the report before validation
+        report._get_report_values(docids=[self.sale_order.id])
+        self.sale_order.company_id.sale_report_print_block = True
         with self.assertRaises(UserError):
             report._get_report_values(docids=[self.sale_order.id])
         self.sale_order.request_validation()
