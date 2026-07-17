@@ -41,6 +41,7 @@ class TierValidation(models.AbstractModel):
         string="Validations",
         domain=lambda self: [("model", "=", self._name)],
         bypass_search_access=True,
+        copy=False,
     )
     to_validate_message = fields.Html(compute="_compute_to_validate_message")
     validated_message = fields.Html(compute="_compute_validated_message")
