@@ -301,6 +301,11 @@ msgid "Fields"
 msgstr ""
 
 #. module: base_tier_validation
+#: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__exclude_requester
+msgid "Four-eyes Principle"
+msgstr ""
+
+#. module: base_tier_validation
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_review.py:0
 msgid "Group %s"
@@ -822,6 +827,17 @@ msgstr ""
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_review__status__waiting
 #: model:ir.model.fields.selection,name:base_tier_validation.selection__tier_validation__validation_status__waiting
 msgid "Waiting"
+msgstr ""
+
+#. module: base_tier_validation
+#: model:ir.model.fields,help:base_tier_validation.field_tier_definition__exclude_requester
+msgid ""
+"When set, the user who requested the validation is removed from this tier's "
+"reviewer pool. Anyone else in the configured group can validate -- except "
+"the requester themselves. Without this flag, a requester who happens to be "
+"in the same group as the configured reviewers can auto-validate their own "
+"request. Only meaningful for review_type='group'; the form hides this field "
+"for the other review types."
 msgstr ""
 
 #. module: base_tier_validation
