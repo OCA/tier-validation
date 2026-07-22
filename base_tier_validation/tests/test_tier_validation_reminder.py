@@ -5,6 +5,7 @@ from freezegun import freeze_time
 
 from odoo import fields
 from odoo.tests.common import tagged
+from odoo.tools import mute_logger
 
 from .common import CommonTierValidation
 
@@ -107,3 +108,38 @@ class TierTierValidation(CommonTierValidation):
             tier_definition._cron_send_review_reminder()
         # The orphan review is silently skipped: no reminder recorded.
         self.assertFalse(review.last_reminder_date)
+
+    @mute_logger("odoo.addons.base_tier_validation.models.tier_review")
+    def test_validation_reminder_non_mail_thread_model(self):
+        """A validated model that is not a ``mail.thread`` (no
+        ``message_post``) must not break the reminder cron. Such a review
+        falls through to the defensive branch: it is logged and skipped
+        instead of notified, but the run still stamps ``last_reminder_date``
+        so the cron does not keep reprocessing it every tick.
+        """
+        definition = self.env["tier.definition"].create(
+            {
+                "model_id": self.tester_model_2.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '=', 2.5)]",
+                "notify_reminder_delay": 1,
+                "name": "tester2 reminder -- no mail.thread",
+            }
+        )
+        record = self.test_model_2.create({"test_field": 2.5})
+        record.with_user(self.test_user_2.id).request_validation()
+        review = self.env["tier.review"].search(
+            [
+                ("definition_id", "=", definition.id),
+                ("res_id", "=", record.id),
+            ]
+        )
+        self.assertTrue(review)
+        self.assertFalse(review.last_reminder_date)
+        later = fields.Datetime.add(fields.Datetime.now(), days=2)
+        with freeze_time(later):
+            definition._cron_send_review_reminder()
+        # ``tier.validation.tester2`` has no ``message_post``: the reminder is
+        # logged and skipped, but the review is still stamped.
+        self.assertEqual(review.last_reminder_date, later)
