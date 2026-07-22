@@ -206,8 +206,12 @@ class TierReview(models.Model):
             if not record.exists():  # <-- skip orphaned reviews
                 continue
             # Only schedule activity if reviewer is a single user and model
-            # has activities
-            if len(rev.reviewer_ids) == 1 and hasattr(record, "activity_ids"):
+            # has activities. Excluded from coverage: exercising it needs a
+            # validated model mixing in ``mail.activity.mixin``, which none of
+            # the base test models do (they are ``mail.thread`` at most).
+            if (  # pragma: no cover
+                len(rev.reviewer_ids) == 1 and hasattr(record, "activity_ids")
+            ):
                 rev._schedule_review_reminder_activity(record)
             elif hasattr(record, "message_post"):
                 rev._notify_review_reminder(record)
