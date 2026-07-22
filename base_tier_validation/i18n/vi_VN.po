@@ -17,15 +17,16 @@ msgstr ""
 "X-Generator: Weblate 5.10.2\n"
 
 #. module: base_tier_validation
-#: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_validation_label
-msgid ""
-"<i class=\"fa fa-lg fa-info-circle\"/>\n"
-"                This Record needs to be\n"
-"                validated."
+#. odoo-python
+#: code:addons/base_tier_validation/models/tier_validation.py:0
+msgid "%(icon)s Pending validation by %(todo_by)s"
 msgstr ""
-"<i class=\"fa fa-lg fa-info-circle\"/>\n"
-"                Bản ghi này cần được\n"
-"                xác thực."
+
+#. module: base_tier_validation
+#. odoo-python
+#: code:addons/base_tier_validation/models/tier_validation.py:0
+msgid "%(icon)s This %(model_name)s needs to be validated"
+msgstr ""
 
 #. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_validation_label
@@ -914,3 +915,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_definition_view_form
 msgid "e.g. Tier Validation for..."
 msgstr ""
+
+#~ msgid ""
+#~ "<i class=\"fa fa-lg fa-info-circle\"/>\n"
+#~ "                This Record needs to be\n"
+#~ "                validated."
+#~ msgstr ""
+#~ "<i class=\"fa fa-lg fa-info-circle\"/>\n"
+#~ "                Bản ghi này cần được\n"
+#~ "                xác thực."
