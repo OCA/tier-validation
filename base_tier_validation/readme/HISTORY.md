@@ -14,8 +14,8 @@ UI improvements:
 - Tier Definition *More Options* tab renamed to *Notifications &
   Options* and split into two clearly-titled columns: *Notify
   reviewers when* (all ``notify_*`` flags + ``notify_reminder_delay``)
-  and *Review options* (``has_comment``). The previous flat group
-  mixed conceptually different settings.
+  and *Review options* (``has_comment``, ``comment_approve_default``).
+  The previous flat group mixed conceptually different settings.
 - The reminder setting reads *Remind every [ ] days* instead of *Send
   reminder message on pending reviews*, and its help says the reminder
   repeats while the review is open.
@@ -29,6 +29,10 @@ UI improvements:
   and approved.
 - Tier Definition action: add a helpful empty-state message
   explaining what tier definitions are and how to chain them.
+- Reviewer systray menu: lower its ordering so it sits with the other
+  notification menus (messaging, activities) on the right side of the
+  systray, to the right of the Enterprise AI button, instead of on the
+  far left.
 
 ## 19.0.1.0.4 (2026-05-13)
 
