@@ -150,6 +150,10 @@ UI improvements:
   approved.
 - Tier Definition action: add a helpful empty-state message explaining
   what tier definitions are and how to chain them.
+- Reviewer systray menu: lower its ordering so it sits with the other
+  notification menus (messaging, activities) on the right side of the
+  systray, to the right of the Enterprise AI button, instead of on the
+  far left.
 
 19.0.1.0.4 (2026-05-13)
 -----------------------
