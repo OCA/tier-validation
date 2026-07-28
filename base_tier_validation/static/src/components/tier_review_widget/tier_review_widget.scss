@@ -3,39 +3,42 @@ ul.o_review {
     max-width: 800px;
 }
 
-.panel-group {
+.o_tier_review_widget {
     min-height: auto !important;
     margin-top: -6px !important;
     padding: 16px 16px 8px 16px !important;
 }
 
-.panel-heading {
-    background-color: initial !important;
-}
-
-.panel {
+.o_tier_review_widget .card {
     border: 0 !important;
 }
 
-.panel-body {
+.o_tier_review_widget .card-header {
+    background-color: initial !important;
+}
+
+.o_tier_review_widget .card-body {
     overflow-y: hidden;
     overflow-x: auto;
 }
 
-.panel-title > a,
-.panel-title > a:active {
+.o_tier_review_widget .card-title > a,
+.o_tier_review_widget .card-title > a:active {
     display: block;
 }
 
-.panel-heading a:before {
+.o_tier_review_widget .card-header a:before {
     font-family: FontAwesome;
     content: "\f0d7";
     float: right;
     transition: all 0.5s;
 }
 
-.panel-heading.active a:before {
-    -webkit-transform: rotate(180deg);
-    -moz-transform: rotate(180deg);
+.o_tier_review_widget .card-header.active a:before {
     transform: rotate(180deg);
+}
+
+.o_tier_review_widget .o_tier_review_seq {
+    width: 2rem;
+    white-space: nowrap;
 }

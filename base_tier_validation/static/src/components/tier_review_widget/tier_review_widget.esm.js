@@ -17,9 +17,9 @@ export class ReviewsTable extends Component {
     }
 
     onToggleCollapse(ev) {
-        const panelHeading = ev.currentTarget.closest(".panel-heading");
-        const collapseDiv = panelHeading.nextElementSibling.matches("div#collapse1")
-            ? panelHeading.nextElementSibling
+        const cardHeader = ev.currentTarget.closest(".card-header");
+        const collapseDiv = cardHeader?.nextElementSibling?.matches("div#collapse1")
+            ? cardHeader.nextElementSibling
             : null;
         if (!collapseDiv) return;
         if (this.state.collapse) {
