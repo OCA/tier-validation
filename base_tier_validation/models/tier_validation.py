@@ -73,6 +73,24 @@ class TierValidation(models.AbstractModel):
     )
     next_review = fields.Char(compute="_compute_next_review")
     hide_reviews = fields.Boolean(compute="_compute_hide_reviews")
+    validation_progress = fields.Integer(
+        compute="_compute_validation_progress",
+        string="Validation progress",
+        help="Percentage of approved tier reviews out of the total assigned "
+        "for this record. 0 when no reviews exist; useful as a progressbar "
+        "widget on list views to spot near-done validations.",
+    )
+
+    @api.depends("review_ids.status")
+    def _compute_validation_progress(self):
+        approved = self._validated_states()
+        for rec in self:
+            total = len(rec.review_ids)
+            if not total:
+                rec.validation_progress = 0
+                continue
+            done = len(rec.review_ids.filtered(lambda r: r.status in approved))
+            rec.validation_progress = int(round(done * 100.0 / total))
 
     @api.depends_context("uid")
     @api.depends(
