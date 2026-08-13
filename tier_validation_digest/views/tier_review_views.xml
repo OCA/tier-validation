@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <!--
+        Reusable search view so the two digest click-through actions get
+        sensible default filters and group-by options. Filtering by
+        "Reviewer is me" already exists implicitly on each action via its
+        ``domain``; what we add here are the toggles a recipient is most
+        likely to want after landing on the list.
+    -->
+    <record id="tier_review_view_search" model="ir.ui.view">
+        <field name="name">tier.review.search</field>
+        <field name="model">tier.review</field>
+        <field name="arch" type="xml">
+            <search string="Tier Reviews">
+                <field name="name" />
+                <field name="model" />
+                <field name="requested_by" />
+                <field name="reviewer_ids" />
+                <filter
+                    name="status_pending"
+                    string="Pending"
+                    domain="[('status', '=', 'pending')]"
+                />
+                <filter
+                    name="status_waiting"
+                    string="Waiting"
+                    domain="[('status', '=', 'waiting')]"
+                />
+                <filter
+                    name="status_approved"
+                    string="Approved"
+                    domain="[('status', '=', 'approved')]"
+                />
+                <filter
+                    name="status_rejected"
+                    string="Rejected"
+                    domain="[('status', '=', 'rejected')]"
+                />
+                <separator />
+                <filter
+                    name="my_reviews"
+                    string="Reviewer is me"
+                    domain="[('reviewer_ids', 'in', uid)]"
+                />
+                <filter
+                    name="done_by_me"
+                    string="Validated by me"
+                    domain="[('done_by', '=', uid)]"
+                />
+                <group>
+                    <filter
+                        name="group_by_status"
+                        string="Status"
+                        context="{'group_by': 'status'}"
+                    />
+                    <filter
+                        name="group_by_model"
+                        string="Document model"
+                        context="{'group_by': 'model'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <!--
+        "My tier reviews" &#x2014;the click-through for the three per-user KPI
+        tiles. Filters by ``reviewer_ids in [uid]`` so the recipient lands
+        on their own queue, regardless of which underlying business model
+        the reviews belong to.
+    -->
+    <record id="action_my_tier_reviews" model="ir.actions.act_window">
+        <field name="name">My Tier Reviews</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tier.review</field>
+        <field name="view_mode">list</field>
+        <field
+            name="domain"
+        >[('reviewer_ids', 'in', uid), ('status', 'in', ('waiting', 'pending', 'approved'))]</field>
+        <field
+            name="context"
+        >{'search_default_status_pending': 1, 'search_default_group_by_model': 1}</field>
+        <field name="search_view_id" ref="tier_review_view_search" />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Nothing waiting for your review
+            </p>
+            <p>
+                Tier reviews you are assigned to &#x2014;across every model that
+                uses
+                <em>base_tier_validation</em>
+                &#x2014;show up here. Reviews requested by you on other people are
+                not included.
+            </p>
+        </field>
+    </record>
+    <!--
+        Manager view: every pending review across the accessible companies.
+        Linked to the ``kpi_tier_validation_pending_team`` digest tile, which
+        is itself gated to ``base.group_erp_manager``.
+    -->
+    <record id="action_team_pending_tier_reviews" model="ir.actions.act_window">
+        <field name="name">Team Tier Reviews &#x2014;Pending</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tier.review</field>
+        <field name="view_mode">list</field>
+        <field name="domain">[('status', '=', 'pending')]</field>
+        <field
+            name="context"
+        >{'search_default_group_by_model': 1, 'search_default_group_by_status': 0}</field>
+        <field name="search_view_id" ref="tier_review_view_search" />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No pending tier reviews
+            </p>
+            <p>
+                Every tier review currently waiting for a decision, across
+                every model and every reviewer in the company. Use the
+                <em>Reviewer is me</em>
+                filter to narrow down to your own queue.
+            </p>
+        </field>
+    </record>
+</odoo>
