@@ -33,6 +33,15 @@ class TierCorrectionItem(models.Model):
         string="Affected Tier Reviews",
         help="Tier reivews that will be affected by this correction.",
     )
+    original_reviewer_data = fields.Json(
+        string="Original Reviewers Snapshot",
+        readonly=True,
+        help="Snapshot of each affected review's reviewer_ids taken at the "
+        "moment of correction. Used to restore the exact same reviewers on "
+        "revert, so that subsequent edits to the tier definition (e.g. a "
+        "group membership change) do not silently leak into the reverted "
+        "state.",
+    )
 
     def _notify_reviewer_change(self, ttype="correct"):
         self.ensure_one()
@@ -73,6 +82,9 @@ class TierCorrectionItem(models.Model):
             reviews = item.review_ids.filtered(
                 lambda record: record.status in ["waiting", "pending"]
             )
+            item.original_reviewer_data = {
+                str(review.id): review.reviewer_ids.ids for review in reviews
+            }
             reviews.write({"reviewer_ids": [Command.set(item.new_reviewer_ids.ids)]})
             item._notify_reviewer_change("correct")
 
@@ -81,6 +93,13 @@ class TierCorrectionItem(models.Model):
             reviews = item.review_ids.filtered(
                 lambda record: record.status in ["waiting", "pending"]
             )
+            snapshot = item.original_reviewer_data or {}
             for review in reviews:
-                review.reviewer_ids = review._get_reviewers()
+                original_ids = snapshot.get(str(review.id))
+                if original_ids is None:
+                    # Fallback for legacy items created before the snapshot
+                    # field existed: recompute from the current definition.
+                    review.reviewer_ids = review._get_reviewers()
+                else:
+                    review.reviewer_ids = [Command.set(list(original_ids))]
             item._notify_reviewer_change("revert")
