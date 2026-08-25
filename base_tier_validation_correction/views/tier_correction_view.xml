@@ -248,11 +248,47 @@
             </search>
         </field>
     </record>
+    <record id="tier_correction_view_kanban" model="ir.ui.view">
+        <field name="name">tier.correction.kanban</field>
+        <field name="model">tier.correction</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" group_create="0" group_delete="0">
+                <field name="name" />
+                <field name="correction_type" />
+                <field name="model_id" />
+                <field name="create_uid" />
+                <field name="state" />
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name" />
+                                    </strong>
+                                    <small class="o_kanban_record_subtitle text-muted">
+                                        <field name="model_id" />
+                                    </small>
+                                </div>
+                                <field
+                                    name="create_uid"
+                                    widget="many2one_avatar_user"
+                                />
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <field name="correction_type" />
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
     <record id="tier_correction_action" model="ir.actions.act_window">
         <field name="name">Tier Review Correction</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tier.correction</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="context">{}</field>
     </record>
     <menuitem
