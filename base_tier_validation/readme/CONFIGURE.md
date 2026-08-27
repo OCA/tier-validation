@@ -15,6 +15,9 @@ To configure this module, you need to:
   Reject.
 - If check *Approve by sequence*, reviewers is forced to review by
   specified sequence.
+- If check *Allow Bulk Approve*, reviewers can validate several reviews at
+  once from the Tier Review list. Reviews on definitions without this flag
+  are skipped from a bulk selection.
 
 To configure Tier Validation Exceptions, you need to:
 
