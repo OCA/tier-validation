@@ -15,6 +15,7 @@
     "depends": ["mail"],
     "data": [
         # Security
+        "security/tier_validation_groups.xml",
         "security/ir.model.access.csv",
         "security/tier_validation_security.xml",
         # Data
