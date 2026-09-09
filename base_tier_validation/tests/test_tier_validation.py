@@ -675,6 +675,70 @@ class TierTierValidation(CommonTierValidation):
         result = self.test_user_2.with_user(self.test_user_2).review_user_count()
         self.assertEqual(result, [])
 
+    def test_16c_review_user_count_cost_flat_in_backlog(self):
+        """The systray recount must not get dearer as the backlog grows.
+
+        ``review_user_count`` used to put ``can_review`` in the *document*
+        domain, whose search method re-searches the reviewer's entire backlog
+        on that model and then evaluates the field in Python over all of it;
+        and every recompute of the stored ``tier.review.can_review`` browsed
+        its document one row at a time. Both made the endpoint cost a handful
+        of queries per pending review, paid by every reviewer on every
+        notification -- enough to occupy every HTTP worker on a batch approval.
+        """
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '=', 2.0)]",
+                "approve_sequence": True,
+                "notify_on_pending": False,
+                "sequence": 5,
+                "name": "Definition for test 16c - backlog",
+            }
+        )
+
+        def add_backlog(count):
+            for _i in range(count):
+                record = self.test_model.create({"test_field": 2.0})
+                record.with_user(self.test_user_2).request_validation()
+
+        def measure():
+            # A batch approval keeps moving review statuses, so the stored
+            # ``can_review`` is permanently dirty in production. Reproduce that,
+            # then drop the cache: marking the field to recompute must not go
+            # through a read of the reviews, or the cache it fills would hide
+            # exactly the queries this test is about.
+            self.env.flush_all()
+            self.env.add_to_compute(
+                self.env["tier.review"]._fields["can_review"],
+                self.test_user_1.review_ids,
+            )
+            self.env.invalidate_all(flush=False)
+            before = self.env.cr.sql_log_count
+            result = self.test_user_1.with_user(self.test_user_1).review_user_count()
+            return self.env.cr.sql_log_count - before, result
+
+        add_backlog(2)
+        small_queries, small = measure()
+        self.assertEqual(small[0]["pending_count"], 2)
+
+        add_backlog(20)
+        large_queries, large = measure()
+        self.assertEqual(large[0]["pending_count"], 22)
+
+        # Twenty more pending documents may not cost twenty more round trips.
+        # The tolerance is deliberately loose: the point is that the growth is
+        # bounded, not that the absolute query count never moves.
+        self.assertLessEqual(
+            large_queries,
+            small_queries + 3,
+            "review_user_count scales with the reviewer's backlog: "
+            f"{small_queries} queries for 2 pending documents, "
+            f"{large_queries} for 22.",
+        )
+
     def test_17_search_records_no_validation(self):
         """Search for records that have no validation process started"""
         records = self.env["tier.validation.tester"].search(
