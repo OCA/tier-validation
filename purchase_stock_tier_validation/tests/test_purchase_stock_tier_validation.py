@@ -2,11 +2,12 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl-3.0).
 
 from odoo import fields
-from odoo.tests import new_test_user
+from odoo.tests import new_test_user, tagged
 
 from odoo.addons.base.tests.common import BaseCommon
 
 
+@tagged("-at_install", "post_install")
 class TestPurchaseStockTierValidation(BaseCommon):
     @classmethod
     def setUpClass(cls):
@@ -65,7 +66,7 @@ class TestPurchaseStockTierValidation(BaseCommon):
                             "product_id": self.test_product.id,
                             "date_planned": fields.Datetime.now(),
                             "product_qty": 10,
-                            "product_uom": self.test_product.uom_id.id,
+                            "product_uom_id": self.test_product.uom_id.id,
                             "price_unit": 1000,
                         },
                     )
@@ -79,17 +80,13 @@ class TestPurchaseStockTierValidation(BaseCommon):
         po.request_validation()
         po.with_user(self.test_user_1).validate_tier()
         date_planned = fields.Datetime.now()
-        group = self.env["procurement.group"].create(
-            {"name": "Test", "move_type": "direct"}
-        )
         values = {
             "company_id": self.warehouse.company_id,
-            "group_id": group,
             "date_planned": date_planned,
             "warehouse_id": self.warehouse,
         }
         procurements = [
-            self.env["procurement.group"].Procurement(
+            self.env["stock.rule"].Procurement(
                 self.test_product,
                 1,
                 self.env.ref("uom.product_uom_unit"),
@@ -100,7 +97,7 @@ class TestPurchaseStockTierValidation(BaseCommon):
                 values,
             )
         ]
-        group.run(procurements)
+        self.env["stock.rule"].run(procurements)
         self.assertEqual(len(po.mapped("order_line")), 1)
         rfq_test_partner_after = self.env["purchase.order"].search(
             [("partner_id", "=", self.test_partner.id)]
