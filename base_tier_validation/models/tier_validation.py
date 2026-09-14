@@ -30,7 +30,7 @@ class TierValidation(models.AbstractModel):
     _tier_validation_state_field_is_computed = False
     _tier_validation_company_field = "company_id"
 
-    _state_field = "state"
+    _state_field = "stage_state"
     _state_from = ["draft"]
     _state_to = ["confirmed"]
     _cancel_state = "cancel"
