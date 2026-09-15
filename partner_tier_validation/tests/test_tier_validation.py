@@ -55,7 +55,7 @@ class TestPartnerTierValidation(BaseCommon):
         partner_obj = self.env["res.partner"]
         contact_vals = {"name": "Company for test", "company_type": "company"}
         contact = partner_obj.with_user(self.user_employee).create(contact_vals)
-        self.assertEqual(contact.state, "draft")
+        self.assertEqual(contact.stage_state, "draft")
 
         # Assert an error shows if trying to make it active
         with self.assertRaises(ValidationError):
@@ -68,12 +68,12 @@ class TestPartnerTierValidation(BaseCommon):
         contact.with_user(self.user_approver).write(
             {"stage_id": self.stage_confirmed.id}
         )
-        self.assertEqual(contact.state, "confirmed")
+        self.assertEqual(contact.stage_state, "confirmed")
 
         # Change company type to retrigger validation
         contact.write({"company_type": "person"})
         self.assertEqual(
-            contact.state, "draft", "Change company type sets back to draft"
+            contact.stage_state, "draft", "Change company type sets back to draft"
         )
 
     def test_no_validation_res_partner(self):
@@ -83,10 +83,10 @@ class TestPartnerTierValidation(BaseCommon):
         partner_obj = self.env["res.partner"]
         contact_vals = {"name": "Company for test", "company_type": "person"}
         contact = partner_obj.with_user(self.user_employee).create(contact_vals)
-        self.assertEqual(contact.state, "draft")
+        self.assertEqual(contact.stage_state, "draft")
         # Can move to confirmed state without approval
         contact.write({"stage_id": self.stage_confirmed.id})
-        self.assertEqual(contact.state, "confirmed")
+        self.assertEqual(contact.stage_state, "confirmed")
 
     def test_validation_res_partner_restarted(self):
         """
@@ -96,7 +96,7 @@ class TestPartnerTierValidation(BaseCommon):
         Partner = self.env["res.partner"]
         contact_vals = {"name": "Company for test", "company_type": "company"}
         contact = Partner.with_user(self.user_employee).create(contact_vals)
-        self.assertEqual(contact.state, "draft")
+        self.assertEqual(contact.stage_state, "draft")
         self.assertEqual(contact.validation_status, "no")
         self.assertFalse(contact.review_ids.status)
         # Request and validate partner
@@ -111,13 +111,13 @@ class TestPartnerTierValidation(BaseCommon):
         contact.with_user(self.user_approver).write(
             {"stage_id": self.stage_confirmed.id}
         )
-        self.assertEqual(contact.state, "confirmed")
+        self.assertEqual(contact.stage_state, "confirmed")
         # validation didn't change
         self.assertEqual(contact.validation_status, "validated")
         self.assertEqual(contact.review_ids.status, "approved")
         # change stage to draft
         contact.with_user(self.user_approver).write({"stage_id": self.stage_draft.id})
-        self.assertEqual(contact.state, "draft")
+        self.assertEqual(contact.stage_state, "draft")
         # validation removed by restart
         self.assertEqual(contact.validation_status, "no")
         self.assertFalse(contact.review_ids.status)
