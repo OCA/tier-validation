@@ -1,0 +1,1 @@
+odoo-addon-partner_stage @ git+https://github.com/OCA/partner-contact.git@refs/pull/2367/head#subdirectory=partner_stage
