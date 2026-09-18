@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import logging
+from collections import defaultdict
 
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
@@ -93,8 +94,38 @@ class TierReview(models.Model):
 
     @api.depends("status", "approve_sequence", "sequence", "model", "res_id")
     def _compute_can_review(self):
+        # Only sequential definitions reach the branch of ``_can_review_value``
+        # that looks at the document, so only those are worth warming.
+        self.filtered("approve_sequence")._prefetch_resource_reviews()
         for record in self:
             record.can_review = record._can_review_value()
+
+    def _prefetch_resource_reviews(self):
+        """Warm the cache with the reviews of every resource in ``self``.
+
+        ``_can_review_value`` browses its own ``res_id`` to find the lowest
+        pending sequence on that document. Record by record, that browse has a
+        prefetch set of exactly one id, so every review pays a fresh read of
+        its document's ``review_ids`` -- a handful of queries per review, on
+        every recompute of this (stored) field. The systray recount flushes
+        ``can_review``, so the cost of the counter grew with the reviewer's
+        backlog.
+
+        Reading the same relation once per model puts the values in the
+        environment cache, where the per-record browse then finds them for
+        free. Callers pass the subset whose documents they are about to look
+        at.
+        """
+        res_ids_per_model = defaultdict(list)
+        for record in self:
+            if record.model and record.res_id:
+                res_ids_per_model[record.model].append(record.res_id)
+        for model, res_ids in res_ids_per_model.items():
+            # The model may have been uninstalled, or have dropped tier
+            # validation, while reviews pointing at it survive.
+            if model not in self.env or "review_ids" not in self.env[model]._fields:
+                continue
+            self.env[model].browse(res_ids).review_ids.fetch(["status", "sequence"])
 
     def _update_review_status(self):
         """Promote reviews that are currently available to pending."""
