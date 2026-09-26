@@ -1,0 +1,2 @@
+- Bernat Puig Font \<<bernat.puig@forgeflow.com>\>
+- Giordano Loiaconi \<<giordanoloiaconi95@gmail.com>\> (migrate to v19)
