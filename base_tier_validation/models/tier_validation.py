@@ -10,7 +10,7 @@ from psycopg2.extensions import AsIs
 
 from odoo import api, fields, models
 from odoo.api import NewId
-from odoo.exceptions import AccessError, ValidationError
+from odoo.exceptions import ValidationError
 from odoo.fields import Domain
 from odoo.tools import SQL
 from odoo.tools.misc import frozendict
@@ -853,18 +853,15 @@ class TierValidation(models.AbstractModel):
         evaluated here, so false positives are possible. The message is
         worded as a "may not be able to" warning rather than a guarantee.
         """
-        Model = self.env[self._name]
+        TierDefinition = self.env["tier.definition"]
         for rec in self:
             rec_reviews = reviews.filtered(lambda r, rec=rec: r.res_id == rec.id)
             reviewers = rec_reviews.mapped("reviewer_ids")
             if not reviewers:
                 continue
-            no_access = self.env["res.users"]
-            for user in reviewers:
-                try:
-                    Model.with_user(user).check_access("read")
-                except AccessError:
-                    no_access |= user
+            no_access = TierDefinition._reviewers_without_model_access(
+                self._name, reviewers
+            )
             if not no_access:
                 continue
             _logger.warning(
