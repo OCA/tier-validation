@@ -838,6 +838,87 @@ class TierTierValidation(CommonTierValidation):
             f"{large_queries} for 22.",
         )
 
+    def test_16d_review_user_count_unstored_state_field(self):
+        """A state field that is not stored cannot be filtered in SQL, so
+        ``review_user_count`` drops cancelled documents in Python instead.
+        ``display_name`` (computed, never stored) stands in for such a state
+        field, with one document's name playing the cancel state."""
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '=', 2.0)]",
+                "name": "Definition for test 16d - unstored state",
+            }
+        )
+        kept, cancelled = self.test_model.create([{"test_field": 2.0}] * 2)
+        (kept | cancelled).with_user(self.test_user_2).request_validation()
+        with mock.patch.multiple(
+            type(self.test_model),
+            _state_field="display_name",
+            _cancel_state=cancelled.display_name,
+        ):
+            result = self.test_user_1.with_user(self.test_user_1).review_user_count()
+        counts = {r["model"]: r["pending_count"] for r in result}
+        self.assertEqual(counts[self.test_model._name], 1)
+
+    def test_16e_review_user_count_skips_orphan_reviews(self):
+        """Reviews can outlive tier validation on their model: the model may
+        have been uninstalled, or no longer inherit ``tier.validation``. The
+        systray count and the ``can_review`` prefetch must both skip them."""
+        country = self.env.ref("base.be")
+        orphan_model = "tier.validation.uninstalled"
+        # Non-sequential definition: pending orphans stay reviewable, so they
+        # reach review_user_count.
+        pending = self.env["tier.review"].create(
+            [
+                {
+                    "definition_id": self.definition_4.id,
+                    "status": "pending",
+                    "model": orphan_model,
+                    "res_id": 1,
+                },
+                {
+                    "definition_id": self.definition_4.id,
+                    "status": "pending",
+                    "model": "res.country",
+                    "res_id": country.id,
+                },
+            ]
+        )
+        self.assertTrue(all(pending.mapped("can_review")))
+        # Sequential definition: computing can_review prefetches the documents'
+        # reviews, which must not choke on a missing model, a model without
+        # tier validation, or a review without a document.
+        done = self.env["tier.review"].create(
+            [
+                {
+                    "definition_id": self.definition_5.id,
+                    "status": "approved",
+                    "model": orphan_model,
+                    "res_id": 1,
+                },
+                {
+                    "definition_id": self.definition_5.id,
+                    "status": "approved",
+                    "model": "res.country",
+                    "res_id": country.id,
+                },
+                {"definition_id": self.definition_5.id, "status": "approved"},
+            ]
+        )
+        self.assertFalse(any(done.mapped("can_review")))
+        # res.users.review_ids shares its table with tier.review.reviewer_ids
+        # but is not its inverse: drop the cached value so the count sees the
+        # reviews created above.
+        self.test_user_1.invalidate_recordset(["review_ids"])
+        self.assertTrue(pending <= self.test_user_1.review_ids)
+        result = self.test_user_1.with_user(self.test_user_1).review_user_count()
+        models = [r["model"] for r in result]
+        self.assertNotIn(orphan_model, models)
+        self.assertNotIn("res.country", models)
+
     def test_17_search_records_no_validation(self):
         """Search for records that have no validation process started"""
         records = self.env["tier.validation.tester"].search(
