@@ -1,0 +1,227 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* contract_tier_validation
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,help:contract_tier_validation.field_contract_contract__state
+msgid ""
+"A contract only generates invoices while it is active. Draft is for a "
+"contract still being prepared, cancelled for one that will never run."
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,help:contract_tier_validation.field_contract_contract__contract_approval_step
+#: model:ir.model.fields,help:contract_tier_validation.field_res_company__contract_approval_step
+#: model:ir.model.fields,help:contract_tier_validation.field_res_config_settings__contract_approval_step
+msgid ""
+"Add an Approved state between Draft and Active. Accepting the last review "
+"then approves the contract instead of activating it, and contracts that need"
+" no review get an Approve button. Activating, which starts invoicing, is a "
+"separate step, for when the contract really starts (a delivery, a "
+"signature)."
+msgstr ""
+
+#. module: contract_tier_validation
+#: model_terms:ir.ui.view,arch_db:contract_tier_validation.res_config_settings_view_form
+msgid ""
+"Add an Approved state between Draft and Active. The last review approves the"
+" contract; activating it, which starts invoicing, is a separate step."
+msgstr ""
+
+#. module: contract_tier_validation
+#: model_terms:ir.ui.view,arch_db:contract_tier_validation.contract_contract_form_view
+msgid "Approve"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__contract_approval_step
+#: model:ir.model.fields,field_description:contract_tier_validation.field_res_company__contract_approval_step
+#: model:ir.model.fields,field_description:contract_tier_validation.field_res_config_settings__contract_approval_step
+#: model_terms:ir.ui.view,arch_db:contract_tier_validation.res_config_settings_view_form
+msgid "Approve contracts before activating them"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields.selection,name:contract_tier_validation.selection__contract_contract__state__approved
+#: model_terms:ir.ui.view,arch_db:contract_tier_validation.contract_contract_search_view
+msgid "Approved"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__can_review
+msgid "Can Review"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model,name:contract_tier_validation.model_res_company
+msgid "Companies"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model,name:contract_tier_validation.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: contract_tier_validation
+#. odoo-python
+#: code:addons/contract_tier_validation/models/contract.py:0
+#: model:ir.model,name:contract_tier_validation.model_contract_contract
+msgid "Contract"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model,name:contract_tier_validation.model_contract_line
+msgid "Contract Line"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__display_name
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_line__display_name
+#: model:ir.model.fields,field_description:contract_tier_validation.field_res_company__display_name
+#: model:ir.model.fields,field_description:contract_tier_validation.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:contract_tier_validation.field_tier_definition__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__has_comment
+msgid "Has Comment"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__hide_reviews
+msgid "Hide Reviews"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__id
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_line__id
+#: model:ir.model.fields,field_description:contract_tier_validation.field_res_company__id
+#: model:ir.model.fields,field_description:contract_tier_validation.field_res_config_settings__id
+#: model:ir.model.fields,field_description:contract_tier_validation.field_tier_definition__id
+msgid "ID"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,help:contract_tier_validation.field_contract_contract__has_comment
+msgid "If set, Allow the reviewer to leave a comment on the review."
+msgstr ""
+
+#. module: contract_tier_validation
+#. odoo-python
+#: code:addons/contract_tier_validation/models/contract_line.py:0
+msgid ""
+"Lines cannot be added to or removed from a validated contract.\n"
+"\n"
+"Set the contract back to draft to change its terms, or turn off 'Lock contract lines after validation' in the contract settings."
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_res_company__contract_lock_lines_after_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_res_config_settings__contract_lock_lines_after_validation
+#: model_terms:ir.ui.view,arch_db:contract_tier_validation.res_config_settings_view_form
+msgid "Lock contract lines after validation"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__need_validation
+msgid "Need Validation"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__next_review
+msgid "Next Review"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,help:contract_tier_validation.field_res_company__contract_lock_lines_after_validation
+#: model:ir.model.fields,help:contract_tier_validation.field_res_config_settings__contract_lock_lines_after_validation
+msgid ""
+"Once a contract has passed its validation, stop its lines from being added, "
+"removed or edited, so the terms that were approved are the terms that run. "
+"The invoicing run and the renewal actions keep working. Turn this off for "
+"companies that amend running contracts instead of re-approving them."
+msgstr ""
+
+#. module: contract_tier_validation
+#: model_terms:ir.ui.view,arch_db:contract_tier_validation.res_config_settings_view_form
+msgid ""
+"Once a contract has passed its validation, stop its lines from being added, "
+"removed or edited. The invoicing run and the renewal actions keep working."
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__rejected_message
+msgid "Rejected Message"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__reviewer_ids
+msgid "Reviewers"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__state
+msgid "State"
+msgstr ""
+
+#. module: contract_tier_validation
+#. odoo-python
+#: code:addons/contract_tier_validation/models/contract_line.py:0
+msgid ""
+"The lines of a validated contract cannot be changed.\n"
+"Fields refused: %(fields)s\n"
+"\n"
+"Set the contract back to draft to change its terms, or turn off 'Lock contract lines after validation' in the contract settings."
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model,name:contract_tier_validation.model_tier_definition
+msgid "Tier Definition"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:mail.message.subtype,name:contract_tier_validation.mt_contract_tier_validation_accepted
+msgid "Tier Validation Accepted Notification"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:mail.message.subtype,name:contract_tier_validation.mt_contract_tier_validation_rejected
+msgid "Tier Validation Rejected Notification"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:mail.message.subtype,name:contract_tier_validation.mt_contract_tier_validation_requested
+msgid "Tier Validation Requested"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__to_validate_message
+msgid "To Validate Message"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__validated_message
+msgid "Validated Message"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__validation_status
+msgid "Validation Status"
+msgstr ""
+
+#. module: contract_tier_validation
+#: model:ir.model.fields,field_description:contract_tier_validation.field_contract_contract__review_ids
+msgid "Validations"
+msgstr ""

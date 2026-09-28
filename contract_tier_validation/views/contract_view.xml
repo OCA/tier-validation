@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 bosd
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="contract_contract_form_view" model="ir.ui.view">
+        <field name="model">contract.contract</field>
+        <field name="inherit_id" ref="contract_state.contract_contract_form_view" />
+        <field name="arch" type="xml">
+            <!-- A contract still under review, or one that was rejected, must
+                 not be activated from the button. With the approval step on,
+                 a draft contract is approved first and activated after.
+                 Added to the existing condition (not replacing it) so other
+                 modules hiding the button keep their part. -->
+            <xpath expr="//button[@name='action_activate']" position="attributes">
+                <attribute
+                    name="invisible"
+                    add="validation_status in ['pending', 'rejected'] or (contract_approval_step and state == 'draft')"
+                    separator=" or "
+                />
+            </xpath>
+            <!-- Approve by hand only when no tier definition applies: reviewed
+                 contracts are approved by their last review. -->
+            <xpath expr="//button[@name='action_activate']" position="before">
+                <button
+                    name="action_approve"
+                    type="object"
+                    string="Approve"
+                    class="oe_highlight"
+                    invisible="not contract_approval_step or state != 'draft' or need_validation or validation_status in ['pending', 'rejected']"
+                />
+            </xpath>
+            <field name="state" position="attributes">
+                <attribute name="statusbar_visible">draft,approved,active</attribute>
+            </field>
+            <field name="state" position="after">
+                <field name="validation_status" invisible="1" />
+                <field name="need_validation" invisible="1" />
+                <field name="contract_approval_step" invisible="1" />
+            </field>
+        </field>
+    </record>
+
+    <record id="contract_contract_search_view" model="ir.ui.view">
+        <field name="model">contract.contract</field>
+        <field name="inherit_id" ref="contract_state.contract_contract_search_view" />
+        <field name="arch" type="xml">
+            <filter name="filter_draft" position="after">
+                <filter
+                    name="filter_approved"
+                    string="Approved"
+                    domain="[('state', '=', 'approved')]"
+                />
+            </filter>
+        </field>
+    </record>
+</odoo>
