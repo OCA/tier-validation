@@ -1,8 +1,7 @@
 # Copyright 2024 ForgeFlow S.L.  <https://www.forgeflow.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 from odoo import api, fields, models
-from odoo.osv import expression
-from odoo.tools import SQL
+from odoo.tools import SQL, split_every
 
 
 class TierReview(models.Model):
@@ -37,7 +36,13 @@ class TierReview(models.Model):
 
     @api.model
     def _selection_related_model_instance(self):
-        models = self.env["tier.definition"].sudo().search([]).mapped("model_id")
+        # Restrict the Reference selection to models that actually carry
+        # tier validation. Avoids the pylint `no-search-all` warning and
+        # mirrors the domain used in `tier.definition.model_id`.
+        model_names = self.env["tier.definition"]._get_tier_validation_model_names()
+        if not model_names:
+            return []
+        models = self.env["ir.model"].sudo().search([("model", "in", model_names)])
         return [(model.model, model.name) for model in models]
 
     def open_origin(self):
@@ -54,22 +59,15 @@ class TierReview(models.Model):
         return response
 
     @api.model
-    def _search(
-        self,
-        domain,
-        offset=0,
-        limit=None,
-        order=None,
-    ):
-        # Rules do not apply to administrator
-        if self.env.is_superuser():
-            return super()._search(
-                domain,
-                offset=offset,
-                limit=limit,
-                order=order,
-            )
-        query = super()._search(domain, offset, limit, order)
+    def _search(self, domain, *args, **kwargs):
+        # Forward arbitrary kwargs to super() (the v19 ORM keeps adding
+        # them: ``bypass_access``, ``active_test``, ...). When the caller
+        # has explicitly opted out of ACL or is the superuser, skip the
+        # board's per-document filter -- the board filter is itself an
+        # ACL, so bypass_access=True should bypass it too.
+        if kwargs.get("bypass_access") or self.env.is_superuser():
+            return super()._search(domain, *args, **kwargs)
+        query = super()._search(domain, *args, **kwargs)
         ids = self.browse(query).ids
         if not ids:
             return query
@@ -78,8 +76,8 @@ class TierReview(models.Model):
 
         self.flush_model(["model", "res_id"])
         reviews_to_check = []
-        for sub_ids in self._cr.split_for_in_conditions(ids):
-            self._cr.execute(
+        for sub_ids in split_every(self.env.cr.IN_MAX, ids):
+            self.env.cr.execute(
                 SQL(
                     """
                 SELECT DISTINCT review.id, review.model, review.res_id
@@ -89,7 +87,7 @@ class TierReview(models.Model):
                     ids=list(sub_ids),
                 )
             )
-            reviews_to_check += self._cr.dictfetchall()
+            reviews_to_check += self.env.cr.dictfetchall()
 
         review_to_documents = {}
         for review in reviews_to_check:
@@ -98,7 +96,7 @@ class TierReview(models.Model):
         allowed_ids = set()
         for doc_model, doc_ids in review_to_documents.items():
             doc_operation = "read"
-            DocumentModel = self.env[doc_model].with_user(self._uid)
+            DocumentModel = self.env[doc_model].with_user(self.env.uid)
             right = DocumentModel.has_access(doc_operation)
             if right:
                 valid_docs = DocumentModel.browse(doc_ids)._filtered_access(
@@ -114,27 +112,12 @@ class TierReview(models.Model):
 
         id_list = [id for id in ids if id in allowed_ids]
 
-        return super()._search([("id", "in", id_list)], offset, limit, order)
+        return super()._search([("id", "in", id_list)], *args, **kwargs)
 
-    @api.model
-    def _read_group_raw(
-        self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True
-    ):
-        # Rules do not apply to administrator
-        if not self.env.is_superuser():
-            allowed_ids = self._search(domain, count=False)
-            if allowed_ids:
-                domain = expression.AND([domain, [("id", "in", allowed_ids)]])
-            else:
-                # force void result if no allowed ids found
-                domain = expression.AND([domain, [(0, "=", 1)]])
-
-        return super()._read_group_raw(
-            domain=domain,
-            fields=fields,
-            groupby=groupby,
-            offset=offset,
-            limit=limit,
-            orderby=orderby,
-            lazy=lazy,
-        )
+    # NOTE: previous Odoo versions overrode ``_read_group_raw`` here to
+    # re-apply the same per-document ACL the ``_search`` override above
+    # enforces -- needed because the read_group path used to bypass
+    # ``_search``. From Odoo 17 onwards ``_read_group_raw`` is gone and
+    # ``_read_group`` routes through ``_search`` internally, so the
+    # ``_search`` override already covers the read_group case and the
+    # explicit override is no longer required.
