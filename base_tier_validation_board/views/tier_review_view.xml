@@ -189,10 +189,13 @@
         <field name="name">tier.review.boards.view.pivot</field>
         <field name="model">tier.review</field>
         <field name="arch" type="xml">
+            <!-- Operational view: how many reviews per model x status. No
+                 explicit measure, so it defaults to Count (the useful "where
+                 is the backlog" number); response time stays selectable from
+                 the Measures menu, and is best read in Review Statistics. -->
             <pivot string="Tier Reviews" sample="1">
                 <field name="model_id" type="row" />
                 <field name="status" type="col" />
-                <field name="response_days" type="measure" />
             </pivot>
         </field>
     </record>
@@ -201,9 +204,9 @@
         <field name="name">tier.review.boards.view.graph</field>
         <field name="model">tier.review</field>
         <field name="arch" type="xml">
+            <!-- Count of reviews per status (no measure -> defaults to Count). -->
             <graph string="Tier Reviews" type="bar" sample="1">
                 <field name="status" type="row" />
-                <field name="response_days" type="measure" />
             </graph>
         </field>
     </record>
