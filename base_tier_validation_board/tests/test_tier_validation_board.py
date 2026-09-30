@@ -1,6 +1,8 @@
 # Copyright 2026 OCA / @bosd
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+from freezegun import freeze_time
+
 from odoo import fields
 from odoo.fields import Domain
 from odoo.tests.common import tagged
@@ -37,6 +39,22 @@ class TierValidationBoard(CommonTierValidation):
         self.assertEqual(self.review.model_id, self.tester_model)
         self.assertEqual(self.review.model_id.model, self.test_record._name)
 
+    def test_search_is_overdue_returns_id_in_domain(self):
+        """`_search_is_overdue` returns a domain shape the ORM can use --
+        either ``[("id", "in", ids)]`` or ``[("id", "not in", ids)]``
+        depending on the operator/value pair, and never raises."""
+        Model = self.env["tier.review"]
+        for value in (True, False):
+            for operator in ("=", "!="):
+                domain = Model._search_is_overdue(operator, value)
+                self.assertEqual(len(domain), 1)
+                cond = domain[0]
+                self.assertEqual(cond[0], "id")
+                self.assertIn(cond[1], ("in", "not in", "="))
+        # Bad operator -> match nothing (does not raise).
+        bad = Model._search_is_overdue("ilike", "garbage")
+        self.assertEqual(bad, [("id", "=", False)])
+
     def test_selection_related_model_instance(self):
         """The Reference selection only exposes tier-validated models,
         not every model in the DB."""
@@ -54,6 +72,42 @@ class TierValidationBoard(CommonTierValidation):
         self.assertEqual(action["res_model"], self.test_record._name)
         self.assertEqual(action["res_id"], self.test_record.id)
         self.assertEqual(action["view_mode"], "form")
+
+    def test_response_days_is_zero_until_reviewed(self):
+        """`response_days` only populates once the review is approved
+        or rejected; it stays 0 while pending/waiting."""
+        self.assertEqual(self.review.response_days, 0.0)
+        # Force-set a reviewed_date so the compute fires deterministically.
+        self.review.write(
+            {
+                "reviewed_date": fields.Datetime.add(self.review.create_date, days=2),
+                "status": "approved",
+                "done_by": self.test_user_1.id,
+            }
+        )
+        self.assertAlmostEqual(self.review.response_days, 2.0, places=2)
+
+    def test_is_overdue_compute(self):
+        """`is_overdue` flips True for waiting/pending reviews older
+        than the configured threshold, and resets when the review is
+        completed.
+
+        Uses ``freeze_time`` to move "now" past the threshold instead
+        of rewriting create_date, keeping the test independent of any
+        ORM-side cache invariants around the create_date magic field.
+        """
+        # Fresh review: not overdue.
+        self.assertFalse(self.review.is_overdue)
+        # Move "now" 14 days forward -- the review's real create_date
+        # is now well past the 7-day overdue threshold.
+        later = fields.Datetime.add(fields.Datetime.now(), days=14)
+        with freeze_time(later):
+            self.review.invalidate_recordset(["is_overdue"])
+            self.assertTrue(self.review.is_overdue)
+            # Once approved, the review is no longer "overdue" -- even
+            # if it took forever, it's done.
+            self.review.write({"status": "approved", "done_by": self.test_user_1.id})
+            self.assertFalse(self.review.is_overdue)
 
     def test_search_filters_by_user_acl(self):
         """The `_search` override hides reviews whose underlying record
@@ -78,17 +132,3 @@ class TierValidationBoard(CommonTierValidation):
             .search(Domain("id", "=", self.review.id))
         )
         self.assertFalse(hidden)
-
-    def test_response_days_is_zero_until_reviewed(self):
-        """`response_days` only populates once the review is approved
-        or rejected; it stays 0 while pending/waiting."""
-        self.assertEqual(self.review.response_days, 0.0)
-        # Force-set a reviewed_date so the compute fires deterministically.
-        self.review.write(
-            {
-                "reviewed_date": fields.Datetime.add(self.review.create_date, days=2),
-                "status": "approved",
-                "done_by": self.test_user_1.id,
-            }
-        )
-        self.assertAlmostEqual(self.review.response_days, 2.0, places=2)
