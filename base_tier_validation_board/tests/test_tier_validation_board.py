@@ -172,3 +172,15 @@ class TierValidationBoard(CommonTierValidation):
             .search(Domain("id", "=", self.review.id))
         )
         self.assertFalse(hidden)
+
+    def test_age_display_relative_for_open_reviews(self):
+        """`age_display` gives a short relative age for open reviews and is
+        empty once the review is done."""
+        # Fresh review created "today".
+        self.assertIn(self.review.age_display, ("today", "0d"))
+        later = fields.Datetime.add(fields.Datetime.now(), days=90)
+        with freeze_time(later):
+            self.review.invalidate_recordset(["age_display"])
+            self.assertTrue(self.review.age_display.endswith("mo"))
+            self.review.write({"status": "approved", "done_by": self.test_user_1.id})
+            self.assertFalse(self.review.age_display)
