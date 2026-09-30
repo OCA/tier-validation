@@ -1,6 +1,7 @@
 # Copyright 2026 OCA / @bosd
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+from odoo import fields
 from odoo.fields import Domain
 from odoo.tests.common import tagged
 
@@ -28,6 +29,13 @@ class TierValidationBoard(CommonTierValidation):
         self.assertEqual(review.res_name, self.test_record.display_name)
         self.assertEqual(review.related_model_instance._name, self.test_record._name)
         self.assertEqual(review.related_model_instance.id, self.test_record.id)
+
+    def test_model_id_related(self):
+        """The `model_id` related field resolves to the validated model's
+        `ir.model` record so pivot/graph views can display its
+        human-friendly description instead of the technical name."""
+        self.assertEqual(self.review.model_id, self.tester_model)
+        self.assertEqual(self.review.model_id.model, self.test_record._name)
 
     def test_selection_related_model_instance(self):
         """The Reference selection only exposes tier-validated models,
@@ -70,3 +78,17 @@ class TierValidationBoard(CommonTierValidation):
             .search(Domain("id", "=", self.review.id))
         )
         self.assertFalse(hidden)
+
+    def test_response_days_is_zero_until_reviewed(self):
+        """`response_days` only populates once the review is approved
+        or rejected; it stays 0 while pending/waiting."""
+        self.assertEqual(self.review.response_days, 0.0)
+        # Force-set a reviewed_date so the compute fires deterministically.
+        self.review.write(
+            {
+                "reviewed_date": fields.Datetime.add(self.review.create_date, days=2),
+                "status": "approved",
+                "done_by": self.test_user_1.id,
+            }
+        )
+        self.assertAlmostEqual(self.review.response_days, 2.0, places=2)

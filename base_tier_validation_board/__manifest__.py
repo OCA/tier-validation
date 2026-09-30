@@ -2,7 +2,9 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 {
     "name": "Tier Review Activity Board",
-    "summary": "Add Tier Review Boards",
+    "summary": "Dashboard with kanban, list, pivot and graph views over"
+    " every pending/approved/rejected tier review, gated by an opt-in"
+    " group and per-document ACL.",
     "version": "19.0.1.0.0",
     "development_status": "Beta",
     "maintainers": ["JasminSForgeFlow"],

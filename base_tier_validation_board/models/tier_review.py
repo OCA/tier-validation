@@ -25,6 +25,34 @@ class TierReview(models.Model):
     res_name = fields.Char(
         "Resource Name", compute="_compute_res_name", compute_sudo=True
     )
+    model_id = fields.Many2one(
+        comodel_name="ir.model",
+        related="definition_id.model_id",
+        store=True,
+        string="Model",
+        help="Many2one to ir.model used by the pivot/graph views so the "
+        "rows display the model's human-friendly description (e.g. "
+        "'Journal Entry') rather than its technical name "
+        "('account.move').",
+    )
+    response_days = fields.Float(
+        string="Response (days)",
+        compute="_compute_response_days",
+        store=True,
+        help="Days between the review being created and it being done. "
+        "Empty until the review is approved or rejected. Use this as a "
+        "measure in pivot/graph views to compare reviewer response time.",
+    )
+
+    @api.depends("create_date", "reviewed_date")
+    def _compute_response_days(self):
+        for rec in self:
+            if rec.create_date and rec.reviewed_date:
+                rec.response_days = (
+                    rec.reviewed_date - rec.create_date
+                ).total_seconds() / 86400.0
+            else:
+                rec.response_days = 0.0
 
     @api.depends("res_id", "model")
     def _compute_related_model_instance(self):

@@ -95,12 +95,116 @@
         </field>
     </record>
 
+    <record id="tier_review_view_pivot" model="ir.ui.view">
+        <field name="name">tier.review.boards.view.pivot</field>
+        <field name="model">tier.review</field>
+        <field name="arch" type="xml">
+            <pivot string="Tier Reviews" sample="1">
+                <field name="model_id" type="row" />
+                <field name="status" type="col" />
+                <field name="response_days" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <record id="tier_review_view_graph" model="ir.ui.view">
+        <field name="name">tier.review.boards.view.graph</field>
+        <field name="model">tier.review</field>
+        <field name="arch" type="xml">
+            <graph string="Tier Reviews" type="bar" sample="1">
+                <field name="status" type="row" />
+                <field name="response_days" type="measure" />
+            </graph>
+        </field>
+    </record>
+
     <record id="tier_review_view_search" model="ir.ui.view">
         <field name="name">tier.review.boards.view.search</field>
         <field name="model">tier.review</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name" filter_domain="[('name', 'ilike', self)]" />
+                <field
+                    name="name"
+                    string="Review"
+                    filter_domain="['|', ('name', 'ilike', self), ('res_name', 'ilike', self)]"
+                />
+                <field name="requested_by" />
+                <field name="done_by" />
+                <field name="model_id" />
+                <filter
+                    name="my_reviews"
+                    string="To review by me"
+                    domain="[('reviewer_ids', 'in', uid), ('status', 'in', ['pending', 'waiting'])]"
+                />
+                <filter
+                    name="requested_by_me"
+                    string="Requested by me"
+                    domain="[('requested_by', '=', uid)]"
+                />
+                <filter
+                    name="done_by_me"
+                    string="Reviewed by me"
+                    domain="[('done_by', '=', uid)]"
+                />
+                <separator />
+                <filter
+                    name="state_pending"
+                    string="Pending"
+                    domain="[('status', '=', 'pending')]"
+                />
+                <filter
+                    name="state_waiting"
+                    string="Waiting"
+                    domain="[('status', '=', 'waiting')]"
+                />
+                <filter
+                    name="state_approved"
+                    string="Approved"
+                    domain="[('status', '=', 'approved')]"
+                />
+                <filter
+                    name="state_rejected"
+                    string="Rejected"
+                    domain="[('status', '=', 'rejected')]"
+                />
+                <separator />
+                <filter
+                    name="reviewed_today"
+                    string="Reviewed today"
+                    domain="[('reviewed_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"
+                />
+                <filter
+                    name="requested_last_week"
+                    string="Requested in last 7 days"
+                    domain="[('create_date', '&gt;=', (context_today() - relativedelta(days=7)).strftime('%Y-%m-%d'))]"
+                />
+                <group>
+                    <filter
+                        name="group_status"
+                        string="Status"
+                        context="{'group_by': 'status'}"
+                    />
+                    <filter
+                        name="group_model"
+                        string="Model"
+                        context="{'group_by': 'model_id'}"
+                    />
+                    <filter
+                        name="group_requested_by"
+                        string="Requested by"
+                        context="{'group_by': 'requested_by'}"
+                    />
+                    <filter
+                        name="group_done_by"
+                        string="Reviewed by"
+                        context="{'group_by': 'done_by'}"
+                    />
+                    <filter
+                        name="group_definition"
+                        string="Definition"
+                        context="{'group_by': 'definition_id'}"
+                    />
+                </group>
             </search>
         </field>
     </record>
@@ -108,7 +212,7 @@
     <record model="ir.actions.act_window" id="open_boards_tier_reviews">
         <field name="name">Tier Reviews</field>
         <field name="res_model">tier.review</field>
-        <field name="view_mode">kanban,form</field>
+        <field name="view_mode">kanban,list,form,pivot,graph</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
         <field
@@ -117,6 +221,74 @@
                           (0, 0, {'view_mode': 'kanban', 'view_id': ref('tier_review_view_kanban')}),
                           (0, 0, {'view_mode': 'list', 'view_id': ref('base_tier_validation.tier_review_view_tree')}),
                           (0, 0, {'view_mode': 'form', 'view_id': ref('tier_review_view_form_board')}),
+                          (0, 0, {'view_mode': 'pivot', 'view_id': ref('tier_review_view_pivot')}),
+                          (0, 0, {'view_mode': 'graph', 'view_id': ref('tier_review_view_graph')})]"
+        />
+        <field name="search_view_id" ref="tier_review_view_search" />
+    </record>
+
+    <record id="tier_review_view_stats_pivot" model="ir.ui.view">
+        <field name="name">tier.review.boards.view.stats.pivot</field>
+        <field name="model">tier.review</field>
+        <field name="arch" type="xml">
+            <pivot string="Review Statistics" sample="1">
+                <field name="done_by" type="row" />
+                <field name="status" type="col" />
+                <field name="response_days" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <record id="tier_review_view_stats_graph" model="ir.ui.view">
+        <field name="name">tier.review.boards.view.stats.graph</field>
+        <field name="model">tier.review</field>
+        <field name="arch" type="xml">
+            <graph string="Review Statistics" type="bar" sample="1">
+                <field name="done_by" type="row" />
+                <field name="response_days" type="measure" />
+            </graph>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="open_review_statistics">
+        <field name="name">Review Statistics</field>
+        <field name="res_model">tier.review</field>
+        <field name="view_mode">pivot,graph</field>
+        <field
+            name="domain"
+        >[("done_by", "!=", False), ("status", "in", ("approved", "rejected"))]</field>
+        <field name="context">{}</field>
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'pivot', 'view_id': ref('tier_review_view_stats_pivot')}),
+                          (0, 0, {'view_mode': 'graph', 'view_id': ref('tier_review_view_stats_graph')})]"
+        />
+        <field name="search_view_id" ref="tier_review_view_search" />
+        <field name="help">&lt;p class="o_view_nocontent_smiling_face"&gt;
+            No completed reviews to chart yet.
+            &lt;/p&gt;&lt;p&gt;
+            Statistics are computed across approved and rejected reviews.
+            The default *Avg. days* measure shows the average response
+            time per reviewer. Use the *Group by* menu in the search bar
+            to slice by Model, Definition or Requested by.
+            &lt;/p&gt;</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="open_my_tier_reviews">
+        <field name="name">My Tier Reviews</field>
+        <field name="res_model">tier.review</field>
+        <field name="view_mode">list,kanban,form,pivot,graph</field>
+        <field
+            name="domain"
+        >[("reviewer_ids", "in", uid), ("status", "in", ("pending", "waiting"))]</field>
+        <field name="context">{"search_default_my_reviews": 1}</field>
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'list', 'view_id': ref('base_tier_validation.tier_review_view_tree')}),
+                          (0, 0, {'view_mode': 'kanban', 'view_id': ref('tier_review_view_kanban')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('tier_review_view_form_board')}),
                           (0, 0, {'view_mode': 'pivot'}),
                           (0, 0, {'view_mode': 'graph'})]"
         />
@@ -124,11 +296,32 @@
     </record>
 
     <menuitem
-        id="board_menu_tier_reviews"
+        id="menu_tier_reviews_root"
         name="Tier Reviews"
         parent="spreadsheet_dashboard.spreadsheet_dashboard_menu_root"
+        sequence="1"
+    />
+    <menuitem
+        id="menu_my_tier_reviews"
+        name="My Reviews"
+        parent="menu_tier_reviews_root"
+        action="open_my_tier_reviews"
+        sequence="10"
+    />
+    <menuitem
+        id="board_menu_tier_reviews"
+        name="All Reviews"
+        parent="menu_tier_reviews_root"
         action="open_boards_tier_reviews"
         groups="group_show_tier_review_board"
-        sequence="1"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_tier_review_statistics"
+        name="Review Statistics"
+        parent="menu_tier_reviews_root"
+        action="open_review_statistics"
+        groups="group_show_tier_review_board"
+        sequence="30"
     />
 </odoo>
