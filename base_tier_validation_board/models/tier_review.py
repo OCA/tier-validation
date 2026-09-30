@@ -31,15 +31,17 @@ class TierReview(models.Model):
     res_name = fields.Char(
         "Resource Name", compute="_compute_res_name", compute_sudo=True
     )
+    # Stored m2o to ir.model (rather than the base `model` char) so the
+    # list/pivot/graph show and group by the model's human-friendly
+    # description (e.g. "Journal Entry") instead of its technical name
+    # ("account.move"). The help below is what the user sees on hover, so
+    # keep it plain.
     model_id = fields.Many2one(
         comodel_name="ir.model",
         related="definition_id.model_id",
         store=True,
         string="Model",
-        help="Many2one to ir.model used by the pivot/graph views so the "
-        "rows display the model's human-friendly description (e.g. "
-        "'Journal Entry') rather than its technical name "
-        "('account.move').",
+        help="The kind of document this review is for (e.g. Journal Entry, Contract).",
     )
     response_days = fields.Float(
         string="Response (days)",
