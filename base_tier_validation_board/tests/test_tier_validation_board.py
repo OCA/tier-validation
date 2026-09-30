@@ -1,6 +1,8 @@
 # Copyright 2026 OCA / @bosd
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+from unittest import mock
+
 from freezegun import freeze_time
 
 from odoo import fields
@@ -184,3 +186,45 @@ class TierValidationBoard(CommonTierValidation):
             self.assertTrue(self.review.age_display.endswith("mo"))
             self.review.write({"status": "approved", "done_by": self.test_user_1.id})
             self.assertFalse(self.review.age_display)
+
+    def test_age_display_days_and_weeks(self):
+        """Between one day and two weeks the age is shown in days, then in
+        weeks until two months."""
+        for days, expected in ((5, "5d"), (21, "3w")):
+            with freeze_time(fields.Datetime.add(fields.Datetime.now(), days=days)):
+                self.review.invalidate_recordset(["age_display"])
+                self.assertEqual(self.review.age_display, expected)
+
+    def test_review_without_document(self):
+        """A review not linked to a document has no name and no reference."""
+        review = self.env["tier.review"].new({"model": self.test_record._name})
+        self.assertFalse(review.res_name)
+        self.assertFalse(review.related_model_instance)
+
+    def test_selection_related_model_instance_no_tier_models(self):
+        """Without any tier-validated model the selection is empty."""
+        with mock.patch.object(
+            type(self.env["tier.definition"]),
+            "_get_tier_validation_model_names",
+            return_value=[],
+        ):
+            self.assertEqual(
+                self.env["tier.review"]._selection_related_model_instance(), []
+            )
+
+    def test_search_no_match_for_regular_user(self):
+        """The per-document filter is skipped when the search finds nothing."""
+        found = (
+            self.env["tier.review"]
+            .with_user(self.test_user_2)
+            .search(Domain("id", "=", 0))
+        )
+        self.assertFalse(found)
+
+    def test_tier_review_dashboard_action_missing_action(self):
+        """No link is offered when the board action has been deleted."""
+        self.env.ref("base_tier_validation_board.open_boards_tier_reviews").unlink()
+        admin = self.env.ref("base.user_admin")
+        self.assertFalse(
+            self.env["res.users"].with_user(admin).tier_review_dashboard_action()
+        )
