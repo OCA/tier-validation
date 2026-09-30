@@ -39,21 +39,33 @@ class TierValidationBoard(CommonTierValidation):
         self.assertEqual(self.review.model_id, self.tester_model)
         self.assertEqual(self.review.model_id.model, self.test_record._name)
 
-    def test_search_is_overdue_returns_id_in_domain(self):
-        """`_search_is_overdue` returns a domain shape the ORM can use --
+    def test_search_is_late_returns_id_in_domain(self):
+        """`_search_is_late` returns a domain shape the ORM can use --
         either ``[("id", "in", ids)]`` or ``[("id", "not in", ids)]``
         depending on the operator/value pair, and never raises."""
         Model = self.env["tier.review"]
         for value in (True, False):
             for operator in ("=", "!="):
-                domain = Model._search_is_overdue(operator, value)
+                domain = Model._search_is_late(operator, value)
                 self.assertEqual(len(domain), 1)
                 cond = domain[0]
                 self.assertEqual(cond[0], "id")
                 self.assertIn(cond[1], ("in", "not in", "="))
         # Bad operator -> match nothing (does not raise).
-        bad = Model._search_is_overdue("ilike", "garbage")
+        bad = Model._search_is_late("ilike", "garbage")
         self.assertEqual(bad, [("id", "=", False)])
+
+    def test_late_filter(self):
+        """The Late filter finds late reviews through a real search.
+
+        Odoo 19 passes the search method ``in`` instead of ``=``.
+        """
+        TierReview = self.env["tier.review"].with_user(self.test_user_1)
+        self.assertNotIn(self.review, TierReview.search([("is_late", "=", True)]))
+        self.assertIn(self.review, TierReview.search([("is_late", "=", False)]))
+        with freeze_time(fields.Datetime.add(fields.Datetime.now(), days=30)):
+            self.assertIn(self.review, TierReview.search([("is_late", "=", True)]))
+            self.assertNotIn(self.review, TierReview.search([("is_late", "!=", True)]))
 
     def test_selection_related_model_instance(self):
         """The Reference selection only exposes tier-validated models,
@@ -87,27 +99,44 @@ class TierValidationBoard(CommonTierValidation):
         )
         self.assertAlmostEqual(self.review.response_days, 2.0, places=2)
 
-    def test_is_overdue_compute(self):
-        """`is_overdue` flips True for waiting/pending reviews older
-        than the configured threshold, and resets when the review is
-        completed.
+    def test_is_late_compute(self):
+        """`is_late` flips True for waiting/pending reviews older than the
+        configured threshold, and resets when the review is completed.
 
         Uses ``freeze_time`` to move "now" past the threshold instead
         of rewriting create_date, keeping the test independent of any
         ORM-side cache invariants around the create_date magic field.
         """
-        # Fresh review: not overdue.
-        self.assertFalse(self.review.is_overdue)
+        # Fresh review: not late.
+        self.assertFalse(self.review.is_late)
         # Move "now" 14 days forward -- the review's real create_date
-        # is now well past the 7-day overdue threshold.
+        # is now well past the 7-day default late threshold.
         later = fields.Datetime.add(fields.Datetime.now(), days=14)
         with freeze_time(later):
-            self.review.invalidate_recordset(["is_overdue"])
-            self.assertTrue(self.review.is_overdue)
-            # Once approved, the review is no longer "overdue" -- even
+            self.review.invalidate_recordset(["is_late"])
+            self.assertTrue(self.review.is_late)
+            # Once approved, the review is no longer "late" -- even
             # if it took forever, it's done.
             self.review.write({"status": "approved", "done_by": self.test_user_1.id})
-            self.assertFalse(self.review.is_overdue)
+            self.assertFalse(self.review.is_late)
+
+    def test_late_after_days_respects_system_parameter(self):
+        """The late threshold is read from
+        ``base_tier_validation.late_after_days`` so an admin can tune it
+        without a code change."""
+        self.env["ir.config_parameter"].sudo().set_param(
+            "base_tier_validation.late_after_days", "30"
+        )
+        # 14 days old is late at the default 7 but not at 30.
+        later = fields.Datetime.add(fields.Datetime.now(), days=14)
+        with freeze_time(later):
+            self.review.invalidate_recordset(["is_late"])
+            self.assertFalse(self.review.is_late)
+        # 40 days old crosses the 30-day threshold.
+        much_later = fields.Datetime.add(fields.Datetime.now(), days=40)
+        with freeze_time(much_later):
+            self.review.invalidate_recordset(["is_late"])
+            self.assertTrue(self.review.is_late)
 
     def test_tier_review_dashboard_action_for_authorised_user(self):
         """Users in the board group get the dashboard action back from
