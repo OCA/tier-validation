@@ -47,12 +47,17 @@ class TierReview(models.Model):
         help="The kind of document this review is for (e.g. Journal Entry, Contract).",
     )
     response_days = fields.Float(
-        string="Response (days)",
+        string="Response time (days)",
         compute="_compute_response_days",
         store=True,
-        help="Days between the review being created and it being done. "
-        "Empty until the review is approved or rejected. Use this as a "
-        "measure in pivot/graph views to compare reviewer response time.",
+        # Aggregate as an AVERAGE, not a sum: the useful KPI is "reviews
+        # took N days on average", whereas a sum of everyone's turnaround
+        # is a meaningless total. Drives the "avg days" measure in the
+        # Review Statistics pivot/graph.
+        aggregator="avg",
+        help="Days between the review being created and it being done "
+        "(0 until it is approved or rejected). Averaged in pivot/graph "
+        "views, so the measure reads as the mean review turnaround.",
     )
     is_late = fields.Boolean(
         compute="_compute_is_late",
