@@ -109,6 +109,29 @@ class TierValidationBoard(CommonTierValidation):
             self.review.write({"status": "approved", "done_by": self.test_user_1.id})
             self.assertFalse(self.review.is_overdue)
 
+    def test_tier_review_dashboard_action_for_authorised_user(self):
+        """Users in the board group get the dashboard action back from
+        the systray hook so the "Show all reviews" footer link can open
+        it. Users without the group get `False` -- without that gate
+        clicking the link would fail with an AccessError."""
+        group = self.env.ref("base_tier_validation_board.group_show_tier_review_board")
+        admin = self.env.ref("base.user_admin")
+        # Admin is already in the group via the security/groups.xml
+        # default; assert and read the action.
+        self.assertIn(admin, group.user_ids)
+        action = self.env["res.users"].with_user(admin).tier_review_dashboard_action()
+        self.assertTrue(action)
+        self.assertEqual(action.get("res_model"), "tier.review")
+        # test_user_2 is a plain employee and not in the dashboard group
+        # -> the hook returns False so the systray omits the link.
+        self.assertNotIn(self.test_user_2, group.user_ids)
+        no_action = (
+            self.env["res.users"]
+            .with_user(self.test_user_2)
+            .tier_review_dashboard_action()
+        )
+        self.assertFalse(no_action)
+
     def test_search_filters_by_user_acl(self):
         """The `_search` override hides reviews whose underlying record
         the current user cannot read. The standard tester model has a
