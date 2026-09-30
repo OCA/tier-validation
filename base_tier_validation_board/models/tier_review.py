@@ -59,6 +59,13 @@ class TierReview(models.Model):
         "(0 until it is approved or rejected). Averaged in pivot/graph "
         "views, so the measure reads as the mean review turnaround.",
     )
+    age_display = fields.Char(
+        compute="_compute_age_display",
+        string="Waiting",
+        help="How long an open (pending/waiting) review has been waiting, in "
+        "a short relative form (e.g. 3d, 2w, 4mo). Empty once the review is "
+        "done. Used on the kanban card so aging stands out.",
+    )
     is_late = fields.Boolean(
         compute="_compute_is_late",
         search="_search_is_late",
@@ -109,6 +116,23 @@ class TierReview(models.Model):
                 and rec.create_date
                 and rec.create_date < cutoff
             )
+
+    @api.depends("status", "create_date")
+    def _compute_age_display(self):
+        now = fields.Datetime.now()
+        for rec in self:
+            if rec.status in ("waiting", "pending") and rec.create_date:
+                days = (now - rec.create_date).days
+                if days < 1:
+                    rec.age_display = self.env._("today")
+                elif days < 14:
+                    rec.age_display = f"{days}d"
+                elif days < 60:
+                    rec.age_display = f"{days // 7}w"
+                else:
+                    rec.age_display = f"{days // 30}mo"
+            else:
+                rec.age_display = False
 
     @api.model
     def _search_is_late(self, operator, value):

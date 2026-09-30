@@ -108,16 +108,23 @@
                 <field name="create_date" />
                 <field name="reviewed_date" />
                 <field name="is_late" />
+                <field name="age_display" />
                 <field name="activity_ids" />
                 <templates>
                     <t
                         t-name="card"
                         t-att-class="record.is_late.raw_value and 'border-danger bg-danger-subtle' or ''"
                     >
-                        <div class="o_kanban_record_top">
+                        <div
+                            class="o_kanban_record_top d-flex justify-content-between align-items-start"
+                        >
                             <div class="o_kanban_record_headings">
                                 <strong class="o_kanban_record_title d-block">
-                                    <field name="res_name" />
+                                    <!-- One click opens the document under
+                                         review, not the review record. -->
+                                    <a name="open_origin" type="object">
+                                        <field name="res_name" />
+                                    </a>
                                 </strong>
                                 <small
                                     class="o_kanban_record_subtitle text-muted d-block"
@@ -125,6 +132,10 @@
                                     <field name="name" />
                                 </small>
                             </div>
+                            <span
+                                t-if="record.is_late.raw_value"
+                                class="badge text-bg-danger ms-2"
+                            >Late</span>
                         </div>
                         <div class="o_kanban_record_body">
                             <div class="d-flex align-items-center mb-1">
@@ -172,8 +183,19 @@
                             </div>
                         </div>
                         <div class="o_kanban_record_bottom">
-                            <div class="oe_kanban_bottom_left text-muted small">
-                                Requested <field name="create_date" widget="date" />
+                            <div class="oe_kanban_bottom_left small">
+                                <!-- Open reviews lead with how long they have
+                                     been waiting (red once late); done ones
+                                     keep the request date. -->
+                                <span
+                                    t-if="record.age_display.value"
+                                    t-att-class="record.is_late.raw_value and 'text-danger fw-bold' or 'text-muted'"
+                                >
+                                    Waiting <t t-out="record.age_display.value" />
+                                </span>
+                                <span t-else="" class="text-muted">
+                                    Requested <field name="create_date" widget="date" />
+                                </span>
                             </div>
                             <div class="oe_kanban_bottom_right">
                                 <field name="activity_ids" widget="kanban_activity" />
