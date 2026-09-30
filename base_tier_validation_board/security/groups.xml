@@ -3,7 +3,7 @@
     <record model="res.groups" id="group_show_tier_review_board">
         <field name="name">Show tier review board</field>
         <field
-            name="users"
+            name="user_ids"
             eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"
         />
     </record>
