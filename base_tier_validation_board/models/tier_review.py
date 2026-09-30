@@ -3,10 +3,13 @@
 from odoo import api, fields, models
 from odoo.tools import SQL, split_every
 
-OVERDUE_DAYS = 7
-# Days after which a still-pending/waiting tier review is considered
-# overdue. Surfaced as ``is_overdue`` and used by the kanban "rotten"
-# indicator and the "Overdue" search filter.
+# Fallback for the ``base_tier_validation.late_after_days`` system parameter:
+# the number of days after which a still-pending/waiting review counts as
+# "late". Shared with base_tier_validation's reviewer systray (the "Late"
+# bucket), so the board's ``is_late`` indicator/filter and the systray agree
+# on one admin-configurable threshold (Settings > Technical > System
+# Parameters). Used by the kanban "rotten" colour and the "Late" search filter.
+DEFAULT_LATE_AFTER_DAYS = 7
 
 
 class TierReview(models.Model):
@@ -51,13 +54,34 @@ class TierReview(models.Model):
         "Empty until the review is approved or rejected. Use this as a "
         "measure in pivot/graph views to compare reviewer response time.",
     )
-    is_overdue = fields.Boolean(
-        compute="_compute_is_overdue",
-        search="_search_is_overdue",
-        help="True when this review is still pending/waiting and was "
-        f"created more than {OVERDUE_DAYS} days ago. Surfaced on the "
-        "kanban with a 'rotten' indicator.",
+    is_late = fields.Boolean(
+        compute="_compute_is_late",
+        search="_search_is_late",
+        string="Late",
+        help="Set when the review is still waiting for a decision and has "
+        "been pending longer than the configured threshold "
+        "(base_tier_validation.late_after_days, default 7 days). Shown on "
+        "the kanban with a 'rotten' colour and available as the 'Late' "
+        "filter.",
     )
+
+    @api.model
+    def _late_after_days(self):
+        """Days before a pending/waiting review counts as late.
+
+        Read from the ``base_tier_validation.late_after_days`` system
+        parameter (the same one the reviewer systray uses) so a single,
+        admin-configurable value drives both. Falls back to
+        ``DEFAULT_LATE_AFTER_DAYS`` when the parameter is unset.
+        """
+        return int(
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param(
+                "base_tier_validation.late_after_days",
+                default=str(DEFAULT_LATE_AFTER_DAYS),
+            )
+        )
 
     @api.depends("create_date", "reviewed_date")
     def _compute_response_days(self):
@@ -70,21 +94,25 @@ class TierReview(models.Model):
                 rec.response_days = 0.0
 
     @api.depends("status", "create_date")
-    def _compute_is_overdue(self):
-        cutoff = fields.Datetime.subtract(fields.Datetime.now(), days=OVERDUE_DAYS)
+    def _compute_is_late(self):
+        cutoff = fields.Datetime.subtract(
+            fields.Datetime.now(), days=self._late_after_days()
+        )
         for rec in self:
-            rec.is_overdue = (
+            rec.is_late = (
                 rec.status in ("waiting", "pending")
                 and rec.create_date
                 and rec.create_date < cutoff
             )
 
     @api.model
-    def _search_is_overdue(self, operator, value):
+    def _search_is_late(self, operator, value):
         if operator not in ("=", "!=") or not isinstance(value, bool):
             return [("id", "=", False)]
-        cutoff = fields.Datetime.subtract(fields.Datetime.now(), days=OVERDUE_DAYS)
-        overdue_ids = (
+        cutoff = fields.Datetime.subtract(
+            fields.Datetime.now(), days=self._late_after_days()
+        )
+        late_ids = (
             self.sudo()
             .search(
                 [
@@ -95,7 +123,7 @@ class TierReview(models.Model):
             .ids
         )
         match = (operator == "=") == bool(value)
-        return [("id", "in" if match else "not in", overdue_ids)]
+        return [("id", "in" if match else "not in", late_ids)]
 
     @api.depends("res_id", "model")
     def _compute_related_model_instance(self):
