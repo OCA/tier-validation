@@ -3,9 +3,15 @@
 from odoo import api, fields, models
 from odoo.tools import SQL, split_every
 
+OVERDUE_DAYS = 7
+# Days after which a still-pending/waiting tier review is considered
+# overdue. Surfaced as ``is_overdue`` and used by the kanban "rotten"
+# indicator and the "Overdue" search filter.
+
 
 class TierReview(models.Model):
-    _inherit = "tier.review"
+    _name = "tier.review"
+    _inherit = ["tier.review", "mail.thread", "mail.activity.mixin"]
 
     @api.depends("model", "res_id")
     def _compute_res_name(self):
@@ -43,6 +49,13 @@ class TierReview(models.Model):
         "Empty until the review is approved or rejected. Use this as a "
         "measure in pivot/graph views to compare reviewer response time.",
     )
+    is_overdue = fields.Boolean(
+        compute="_compute_is_overdue",
+        search="_search_is_overdue",
+        help="True when this review is still pending/waiting and was "
+        f"created more than {OVERDUE_DAYS} days ago. Surfaced on the "
+        "kanban with a 'rotten' indicator.",
+    )
 
     @api.depends("create_date", "reviewed_date")
     def _compute_response_days(self):
@@ -53,6 +66,34 @@ class TierReview(models.Model):
                 ).total_seconds() / 86400.0
             else:
                 rec.response_days = 0.0
+
+    @api.depends("status", "create_date")
+    def _compute_is_overdue(self):
+        cutoff = fields.Datetime.subtract(fields.Datetime.now(), days=OVERDUE_DAYS)
+        for rec in self:
+            rec.is_overdue = (
+                rec.status in ("waiting", "pending")
+                and rec.create_date
+                and rec.create_date < cutoff
+            )
+
+    @api.model
+    def _search_is_overdue(self, operator, value):
+        if operator not in ("=", "!=") or not isinstance(value, bool):
+            return [("id", "=", False)]
+        cutoff = fields.Datetime.subtract(fields.Datetime.now(), days=OVERDUE_DAYS)
+        overdue_ids = (
+            self.sudo()
+            .search(
+                [
+                    ("status", "in", ["waiting", "pending"]),
+                    ("create_date", "<", cutoff),
+                ]
+            )
+            .ids
+        )
+        match = (operator == "=") == bool(value)
+        return [("id", "in" if match else "not in", overdue_ids)]
 
     @api.depends("res_id", "model")
     def _compute_related_model_instance(self):

@@ -21,12 +21,12 @@
                         <group>
                             <field name="name" />
                             <field name="sequence" />
-                            <field name="requested_by" />
+                            <field name="requested_by" widget="many2one_avatar_user" />
                             <field name="todo_by" />
                         </group>
                         <group>
-                            <field name="status" />
-                            <field name="done_by" />
+                            <field name="status" widget="badge" />
+                            <field name="done_by" widget="many2one_avatar_user" />
                             <field name="reviewed_date" />
                             <field name="comment" />
                         </group>
@@ -46,47 +46,88 @@
                 create="0"
                 quick_create="0"
                 edit="0"
-                _order="create_date"
                 group_create="false"
                 group_delete="false"
                 group_edit="false"
             >
+                <field name="status" />
                 <field name="requested_by" />
+                <field name="reviewer_ids" />
                 <field name="todo_by" />
                 <field name="done_by" />
                 <field name="comment" />
+                <field name="create_date" />
+                <field name="reviewed_date" />
+                <field name="is_overdue" />
+                <field name="activity_ids" />
                 <templates>
-                    <t t-name="card">
-                        <div t-attf-class="oe_kanban_content oe_kanban_global_click">
-                            <div class="oe_kanban_content">
-                                <div>
-                                    <strong class="o_kanban_record_subtitle">
-                                        <field name="name" />
-                                    </strong>
-                                </div>
-                                <div>
-                                    <strong class="o_kanban_record_title">
-                                        <field name="res_name" />
-                                    </strong>
-                                </div>
-                                <div class="o_kanban_record_bottom">
-                                    <div class="oe_kanban_bottom_left">
-                                        <div>
-                                            <div>
-                                                <strong>Requested by: </strong>
-                                                <field name="requested_by" />
-                                            </div>
-                                            <div>
-                                                <strong>Todo by: </strong>
-                                                <field name="todo_by" />
-                                            </div>
-                                            <div t-if="comment">
-                                                <strong>Comment: </strong>
-                                                <field name="comment" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                    <t
+                        t-name="card"
+                        t-att-class="record.is_overdue.raw_value and 'border-danger bg-danger-subtle' or ''"
+                    >
+                        <div class="o_kanban_record_top">
+                            <div class="o_kanban_record_headings">
+                                <strong class="o_kanban_record_title d-block">
+                                    <field name="res_name" />
+                                </strong>
+                                <small
+                                    class="o_kanban_record_subtitle text-muted d-block"
+                                >
+                                    <field name="name" />
+                                </small>
+                            </div>
+                        </div>
+                        <div class="o_kanban_record_body">
+                            <div class="d-flex align-items-center mb-1">
+                                <span class="text-muted me-2">Requested by</span>
+                                <field
+                                    name="requested_by"
+                                    widget="many2one_avatar_user"
+                                />
+                                <span class="ms-2" t-out="record.requested_by.value" />
+                            </div>
+                            <div
+                                t-if="record.reviewer_ids.raw_value.length"
+                                class="d-flex align-items-center mb-1"
+                            >
+                                <span class="text-muted me-2">To review</span>
+                                <field
+                                    name="reviewer_ids"
+                                    widget="many2many_avatar_user"
+                                />
+                            </div>
+                            <div
+                                t-if="!record.reviewer_ids.raw_value.length and record.todo_by.raw_value"
+                                class="mb-1"
+                            >
+                                <span class="text-muted">Todo by: </span>
+                                <field name="todo_by" />
+                            </div>
+                            <div
+                                t-if="record.done_by.raw_value"
+                                class="d-flex align-items-center mb-1"
+                            >
+                                <span class="text-muted me-2">Done by</span>
+                                <field name="done_by" widget="many2one_avatar_user" />
+                                <span class="ms-2" t-out="record.done_by.value" />
+                                <span class="ms-2 text-muted">on </span>
+                                <field
+                                    name="reviewed_date"
+                                    widget="date"
+                                    class="ms-1"
+                                />
+                            </div>
+                            <div t-if="record.comment.raw_value" class="mb-1">
+                                <span class="text-muted">Comment: </span>
+                                <field name="comment" />
+                            </div>
+                        </div>
+                        <div class="o_kanban_record_bottom">
+                            <div class="oe_kanban_bottom_left text-muted small">
+                                Requested <field name="create_date" widget="date" />
+                            </div>
+                            <div class="oe_kanban_bottom_right">
+                                <field name="activity_ids" widget="kanban_activity" />
                             </div>
                         </div>
                     </t>
@@ -168,6 +209,12 @@
                     domain="[('status', '=', 'rejected')]"
                 />
                 <separator />
+                <filter
+                    name="overdue"
+                    string="Overdue"
+                    domain="[('is_overdue', '=', True)]"
+                    help="Pending or waiting reviews older than the configured overdue threshold."
+                />
                 <filter
                     name="reviewed_today"
                     string="Reviewed today"
