@@ -448,6 +448,22 @@ Reject.</li>
 <li>If check <em>Approve by sequence</em>, reviewers is forced to review by
 specified sequence.</li>
 </ul>
+<p>To tune when a pending review is flagged as <em>Late</em> in the reviewer
+systray, you need to:</p>
+<ol class="arabic simple">
+<li>Go to <em>Settings &gt; Technical &gt; Parameters &gt; System Parameters</em>.</li>
+<li>Create or edit the <tt class="docutils literal">base_tier_validation.late_after_days</tt>
+parameter.</li>
+</ol>
+<p><strong>Note:</strong></p>
+<ul class="simple">
+<li>The tier-review systray splits your reviews into <em>Late</em>, <em>Pending</em> and
+<em>Future</em> buckets. A pending review is counted as <em>Late</em> once it has
+been waiting for more than <tt class="docutils literal">base_tier_validation.late_after_days</tt>
+days (default <tt class="docutils literal">7</tt>). Lower the value to be alerted sooner, raise it
+to be more tolerant. The parameter is read on each systray refresh, so
+a change takes effect immediately without restarting.</li>
+</ul>
 <p>To configure Tier Validation Exceptions, you need to:</p>
 <ol class="arabic simple">
 <li>Go to <em>Settings &gt; Technical &gt; Tier Validations &gt; Tier Validation
