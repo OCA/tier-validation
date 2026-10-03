@@ -1,10 +1,10 @@
 # Copyright 2025 360ERP (<https://www.360erp.com>)
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 {
     "name": "Base Tier Validation Delegation HR",
     "summary": "Allows employees to delegate tier validation tasks when out of office.",
-    "version": "18.0.1.0.0",
+    "version": "19.0.1.0.0",
     "development_status": "Beta",
     "category": "Tools",
     "website": "https://github.com/OCA/tier-validation",
