@@ -1,0 +1,1 @@
+odoo-addon-base_tier_validation_delegation @ git+https://github.com/OCA/tier-validation.git@refs/pull/68/head#subdirectory=base_tier_validation_delegation
