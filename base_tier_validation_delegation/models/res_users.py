@@ -135,7 +135,18 @@ class ResUsers(models.Model):
 
         users_to_recompute = self
 
-        res = super().write(vals)
+        users = self
+        if (
+            not self.env.su
+            and set(vals) <= set(holiday_fields)
+            and self.env.user.has_group(
+                "base_tier_validation_delegation.group_delegation_administrator"
+            )
+        ):
+            # Delegation administrators manage these fields for any user,
+            # without needing the rights to edit users in general.
+            users = self.sudo()
+        res = super(ResUsers, users).write(vals)
 
         if users_to_recompute:
             self.env["tier.review"].sudo()._recompute_reviews_for_users(
