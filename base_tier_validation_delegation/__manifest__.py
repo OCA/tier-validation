@@ -7,7 +7,7 @@
     "version": "18.0.1.0.0",
     "development_status": "Beta",
     "category": "Tools",
-    "website": "https://github.com/OCA/server-ux",
+    "website": "https://github.com/OCA/tier-validation",
     "author": "360 ERP, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "depends": ["base_tier_validation"],
