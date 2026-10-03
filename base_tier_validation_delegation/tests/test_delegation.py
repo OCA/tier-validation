@@ -3,9 +3,12 @@
 
 from datetime import date, timedelta
 
+from freezegun import freeze_time
+
 from odoo.exceptions import AccessError, ValidationError
 from odoo.fields import Command
 from odoo.tests.common import tagged
+from odoo.tools import mute_logger
 
 from odoo.addons.base_tier_validation.tests.common import CommonTierValidation
 
@@ -497,3 +500,160 @@ class TestTierValidationDelegation(CommonTierValidation):
             self.user_delegator.with_user(self.admin_user).write(
                 {"on_holiday": True, "name": "Renamed"}
             )
+
+    def _create_stale_delegation(self):
+        """A review still assigned to the delegator whose holiday started today.
+
+        The holiday starts tomorrow, so the review is created for the
+        delegator; the tests then act as if it were tomorrow, before anything
+        recomputed the reviewers.
+        """
+        tomorrow = date.today() + timedelta(days=1)
+        self.user_delegator.write(
+            {
+                "on_holiday": True,
+                "holiday_start_date": tomorrow,
+                "validation_replacer_id": self.user_replacer_b.id,
+            }
+        )
+        record, review = self._create_record_and_request_validation()
+        self.assertEqual(review.reviewer_ids, self.user_delegator)
+        return record, review, tomorrow
+
+    def test_22_validate_as_delegate(self):
+        """A replacer can validate a review not yet reassigned to them."""
+        record, review, tomorrow = self._create_stale_delegation()
+        with freeze_time(tomorrow):
+            record.with_user(self.user_replacer_b).validate_tier()
+        self.assertEqual(review.status, "approved")
+        self.assertEqual(review.done_by, self.user_replacer_b)
+
+    def test_23_reject_as_delegate(self):
+        """A replacer can reject a review not yet reassigned to them."""
+        record, review, tomorrow = self._create_stale_delegation()
+        with freeze_time(tomorrow):
+            _res, delegator, rejected = record.with_user(
+                self.user_replacer_b
+            )._rejected_tier()
+        self.assertEqual(review.status, "rejected")
+        self.assertEqual(review.done_by, self.user_replacer_b)
+        self.assertEqual(delegator, self.user_delegator)
+        self.assertEqual(rejected, review)
+
+    def test_24_reject_as_assigned_replacer(self):
+        """Rejecting a delegated review reports who delegated it."""
+        self.user_delegator.write(
+            {"on_holiday": True, "validation_replacer_id": self.user_replacer_b.id}
+        )
+        record, review = self._create_record_and_request_validation()
+        self.assertEqual(review.reviewer_ids, self.user_replacer_b)
+        _res, delegator, rejected = record.with_user(
+            self.user_replacer_b
+        )._rejected_tier()
+        self.assertEqual(review.status, "rejected")
+        self.assertEqual(delegator, self.user_delegator)
+        self.assertEqual(rejected, review)
+
+    def test_25_validate_without_delegation(self):
+        """A user who is neither reviewer nor replacer cannot validate."""
+        record, review = self._create_record_and_request_validation()
+        record.with_user(self.user_replacer_c)._validate_tier()
+        self.assertEqual(review.status, "pending")
+
+    def test_26_holiday_end_before_start(self):
+        with self.assertRaises(ValidationError):
+            self.user_delegator.write(
+                {
+                    "on_holiday": True,
+                    "holiday_start_date": date.today(),
+                    "holiday_end_date": date.today() - timedelta(days=1),
+                }
+            )
+
+    def test_27_is_currently_on_holiday_defaults_to_today(self):
+        self.user_delegator.write(
+            {"on_holiday": True, "validation_replacer_id": self.user_replacer_b.id}
+        )
+        self.assertTrue(self.user_delegator._is_currently_on_holiday())
+
+    def test_28_circular_delegation_at_runtime(self):
+        """A loop the constraint did not see falls back to the last user."""
+        self.user_delegator.write(
+            {"on_holiday": True, "validation_replacer_id": self.user_replacer_b.id}
+        )
+        # Only possible by bypassing the constraint, e.g. with SQL.
+        self.env.cr.execute(
+            "UPDATE res_users SET on_holiday = true, validation_replacer_id = %s "
+            "WHERE id = %s",
+            (self.user_delegator.id, self.user_replacer_b.id),
+        )
+        self.env.invalidate_all()
+        with mute_logger(
+            "odoo.addons.base_tier_validation_delegation.models.res_users"
+        ):
+            replacer = self.user_delegator._get_final_validation_replacer()
+        self.assertEqual(replacer, self.user_replacer_b)
+
+    def test_29_cron_holiday_reminder(self):
+        """Users starting a holiday in 3 days without replacer are reminded."""
+        users = self.env["res.users"]
+        # Nothing to activate or deactivate today.
+        users._cron_update_holiday_status()
+        self.user_replacer_c.holiday_start_date = date.today() + timedelta(days=3)
+        partner = self.user_replacer_c.partner_id
+        messages_before = partner.message_ids
+        users._cron_send_delegation_reminder()
+        new_messages = partner.message_ids - messages_before
+        self.assertIn(
+            "configure a validation replacer",
+            " ".join(str(m.body) for m in new_messages),
+        )
+
+    def test_30_nothing_to_recompute(self):
+        self.assertTrue(self.env["res.users"].write({"on_holiday": False}))
+        self.assertIsNone(
+            self.env["tier.review"]._recompute_reviews_for_users(self.env["res.users"])
+        )
+
+    def test_31_delegate_review_without_document(self):
+        """A review without document is delegated, without chatter message."""
+        review = self.env["tier.review"].create(
+            {
+                "definition_id": self.definition_1.id,
+                "model": self.test_model._name,
+                "status": "pending",
+            }
+        )
+        self.assertEqual(review.reviewer_ids, self.user_delegator)
+        self.user_delegator.write(
+            {"on_holiday": True, "validation_replacer_id": self.user_replacer_b.id}
+        )
+        self.assertEqual(review.reviewer_ids, self.user_replacer_b)
+        self.assertEqual(review.delegated_by_ids, self.user_delegator)
+
+    def test_32_inside_delegation_flow(self):
+        """Within the delegation flow, the base behaviour applies as is."""
+        record, review = self._create_record_and_request_validation()
+        record.with_user(self.user_delegator).with_context(
+            in_delegation_flow=True
+        )._validate_tier()
+        self.assertEqual(review.status, "approved")
+        record, review = self._create_record_and_request_validation()
+        _res, delegator, rejected = (
+            record.with_user(self.user_delegator)
+            .with_context(in_delegation_flow=True)
+            ._rejected_tier()
+        )
+        self.assertEqual(review.status, "rejected")
+        self.assertFalse(delegator)
+        self.assertFalse(rejected)
+
+    def test_33_reject_without_delegation(self):
+        """A user who is neither reviewer nor replacer cannot reject."""
+        record, review = self._create_record_and_request_validation()
+        _res, delegator, rejected = record.with_user(
+            self.user_replacer_c
+        )._rejected_tier()
+        self.assertEqual(review.status, "pending")
+        self.assertFalse(delegator)
+        self.assertFalse(rejected)
