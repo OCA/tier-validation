@@ -1,5 +1,5 @@
 # Copyright 2025 360ERP (<https://www.360erp.com>)
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo.exceptions import AccessError
 from odoo.fields import Command
@@ -26,7 +26,7 @@ class TestTierValidationDelegationLog(CommonTierValidation):
                     "name": "User B (Replacer)",
                     "login": "user_b",
                     "email": "b@test.com",
-                    "groups_id": [Command.link(base_group_id)],
+                    "group_ids": [Command.link(base_group_id)],
                 }
             )
         )
@@ -39,7 +39,7 @@ class TestTierValidationDelegationLog(CommonTierValidation):
                     "name": "User C (Final)",
                     "login": "user_c",
                     "email": "c@test.com",
-                    "groups_id": [Command.link(base_group_id)],
+                    "group_ids": [Command.link(base_group_id)],
                 }
             )
         )
@@ -54,7 +54,7 @@ class TestTierValidationDelegationLog(CommonTierValidation):
                     "email": "da@test.com",
                     "company_ids": [Command.link(self.env.company.id)],
                     "company_id": self.env.company.id,
-                    "groups_id": [Command.link(base_group_id)],
+                    "group_ids": [Command.link(base_group_id)],
                 }
             )
         )
@@ -65,7 +65,7 @@ class TestTierValidationDelegationLog(CommonTierValidation):
         )
         if self.delegation_admin_group:
             self.admin_user.write(
-                {"groups_id": [Command.link(self.delegation_admin_group.id)]}
+                {"group_ids": [Command.link(self.delegation_admin_group.id)]}
             )
 
         self.user_delegator.write(
