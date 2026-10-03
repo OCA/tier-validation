@@ -112,6 +112,13 @@ class TierValidation(models.AbstractModel):
         "review_ids.status",
     )
     def _compute_can_review(self):
+        # ``_get_sequences_to_approve`` filters ``review_ids`` and then reads
+        # ``reviewer_ids`` on what is left. ``filtered`` returns a recordset
+        # whose prefetch set is narrowed to the records it kept, so that read
+        # is issued one document at a time -- one query per pending review,
+        # every time the systray recounts. Read the relation once, for the
+        # whole batch, before the loop narrows anything.
+        self.review_ids.mapped("reviewer_ids")
         for rec in self:
             rec.can_review = rec._get_sequences_to_approve(self.env.user)
 
