@@ -484,3 +484,16 @@ class TestTierValidationDelegation(CommonTierValidation):
 
         # Call _get_reviewers() as test_user_2
         review.with_user(self.test_user_2)._get_reviewers()
+
+    def test_21_delegation_admin_is_not_settings_admin(self):
+        """The delegation administrator only manages delegation settings."""
+        self.assertFalse(self.admin_user.has_group("base.group_system"))
+        self.assertTrue(
+            self.env.ref("base.user_admin").has_group(
+                "base_tier_validation_delegation.group_delegation_administrator"
+            )
+        )
+        with self.assertRaises(AccessError):
+            self.user_delegator.with_user(self.admin_user).write(
+                {"on_holiday": True, "name": "Renamed"}
+            )
