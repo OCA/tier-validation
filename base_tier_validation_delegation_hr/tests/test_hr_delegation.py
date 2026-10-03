@@ -1,5 +1,5 @@
 # Copyright 2025 360ERP (<https://www.360erp.com>)
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from datetime import date, timedelta
 
@@ -108,7 +108,7 @@ class TestHrDelegation(TransactionCase):
             {
                 "login": "test@example.org",
                 "name": "Test",
-                "groups_id": [Command.set(self.env.ref("base.group_user").ids)],
+                "group_ids": [Command.set(self.env.ref("base.group_user").ids)],
             },
         )
         user.with_user(user).with_context(
