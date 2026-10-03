@@ -60,13 +60,11 @@ class TestTierValidationDelegationLog(CommonTierValidation):
         )
 
         self.delegation_admin_group = self.env.ref(
-            "base_tier_validation_delegation.group_delegation_administrator",
-            raise_if_not_found=False,
+            "base_tier_validation_delegation.group_delegation_administrator"
         )
-        if self.delegation_admin_group:
-            self.admin_user.write(
-                {"group_ids": [Command.link(self.delegation_admin_group.id)]}
-            )
+        self.admin_user.write(
+            {"group_ids": [Command.link(self.delegation_admin_group.id)]}
+        )
 
         self.user_delegator.write(
             {"on_holiday": True, "validation_replacer_id": self.user_replacer_b.id}
@@ -93,11 +91,6 @@ class TestTierValidationDelegationLog(CommonTierValidation):
             .sudo()
             .search([("review_id", "=", review.id)])
         )
-
-        if not log_entry:
-            self.fail("Log entry was not created, blocking the multicompany test.")
-            return
-
         self.assertEqual(len(log_entry), 1, "A delegation log entry was not created.")
 
     def test_02_log_on_rejection(self):
@@ -161,27 +154,23 @@ class TestTierValidationDelegationLog(CommonTierValidation):
             .search([("review_id", "=", review.id)])
         )
 
-        if not log_entry:
-            self.fail("Log entry was not created, blocking the multicompany test.")
-        else:
-            self.env.cr.execute(
-                """
-                UPDATE tier_review_delegation_log
-                SET company_id = %s
-                WHERE id = %s
-                """,
-                (company_2.id, log_entry.id),
-            )
+        self.assertEqual(len(log_entry), 1)
+        self.env.cr.execute(
+            """
+            UPDATE tier_review_delegation_log
+            SET company_id = %s
+            WHERE id = %s
+            """,
+            (company_2.id, log_entry.id),
+        )
 
-            visible_logs = (
-                self.env["tier.review.delegation.log"]
-                .with_user(self.admin_user)
-                .with_context(allowed_company_ids=[self.env.company.id])
-                .search([("review_id", "=", review.id)])
-            )
-            self.assertEqual(
-                len(visible_logs), 0, "Log should be hidden across companies."
-            )
+        visible_logs = (
+            self.env["tier.review.delegation.log"]
+            .with_user(self.admin_user)
+            .with_context(allowed_company_ids=[self.env.company.id])
+            .search([("review_id", "=", review.id)])
+        )
+        self.assertEqual(len(visible_logs), 0, "Log should be hidden across companies.")
 
     def test_06_global_log_visibility(self):
         record, reviews = self._create_record_and_request_validation()
@@ -205,13 +194,42 @@ class TestTierValidationDelegationLog(CommonTierValidation):
         record.with_user(self.user_replacer_b).validate_tier()
         self.env.flush_all()
 
-        with self.assertRaises(
-            AccessError,
-            msg="Users should not be able to delete or read delegation logs.",
-        ):
-            log_entry = (
-                self.env["tier.review.delegation.log"]
-                .with_user(self.user_replacer_b)
-                .search([("review_id", "=", review.id)])
-            )
+        logs = self.env["tier.review.delegation.log"]
+        with self.assertRaises(AccessError, msg="Users cannot read the log."):
+            logs.with_user(self.user_replacer_b).search([("review_id", "=", review.id)])
+        log_entry = logs.with_user(self.admin_user).search(
+            [("review_id", "=", review.id)]
+        )
+        self.assertEqual(len(log_entry), 1)
+        with self.assertRaises(AccessError, msg="Nobody can delete the log."):
             log_entry.unlink()
+
+    def test_08_no_log_when_delegator_acts(self):
+        """A delegator approving their own review is not a delegated action."""
+        _record, reviews = self._create_record_and_request_validation()
+        review = reviews[0]
+        self.assertEqual(review.delegated_by_ids, self.user_delegator)
+        review.with_user(self.user_delegator).sudo().write({"status": "approved"})
+        # Writing the same status again is not an action either.
+        review.with_user(self.user_replacer_b).sudo().write({"status": "approved"})
+        logs = self.env["tier.review.delegation.log"].search(
+            [("review_id", "=", review.id)]
+        )
+        self.assertFalse(logs)
+
+    def test_09_log_company(self):
+        """The log takes the company of the document, if it has one."""
+        company = self.env["res.company"].create({"name": "Log Company"})
+        partner = self.env["res.partner"].create(
+            {"name": "Document with company", "company_id": company.id}
+        )
+        review = self.env["tier.review"].create(
+            {
+                "definition_id": self.tier_definition.id,
+                "model": "res.partner",
+                "res_id": partner.id,
+            }
+        )
+        Log = self.env["tier.review.delegation.log"].sudo()
+        self.assertEqual(Log.create({"review_id": review.id}).company_id, company)
+        self.assertFalse(Log.create({}).company_id)
