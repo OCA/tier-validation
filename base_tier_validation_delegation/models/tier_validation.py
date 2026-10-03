@@ -77,9 +77,11 @@ class TierValidation(models.AbstractModel):
         ):
             return super()._validate_tier(tiers=tiers)
 
-        # If not a direct reviewer, check if they are a delegate.
-        res, _delegator, _review = self._execute_as_delegate("validate")
-        if res is not None:
+        # If not a direct reviewer, check if they are a delegate. The base
+        # method returns nothing, so whether a review was found is what tells
+        # that the delegate acted.
+        res, _delegator, review = self._execute_as_delegate("validate")
+        if review:
             return res
 
         # Fallback to the standard method (which will likely raise an error)
@@ -120,7 +122,7 @@ class TierValidation(models.AbstractModel):
             res, delegator_to_notify, rejected_review = self._execute_as_delegate(
                 "reject"
             )
-            if res is None:
+            if not rejected_review:
                 # Fallback to the standard method if not a delegate
                 res = super()._rejected_tier(tiers=tiers)
 
