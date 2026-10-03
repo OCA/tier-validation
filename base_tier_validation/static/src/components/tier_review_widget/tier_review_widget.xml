@@ -27,7 +27,11 @@
                                     name="th_reviewed_date"
                                     class="text-start"
                                 >Validation Date</th>
-                                <th name="th_comment" class="text-start">Comment</th>
+                                <th
+                                    t-if="hasComments"
+                                    name="th_comment"
+                                    class="text-start"
+                                >Comment</th>
                             </tr>
                         </thead>
                         <tbody class="sale_tbody">
@@ -87,7 +91,11 @@
                                             />
                                         </t>
                                     </td>
-                                    <td name="td_comment" class="text-start">
+                                    <td
+                                        t-if="hasComments"
+                                        name="td_comment"
+                                        class="text-start"
+                                    >
                                         <t t-if="review.comment">
                                             <span t-out="review.comment" />
                                         </t>
