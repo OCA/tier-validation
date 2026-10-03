@@ -1,5 +1,5 @@
 # Copyright 2026 360ERP (<https://www.360erp.com>)
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import logging
 

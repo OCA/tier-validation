@@ -6,7 +6,6 @@
     -->
     <record id="group_delegation_administrator" model="res.groups">
         <field name="name">Delegation Administrator</field>
-        <field name="category_id" ref="base.module_category_hidden" />
         <field name="implied_ids" eval="[Command.link(ref('base.group_system'))]" />
         <field
             name="comment"

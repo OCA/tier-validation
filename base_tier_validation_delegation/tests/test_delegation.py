@@ -1,5 +1,5 @@
 # Copyright 2026 360ERP (<https://www.360erp.com>)
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from datetime import date, timedelta
 
@@ -28,12 +28,12 @@ class TestTierValidationDelegation(CommonTierValidation):
             "base_tier_validation_delegation.group_delegation_administrator"
         )
         self.admin_user.write(
-            {"groups_id": [Command.link(self.delegation_admin_group.id)]}
+            {"group_ids": [Command.link(self.delegation_admin_group.id)]}
         )
 
         self.test_group = self.env["res.groups"].create({"name": "Test Review Group"})
-        self.test_user_1.write({"groups_id": [Command.link(self.test_group.id)]})
-        self.test_user_2.write({"groups_id": [Command.link(self.test_group.id)]})
+        self.test_user_1.write({"group_ids": [Command.link(self.test_group.id)]})
+        self.test_user_2.write({"group_ids": [Command.link(self.test_group.id)]})
 
     def _create_record_and_request_validation(self, test_field_value=1):
         record = self.test_model.create({"test_field": test_field_value})
@@ -439,7 +439,7 @@ class TestTierValidationDelegation(CommonTierValidation):
         admin_groups = self.env.ref("base.group_erp_manager") | self.env.ref(
             "base.group_system"
         )
-        self.test_user_2.write({"groups_id": [(3, g.id) for g in admin_groups]})
+        self.test_user_2.write({"group_ids": [(3, g.id) for g in admin_groups]})
 
         # Setup Tier Definition
         reviewer_field = (
