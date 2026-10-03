@@ -657,3 +657,28 @@ class TestTierValidationDelegation(CommonTierValidation):
         self.assertEqual(review.status, "pending")
         self.assertFalse(delegator)
         self.assertFalse(rejected)
+
+    def test_34_delegate_validation_keeps_tier_sequence(self):
+        """A replacer validating leaves later tiers as the reviewer would."""
+        self._create_stale_delegation()
+        tomorrow = self.user_delegator.holiday_start_date
+        # Third tier, after test_user_2's: it must wait for tier 2.
+        self._create_tier_definition(
+            model_id=self.tester_model.id,
+            review_type="individual",
+            reviewer_id=self.user_replacer_c.id,
+            definition_domain="[('test_field', '>', 3.0)]",
+            approve_sequence=True,
+            sequence=5,
+        )
+        direct = self.test_model.create({"test_field": 4})
+        direct.with_user(self.test_user_2).request_validation()
+        delegated = self.test_model.create({"test_field": 4})
+        delegated.with_user(self.test_user_2).request_validation()
+        direct.with_user(self.user_delegator).validate_tier()
+        with freeze_time(tomorrow):
+            delegated.with_user(self.user_replacer_b).validate_tier()
+        self.assertEqual(
+            delegated.review_ids.sorted("sequence").mapped("status"),
+            direct.review_ids.sorted("sequence").mapped("status"),
+        )
