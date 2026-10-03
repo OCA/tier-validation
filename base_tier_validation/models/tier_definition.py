@@ -230,7 +230,8 @@ class TierDefinition(models.Model):
         )
         domain = (
             Domain("definition_id", "=", self.id)
-            & Domain("status", "in", ["waiting", "pending"])
+            # A waiting review is not the reviewer's turn yet: nothing to remind.
+            & Domain("status", "=", "pending")
             & (
                 Domain("create_date", "<", review_date)
                 & Domain("last_reminder_date", "=", False)
