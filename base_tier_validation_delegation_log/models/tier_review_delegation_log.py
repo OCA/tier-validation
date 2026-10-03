@@ -1,5 +1,5 @@
 # Copyright 2025 360ERP (<https://www.360erp.com>)
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
 
@@ -53,7 +53,5 @@ class TierReviewDelegationLog(models.Model):
         as this is the correct way to identify models using tier validation.
         """
         # Search on tier.definition instead of the non-stored is_tier_validation field
-        tier_definition_models = (
-            self.env["tier.definition"].search([]).mapped("model_id")
-        )
-        return [(m.model, m.name) for m in tier_definition_models]
+        groups = self.env["tier.definition"]._read_group([], groupby=["model_id"])
+        return [(model.model, model.name) for (model,) in groups if model]
