@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="digest_digest_view_form" model="ir.ui.view">
+        <field name="name">digest.digest.form.tier.validation</field>
+        <field name="model">digest.digest</field>
+        <field name="inherit_id" ref="digest.digest_digest_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='kpis']" position="inside">
+                <group
+                    name="kpi_tier_validation"
+                    string="Tier Validation"
+                    groups="base.group_user"
+                >
+                    <field name="kpi_tier_validation_pending" />
+                    <field name="kpi_tier_validation_waiting" />
+                    <field name="kpi_tier_validation_validated_period" />
+                    <field
+                        name="kpi_tier_validation_pending_team"
+                        groups="base.group_erp_manager"
+                    />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
