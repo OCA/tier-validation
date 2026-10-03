@@ -6,6 +6,11 @@ export class ReviewsTable extends Component {
         const records = this.props.record.data.review_ids.records;
         return records.map((record) => record.data);
     }
+
+    /** Hide the Comment column on documents where nobody commented. */
+    get hasComments() {
+        return this._getReviewData().some((review) => review.comment);
+    }
 }
 
 ReviewsTable.template = "base_tier_validation.Collapse";
