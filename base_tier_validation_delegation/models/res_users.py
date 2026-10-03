@@ -1,5 +1,5 @@
 # Copyright 2026 360ERP (<https://www.360erp.com>)
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import logging
 from datetime import timedelta
@@ -183,9 +183,9 @@ class ResUsers(models.Model):
                 body=self.env._(
                     "Your holiday is scheduled to start on %s. Please remember to "
                     "configure a validation replacer in your preferences to avoid "
-                    "blocking any documents."
-                )
-                % user.holiday_start_date,
+                    "blocking any documents.",
+                    user.holiday_start_date,
+                ),
                 message_type="notification",
                 subtype_xmlid="mail.mt_comment",
             )
