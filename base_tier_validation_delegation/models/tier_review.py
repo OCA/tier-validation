@@ -1,5 +1,5 @@
 # Copyright 2026 360ERP (<https://www.360erp.com>)
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
 
 from markupsafe import Markup
@@ -17,7 +17,6 @@ class TierReview(models.Model):
         relation="tier_review_delegated_by_rel",
         column1="review_id",
         column2="user_id",
-        string="Delegated By",
         compute="_compute_reviewer_ids",
         store=True,
         help="Original users who delegated this review to the current reviewers.",
@@ -58,10 +57,10 @@ class TierReview(models.Model):
                         to_names = ", ".join(added.mapped("name"))
                         body = Markup(
                             self.env._(
-                                f"Review task delegated from <strong>{from_names}"
-                                f"</strong> to <strong>{to_names}</strong>."
+                                "Review task delegated from <strong>%(from)s"
+                                "</strong> to <strong>%(to)s</strong>."
                             )
-                        )
+                        ) % {"from": from_names, "to": to_names}
                         record.message_post(body=body)
         return res
 
