@@ -29,6 +29,7 @@ class ResUsers(models.Model):
     validation_replacer_id = fields.Many2one(
         "res.users",
         string="Default Replacer",
+        domain=[("share", "=", False)],
         help="This user will receive your validation requests "
         "while you are on holiday.",
     )
