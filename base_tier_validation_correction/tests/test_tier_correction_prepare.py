@@ -39,27 +39,24 @@ class TestTierCorrectionPrepare(CommonTierValidation):
 
     def test_warn_new_reviewers_without_access(self):
         """Choosing a new reviewer who cannot read the model warns."""
-        # Only internal users can read the tester model.
+        # Only administrators can read the tester model.
         self.env["ir.model.access"].search(
             [("model_id", "=", self.tester_model.id)]
-        ).group_id = self.env.ref("base.group_user")
+        ).group_id = self.env.ref("base.group_system")
         self.env["ir.model.access"].call_cache_clearing_methods()
-        portal = self.env["res.users"].create(
-            {
-                "name": "No access",
-                "login": "no_access_reviewer",
-                "group_ids": [Command.set(self.env.ref("base.group_portal").ids)],
-            }
+        no_access = self.env["res.users"].create(
+            {"name": "No access", "login": "no_access_reviewer"}
         )
+        admin = self.env.ref("base.user_admin")
         correction = self.env["tier.correction"].new(
-            {"model_id": self.tester_model.id, "new_reviewer_ids": portal.ids}
+            {"model_id": self.tester_model.id, "new_reviewer_ids": no_access.ids}
         )
         res = correction._onchange_warn_new_reviewers_access()
         self.assertIn("No access", res["warning"]["message"])
-        correction.new_reviewer_ids = self.test_user_2
+        correction.new_reviewer_ids = admin
         self.assertFalse(correction._onchange_warn_new_reviewers_access())
         item = self.env["tier.correction.item"].new(
-            {"res_model": self.tester_model.model, "new_reviewer_ids": portal.ids}
+            {"res_model": self.tester_model.model, "new_reviewer_ids": no_access.ids}
         )
         res = item._onchange_warn_new_reviewers_access()
         self.assertIn("No access", res["warning"]["message"])
@@ -68,3 +65,18 @@ class TestTierCorrectionPrepare(CommonTierValidation):
         self.assertFalse(correction._onchange_warn_new_reviewers_access())
         item.new_reviewer_ids = False
         self.assertFalse(item._onchange_warn_new_reviewers_access())
+
+    def test_new_reviewers_are_internal_users(self):
+        """Portal users cannot act on reviews, so they are not offered as new
+        reviewers."""
+        portal = self.env["res.users"].create(
+            {
+                "name": "Portal",
+                "login": "portal_reviewer",
+                "group_ids": [Command.set(self.env.ref("base.group_portal").ids)],
+            }
+        )
+        for model in ("tier.correction", "tier.correction.item"):
+            domain = self.env[model]._fields["new_reviewer_ids"].domain
+            self.assertFalse(portal.filtered_domain(domain))
+            self.assertTrue(self.test_user_2.filtered_domain(domain))
