@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-09-25 19:51+0000\n"
+"PO-Revision-Date: 2026-10-05 10:46+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -638,7 +638,7 @@ msgstr "Revisione"
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_validation.py:0
 msgid "Review pending for %(assignees)s, requested by %(requester)s."
-msgstr ""
+msgstr "Revisione in sospeso per %(assignees)s, richiesta da %(requester)s."
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__reviewer_id
@@ -1004,7 +1004,7 @@ msgstr "es. Validazione livello per ..."
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_validation.py:0
 msgid "the assigned reviewer"
-msgstr ""
+msgstr "il revisore assegnato"
 
 #~ msgid ""
 #~ "<i class=\"fa fa-lg fa-info-circle\"/>\n"
