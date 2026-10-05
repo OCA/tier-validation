@@ -1854,6 +1854,65 @@ class TierTierValidation(CommonTierValidation):
         # Review_ids should not be copied when duplicating a user
         self.assertFalse(new_user.review_ids.ids)
 
+    def test_41_same_sequence_onchange_warns(self):
+        """Two sequential tiers with the same sequence on the same documents
+        warn; a different sequence or a different filter does not."""
+        self.tier_def_obj.create(
+            {
+                "name": "Existing tier",
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '=', 9.0)]",
+                "approve_sequence": True,
+                "sequence": 55,
+            }
+        )
+        new = self.tier_def_obj.new(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_2.id,
+                "definition_domain": "[('test_field', '=', 9.0)]",
+                "sequence": 55,
+            }
+        )
+        res = new._onchange_warn_same_sequence()
+        self.assertIn("Existing tier", res["warning"]["message"])
+        # A definition for all companies meets the company-specific one.
+        new.company_id = False
+        self.assertTrue(new._onchange_warn_same_sequence())
+        # No filter on the new one: it can meet the same documents too.
+        new.definition_domain = "[]"
+        self.assertTrue(new._onchange_warn_same_sequence())
+        # A different filter, or a different sequence: no warning.
+        new.definition_domain = "[('test_field', '=', 10.0)]"
+        self.assertFalse(new._onchange_warn_same_sequence())
+        new.definition_domain = "[('test_field', '=', 9.0)]"
+        new.sequence = 56
+        self.assertFalse(new._onchange_warn_same_sequence())
+        # Neither in sequence: the order does not matter.
+        self.env["tier.definition"].search([("sequence", "=", 55)]).write(
+            {"approve_sequence": False}
+        )
+        new.sequence = 55
+        self.assertFalse(new._onchange_warn_same_sequence())
+        # Nothing to compare, nor to summarize, without a model.
+        empty = self.tier_def_obj.new({})
+        self.assertFalse(empty._onchange_warn_same_sequence())
+        self.assertFalse(empty.tier_summary)
+        # A definition without any filter saves fine.
+        no_filter = self.tier_def_obj.create(
+            {
+                "name": "No filter",
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": False,
+            }
+        )
+        self.assertFalse(no_filter.definition_domain)
+
     def test_36_tier_summary_is_human_readable(self):
         """The computed summary names the document, the condition and the
         reviewer in plain language."""

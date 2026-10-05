@@ -358,6 +358,56 @@ class TierDefinition(models.Model):
                 }
             }
 
+    def _same_sequence_conflicts(self):
+        """Other active definitions that would form an ambiguous chain with
+        this one: same model, sequence and company scope, "Approve by
+        sequence" on either side, and possibly the same documents (same
+        filter, or no filter on one of them). Definitions with different
+        filters may never meet on a document, so they are left alone."""
+        self.ensure_one()
+        if not self.model_id:
+            return self.browse()
+        domain = [
+            ("model_id", "=", self.model_id.id),
+            ("sequence", "=", self.sequence),
+            ("id", "!=", self._origin.id),
+        ]
+        if self.company_id:
+            domain.append(("company_id", "in", [False, self.company_id.id]))
+        own_filter = (self.definition_domain or "").strip()
+
+        def overlaps(other):
+            other_filter = (other.definition_domain or "").strip()
+            if own_filter in ("", "[]") or other_filter in ("", "[]"):
+                return True
+            return own_filter == other_filter
+
+        return self.search(domain).filtered(
+            lambda other: (self.approve_sequence or other.approve_sequence)
+            and overlaps(other)
+        )
+
+    @api.onchange(
+        "sequence", "approve_sequence", "model_id", "definition_domain", "company_id"
+    )
+    def _onchange_warn_same_sequence(self):
+        others = self._same_sequence_conflicts()
+        if not others:
+            return
+        return {
+            "warning": {
+                "title": self.env._("Same sequence"),
+                "message": self.env._(
+                    "%(names)s also has sequence %(seq)s and can apply to the same "
+                    "documents. With 'Approve by sequence' the order between them "
+                    "is not clear: give each tier its own sequence. A higher "
+                    "sequence comes first.",
+                    names=", ".join(others.mapped("display_name")),
+                    seq=self.sequence,
+                ),
+            }
+        }
+
     def _get_review_needing_reminder(self):
         """Return all the reviews that have the reminder setup."""
         self.ensure_one()
