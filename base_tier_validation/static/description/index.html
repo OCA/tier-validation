@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils: https://docutils.sourceforge.io/" />
-<title>Base Tier Validation</title>
+<title>README.rst</title>
 <style type="text/css">
 
 /*
@@ -486,6 +486,16 @@ notifications, the reviews a user can approve. This can_review field
 is updated <strong>in the database</strong> in method review_user_count, this can
 make it very inconsistent for databases with a lot of users and
 recurring updates that can change the expected behavior.</p>
+</li>
+<li><p class="first"><strong>Issue:</strong></p>
+<p>A higher sequence makes an earlier tier.</p>
+<p><strong>Description:</strong></p>
+<p>Everywhere else in Odoo a lower sequence comes first, and the tier
+definition list has a drag handle: dragging a definition to the top
+gives it the lowest sequence, which makes it the last tier. Many users
+find this confusing. For 20.0, order tiers by ascending sequence, with
+a migration that inverts the sequences of existing definitions so that
+their chains keep their order.</p>
 </li>
 </ul>
 </div>
