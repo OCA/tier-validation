@@ -74,7 +74,21 @@
                     />
                 </header>
                 <sheet>
-                    <div class="oe_button_box" name="button_box" />
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_view_documents"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                            invisible="not document_count"
+                        >
+                            <field
+                                name="document_count"
+                                widget="statinfo"
+                                string="Documents"
+                            />
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <h1>
                             <field
