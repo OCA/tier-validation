@@ -1,7 +1,7 @@
 # Copyright 2020 Ecosoft Co., Ltd. (http://ecosoft.co.th)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import Command, fields, models
+from odoo import Command, api, fields, models
 
 
 class TierCorrectionItem(models.Model):
@@ -33,6 +33,13 @@ class TierCorrectionItem(models.Model):
         string="Affected Tier Reviews",
         help="Tier reivews that will be affected by this correction.",
     )
+
+    @api.onchange("new_reviewer_ids")
+    def _onchange_warn_new_reviewers_access(self):
+        if self.res_model and self.new_reviewer_ids:
+            return self.env["tier.correction"]._warn_new_reviewers_access(
+                self.res_model, self.new_reviewer_ids._origin
+            )
 
     def _notify_reviewer_change(self, ttype="correct"):
         self.ensure_one()
