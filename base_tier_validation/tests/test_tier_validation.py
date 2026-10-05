@@ -919,6 +919,36 @@ class TierTierValidation(CommonTierValidation):
         self.assertNotIn(orphan_model, models)
         self.assertNotIn("res.country", models)
 
+    def test_16f_orphan_sequential_reviews_still_open(self):
+        """Open sequential reviews of a missing document model, or of a model
+        without tier validation, do not break the systray count: they cannot
+        be reviewed, and waiting ones are neither promoted nor notified."""
+        self.definition_5.notify_on_pending = True
+        country = self.env.ref("base.be")
+        reviews = self.env["tier.review"].create(
+            [
+                {
+                    "definition_id": self.definition_5.id,
+                    "status": status,
+                    "model": model,
+                    "res_id": res_id,
+                }
+                for status in ("waiting", "pending")
+                for model, res_id in (
+                    ("tier.validation.uninstalled", 1),
+                    ("res.country", country.id),
+                )
+            ]
+        )
+        self.assertFalse(any(reviews.mapped("can_review")))
+        self.test_user_1.invalidate_recordset(["review_ids"])
+        result = self.test_user_1.with_user(self.test_user_1).review_user_count()
+        models = [r["model"] for r in result]
+        self.assertNotIn("tier.validation.uninstalled", models)
+        self.assertNotIn("res.country", models)
+        waiting = reviews.filtered(lambda r: r.status == "waiting")
+        self.assertEqual(len(waiting), 2)
+
     def test_17_search_records_no_validation(self):
         """Search for records that have no validation process started"""
         records = self.env["tier.validation.tester"].search(
