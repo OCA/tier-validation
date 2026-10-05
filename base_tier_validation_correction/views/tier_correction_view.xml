@@ -145,29 +145,19 @@
                                         name="new_reviewer_ids"
                                         widget="many2many_avatar_user"
                                     />
-                                    <field name="review_ids" widget="many2many_tags" />
+                                    <field
+                                        name="review_ids"
+                                        widget="many2many_tags"
+                                        readonly="1"
+                                    />
                                     <button
-                                        name="%(view_affected_tier_reviews_action)d"
-                                        string=" Affected Tier Reviews"
-                                        type="action"
-                                        icon="fa-list"
+                                        name="action_open_document"
+                                        string="Open Document"
+                                        type="object"
+                                        icon="fa-external-link"
+                                        class="btn-link"
                                     />
                                 </list>
-                                <form>
-                                    <group>
-                                        <field name="resource_ref" string="Document" />
-                                    </group>
-                                    <group>
-                                        <field
-                                            name="new_reviewer_ids"
-                                            widget="many2many_avatar_user"
-                                        />
-                                        <field
-                                            name="review_ids"
-                                            widget="many2many_tags"
-                                        />
-                                    </group>
-                                </form>
                             </field>
                         </page>
                         <page string="Scheduled Action">
@@ -214,6 +204,39 @@
                 </sheet>
                 <!-- Chatter -->
                 <chatter />
+            </form>
+        </field>
+    </record>
+    <record id="tier_correction_item_view_form" model="ir.ui.view">
+        <field name="name">tier.correction.item.form</field>
+        <field name="model">tier.correction.item</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_open_document"
+                        string="Open Document"
+                        type="object"
+                        icon="fa-external-link"
+                    />
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="resource_ref" string="Document" />
+                            <field
+                                name="new_reviewer_ids"
+                                widget="many2many_avatar_user"
+                                readonly="correction_state not in ['draft', 'prepare']"
+                            />
+                        </group>
+                        <group>
+                            <field name="correction_id" readonly="1" />
+                            <field name="correction_state" />
+                        </group>
+                    </group>
+                    <field name="review_ids" readonly="1" />
+                </sheet>
             </form>
         </field>
     </record>
