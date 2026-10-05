@@ -119,6 +119,13 @@ class TierTierValidation(CommonTierValidation):
         arch = self.env["tier.correction.item"].get_view(view_type="form")["arch"]
         self.assertIn("action_open_document", arch)
         self.assertNotIn('name="res_model"', arch)
+        # The smart button lists the documents of the correction.
+        self.assertEqual(correction.document_count, 1)
+        action = correction.action_view_documents()
+        self.assertEqual(action["res_model"], self.test_record._name)
+        self.assertEqual(
+            self.env[action["res_model"]].search(action["domain"]), self.test_record
+        )
 
     def test_01_tier_correction_by_scheduler(self):
         """With the document in validation,
