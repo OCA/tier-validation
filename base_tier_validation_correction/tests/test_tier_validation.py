@@ -97,6 +97,29 @@ class TierTierValidation(CommonTierValidation):
         res = doc_user1.with_context(**ctx).view_tier_correction()
         self.assertEqual(res["domain"][0][2], [correction.id])
 
+    def test_open_document_from_correction_line(self):
+        """A correction line opens its document, and has a form of its own
+        without technical fields."""
+        self.test_record.with_user(self.test_user_2).request_validation()
+        correction = self.env["tier.correction"].create(
+            {
+                "name": "Correction",
+                "model_id": self.tester_model.id,
+                "old_reviewer_ids": [Command.set(self.test_user_1.ids)],
+                "new_reviewer_ids": [Command.set(self.test_user_2.ids)],
+            }
+        )
+        correction.action_prepare()
+        item = correction.item_ids
+        action = item.action_open_document()
+        self.assertEqual(action["res_model"], self.test_record._name)
+        self.assertEqual(action["res_id"], self.test_record.id)
+        self.assertEqual(item.correction_state, "prepare")
+        self.assertEqual(item.display_name, self.test_record.display_name)
+        arch = self.env["tier.correction.item"].get_view(view_type="form")["arch"]
+        self.assertIn("action_open_document", arch)
+        self.assertNotIn('name="res_model"', arch)
+
     def test_01_tier_correction_by_scheduler(self):
         """With the document in validation,
         - User click on Change Reviewer to creat new correction
