@@ -76,7 +76,17 @@
                                         <span t-out="review.name" />
                                     </td>
                                     <td name="td_display_status" class="text-start">
-                                        <span t-out="review.display_status" />
+                                        <!-- Same classes as Odoo's badge widget -->
+                                        <span
+                                            class="badge rounded-pill"
+                                            t-att-class="{
+                                                'text-bg-warning': review.status === 'pending',
+                                                'text-bg-success': review.status === 'approved',
+                                                'text-bg-danger': review.status === 'rejected',
+                                                'text-bg-300': !['pending', 'approved', 'rejected'].includes(review.status),
+                                            }"
+                                            t-out="review.display_status"
+                                        />
                                     </td>
                                     <td name="td_todo_by" class="text-start">
                                         <span t-out="review.todo_by" />
