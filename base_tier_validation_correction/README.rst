@@ -79,7 +79,8 @@ To create/edit Tier Review Correction
 - Find documents with pending reviews by,
 
   - Reviewer(s)
-  - Name Search
+  - Documents: a filter on the documents themselves, e.g. a partner, a
+    date or a state
 
 - Then set default value to change, in this case,
 
