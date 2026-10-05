@@ -100,6 +100,17 @@ class TierReview(models.Model):
         for record in self:
             record.can_review = record._can_review_value()
 
+    def _has_resource_model(self, model=None):
+        """Whether the review's document model (or ``model``) still has tier
+        validation. It may have been uninstalled, or have dropped tier
+        validation, while reviews pointing at it survive."""
+        model = model or self.model
+        return (
+            bool(model)
+            and model in self.env
+            and "review_ids" in self.env[model]._fields
+        )
+
     def _prefetch_resource_reviews(self):
         """Warm the cache with the reviews of every resource in ``self``.
 
@@ -121,9 +132,7 @@ class TierReview(models.Model):
             if record.model and record.res_id:
                 res_ids_per_model[record.model].append(record.res_id)
         for model, res_ids in res_ids_per_model.items():
-            # The model may have been uninstalled, or have dropped tier
-            # validation, while reviews pointing at it survive.
-            if model not in self.env or "review_ids" not in self.env[model]._fields:
+            if not self._has_resource_model(model):
                 continue
             self.env[model].browse(res_ids).review_ids.fetch(["status", "sequence"])
 
@@ -163,6 +172,10 @@ class TierReview(models.Model):
         for record in reviews:
             if record.status != "waiting":
                 continue
+            # Nobody can act on a review whose document is gone, and notifying
+            # its reviewers would fail on the missing model.
+            if not (record.res_id and record._has_resource_model()):
+                continue
             if record.approve_sequence and record.sequence != min_seq_by_record.get(
                 (record.model, record.res_id)
             ):
@@ -177,6 +190,9 @@ class TierReview(models.Model):
             return False
         if not self.approve_sequence:
             return True
+        # An orphaned review can neither be opened nor approved.
+        if not (self.res_id and self._has_resource_model()):
+            return False
         resource = self.env[self.model].browse(self.res_id)
         reviews = resource.review_ids.filtered(lambda r: r.status == "pending")
         if not reviews:
