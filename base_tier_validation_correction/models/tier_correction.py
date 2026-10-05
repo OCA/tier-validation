@@ -3,7 +3,7 @@
 import logging
 
 from odoo import Command, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Domain
 
 _logger = logging.getLogger(__name__)
@@ -175,6 +175,14 @@ class TierCorrection(models.Model):
 
     def action_prepare(self):
         self.search_document()
+        for rec in self.filtered(lambda rec: not rec.item_ids):
+            raise UserError(
+                self.env._(
+                    "No %(model)s has open reviews matching these criteria, so "
+                    "there is nothing to correct. Check the search criteria.",
+                    model=rec.model_id.name,
+                )
+            )
         self.write({"state": "prepare"})
 
     def action_done(self):
