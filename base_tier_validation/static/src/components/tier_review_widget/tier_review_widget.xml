@@ -3,7 +3,15 @@
     <t t-name="base_tier_validation.Collapse">
         <div class="o_form_sheet o_tier_review_widget">
             <details class="o_tier_review_details" open="open">
-                <summary class="o_tier_review_summary">Reviews</summary>
+                <summary class="o_tier_review_summary">
+                    Reviews
+                    <span
+                    t-if="singleRequester"
+                    class="o_tier_review_requester text-muted fw-normal"
+                >
+                        · requested by <t t-out="singleRequester" />
+                    </span>
+                </summary>
                 <div class="o_tier_review_body o_review">
                     <table class="mt-4 table table-sm">
                         <thead>
@@ -13,6 +21,7 @@
                                     class="text-center o_tier_review_seq"
                                 >#</th>
                                 <th
+                                    t-if="!singleRequester"
                                     name="th_requested_by"
                                     class="text-start"
                                 >Requested by</th>
@@ -67,7 +76,11 @@
                                     >
                                         <span t-out="review.sequence" />
                                     </td>
-                                    <td name="td_requested_by" class="text-start">
+                                    <td
+                                        t-if="!singleRequester"
+                                        name="td_requested_by"
+                                        class="text-start"
+                                    >
                                         <span
                                             t-out="review.requested_by.display_name"
                                         />

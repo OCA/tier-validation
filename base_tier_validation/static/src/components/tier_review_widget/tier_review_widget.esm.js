@@ -11,6 +11,21 @@ export class ReviewsTable extends Component {
     get hasComments() {
         return this._getReviewData().some((review) => review.comment);
     }
+
+    /**
+     * The requester when every review has the same one, as after a single
+     * validation request. Shown once above the table instead of a column.
+     * Forwarding adds reviews requested by someone else: then the column
+     * is kept.
+     */
+    get singleRequester() {
+        const requesters = this._getReviewData().map((review) => review.requested_by);
+        const first = requesters[0];
+        if (!first || !first.id || requesters.some((r) => !r || r.id !== first.id)) {
+            return null;
+        }
+        return first.display_name;
+    }
 }
 
 ReviewsTable.template = "base_tier_validation.Collapse";
