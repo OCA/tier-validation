@@ -25,6 +25,7 @@ class TierCorrectionItem(models.Model):
     new_reviewer_ids = fields.Many2many(
         comodel_name="res.users",
         relation="tier_correction_item_new_reviewer_rel",
+        domain=[("share", "=", False)],
         string="New Reviewers",
         help="These reviewers will overwrite the existing reviewer_ids in tier.review",
     )

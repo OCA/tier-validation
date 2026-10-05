@@ -50,6 +50,7 @@ class TierCorrection(models.Model):
     new_reviewer_ids = fields.Many2many(
         comodel_name="res.users",
         relation="tier_correction_new_reviewer_rel",
+        domain=[("share", "=", False)],
         string="Reassign Reviewer(s)",
         help="Reassign these reviewers to the tier reviews of the found document",
     )
