@@ -682,3 +682,17 @@ class TestTierValidationDelegation(CommonTierValidation):
             delegated.review_ids.sorted("sequence").mapped("status"),
             direct.review_ids.sorted("sequence").mapped("status"),
         )
+
+    def test_35_replacer_is_an_internal_user(self):
+        """Portal users cannot act on reviews, so they are not offered as
+        replacer."""
+        portal = self.env["res.users"].create(
+            {
+                "name": "Portal",
+                "login": "portal_replacer",
+                "group_ids": [Command.set(self.env.ref("base.group_portal").ids)],
+            }
+        )
+        domain = self.env["res.users"]._fields["validation_replacer_id"].domain
+        self.assertFalse(portal.filtered_domain(domain))
+        self.assertTrue(self.user_replacer_b.filtered_domain(domain))
