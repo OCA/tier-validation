@@ -140,3 +140,57 @@ class TestAccountTierValidation(BaseCommon):
                 "Could not find a 'action_send_and_print' "
                 "action on the account.move.send.wizard."
             )
+
+    def _create_invoice(self, partner, product, invoice_date):
+        return self.env["account.move"].create(
+            {
+                "move_type": "out_invoice",
+                "partner_id": partner.id,
+                "invoice_date": invoice_date,
+                "invoice_date_due": invoice_date,
+                "invoice_line_ids": [
+                    Command.create(
+                        {"product_id": product.id, "quantity": 1, "price_unit": 30}
+                    )
+                ],
+            }
+        )
+
+    def test_04_resequence_validated_moves(self):
+        """Journal entries under tier validation can still be resequenced."""
+        self.env["tier.definition"].create(
+            {
+                "model_id": self.account_move_model.id,
+                "definition_domain": "[('move_type', '=', 'out_invoice')]",
+                "reviewer_id": self.test_user_1.id,
+            }
+        )
+        partner = self.env["res.partner"].create(
+            {"name": "Test Partner", "email": "test@example.com"}
+        )
+        product = self.env["product.product"].create({"name": "Test product"})
+        invoice_ids = []
+        for day in ("2024-01-01", "2024-01-02"):
+            invoice = self._create_invoice(partner, product, fields.Date.to_date(day))
+            invoice.with_user(self.test_user_2.id).request_validation()
+            invoice.with_user(self.test_user_1.id).validate_tier()
+            invoice.invalidate_model()
+            invoice.action_post()
+            invoice_ids.append(invoice.id)
+        invoices = self.env["account.move"].browse(invoice_ids)
+        self.assertEqual(set(invoices.mapped("state")), {"posted"})
+        self.assertEqual(set(invoices.mapped("validation_status")), {"validated"})
+        original_names = invoices.mapped("name")
+        prefix = invoices[0].sequence_prefix
+
+        # Resequencing writes the name of already validated and posted moves.
+        wizard = (
+            self.env["account.resequence.wizard"]
+            .with_context(active_model="account.move", active_ids=invoices.ids)
+            .create({"first_name": f"{prefix}00042"})
+        )
+        wizard.resequence()
+
+        new_names = invoices.mapped("name")
+        self.assertNotEqual(new_names, original_names)
+        self.assertEqual(sorted(new_names), [f"{prefix}00042", f"{prefix}00043"])
