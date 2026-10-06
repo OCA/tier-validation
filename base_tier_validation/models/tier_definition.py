@@ -102,8 +102,8 @@ class TierDefinition(models.Model):
     )
     notify_reminder_delay = fields.Integer(
         string="Send reminder message on pending reviews",
-        help="Number of days after which a message must be posted to remind about "
-        "pending validation  (0 = no reminder)",
+        help="Remind the reviewers every this many days while their review is "
+        "pending. Leave at 0 to send no reminder.",
     )
     approve_sequence = fields.Boolean(
         string="Approve by sequence",
