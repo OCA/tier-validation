@@ -210,6 +210,17 @@ msgid "Tip: Say why when you reject"
 msgstr "Consejo: explique por qué rechaza"
 
 #. module: tier_validation_digest
+#: model:digest.tip,name:tier_validation_digest.digest_tip_tier_validation_bulk_validation
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_validation
+msgid "Tip: Validate or reject several reviews at once"
+msgstr "Consejo: valide o rechace varias revisiones a la vez"
+
+#. module: tier_validation_digest
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_validation
+msgid "When a"
+msgstr "Cuando una"
+
+#. module: tier_validation_digest
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_four_eyes
 msgid "When a group reviews a"
 msgstr "Cuando un grupo revisa una"
@@ -231,6 +242,17 @@ msgid "You have not validated any review yet"
 msgstr "Aún no ha validado ninguna revisión"
 
 #. module: tier_validation_digest
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_validation
+msgid ""
+"allows bulk validation, you can select several of its reviews in the reviews"
+" list and validate or reject them in one go, instead of opening each "
+"document. A bulk reject asks for one comment for all of them."
+msgstr ""
+"permite la validación masiva, puede seleccionar varias de sus revisiones en "
+"la lista de revisiones y validarlas o rechazarlas de una vez, en lugar de "
+"abrir cada documento. Un rechazo masivo pide un solo comentario para todas."
+
+#. module: tier_validation_digest
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_late
 msgid ""
 "filter shows the reviews that have been waiting longer than agreed. Start "
@@ -249,6 +271,7 @@ msgstr ""
 "reiniciar la revisión."
 
 #. module: tier_validation_digest
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_validation
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_four_eyes
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_order
 msgid "tier definition"
