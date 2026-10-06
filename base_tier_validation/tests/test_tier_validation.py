@@ -1878,6 +1878,25 @@ class TierTierValidation(CommonTierValidation):
         # Review_ids should not be copied when duplicating a user
         self.assertFalse(new_user.review_ids.ids)
 
+    def test_35_archived_exception_not_applied(self):
+        exception = self.env["tier.validation.exception"].create(
+            {
+                "model_id": self.tester_model.id,
+                "field_ids": [
+                    Command.set(
+                        self.tester_model.field_id.filtered(
+                            lambda f: f.name == "test_validation_field"
+                        ).ids
+                    )
+                ],
+            }
+        )
+        self.assertIn("test_validation_field", self.test_record._get_exception_fields())
+        exception.action_archive()
+        self.assertNotIn(
+            "test_validation_field", self.test_record._get_exception_fields()
+        )
+
 
 @tagged("at_install")
 class TierTierValidationView(CommonTierValidation):
