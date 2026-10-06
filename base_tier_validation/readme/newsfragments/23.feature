@@ -1,1 +1,3 @@
 Clearer tier definition form: who reviews and in what order at the top, a *Review* tab (reviewer permissions, what happens when reviewing, after review) and a *Notifications* tab, where the reminder reads *Remind every [ ] days*. The definition list hides archived definitions by default, shows reviewer avatars and has an optional *Reviewer field* column. The review lists show avatars and status badges, the definition action has an empty-state help, and the reviewer menu sits with the other notification menus in the systray.
+
+Tier validation exceptions can be archived; archived exceptions no longer apply. Their form groups the write permissions and the groups they apply to.

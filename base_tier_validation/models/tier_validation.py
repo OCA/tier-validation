@@ -312,6 +312,7 @@ class TierValidation(models.AbstractModel):
         return (
             self.env["tier.validation.exception"]
             .sudo()
+            .with_context(active_test=True)
             .search(domain)
             .mapped("field_ids.name")
         )
