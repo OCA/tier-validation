@@ -36,6 +36,7 @@ class TierDefinition(models.Model):
         default="individual",
         selection=[
             ("individual", "Specific user"),
+            ("users", "Any of specific users"),
             ("group", "Any user in a specific group"),
             ("field", "Field in related record"),
         ],
@@ -47,6 +48,16 @@ class TierDefinition(models.Model):
     reviewer_id = fields.Many2one(comodel_name="res.users", string="Reviewer")
     reviewer_group_id = fields.Many2one(
         comodel_name="res.groups", string="Reviewer group"
+    )
+    reviewer_user_ids = fields.Many2many(
+        comodel_name="res.users",
+        relation="tier_definition_reviewer_user_rel",
+        column1="definition_id",
+        column2="user_id",
+        string="Reviewers",
+        domain="[('share', '=', False)]",
+        help="Any one of these users can validate, like a member of a reviewer "
+        "group, without having to create a group for them.",
     )
     reviewer_field_id = fields.Many2one(
         comodel_name="ir.model.fields",
@@ -122,14 +133,15 @@ class TierDefinition(models.Model):
         "group can validate -- except the requester themselves. Without "
         "this flag, a requester who happens to be in the same group as "
         "the configured reviewers can auto-validate their own request. "
-        "Only meaningful for review_type='group'; the form hides this "
-        "field for the other review types.",
+        "Only meaningful when several users can review (a group or a list "
+        "of users); the form hides this field for the other review types.",
     )
 
     @api.onchange("review_type")
     def onchange_review_type(self):
         self.reviewer_id = None
         self.reviewer_group_id = None
+        self.reviewer_user_ids = False
 
     def _reviewers_without_model_access(self, model_name, users):
         """Return the subset of ``users`` that cannot read ``model_name``.
@@ -160,9 +172,19 @@ class TierDefinition(models.Model):
             return self.reviewer_id
         if self.review_type == "group":
             return self.reviewer_group_id.user_ids
+        if self.review_type == "users":
+            # In a form, the lines of an x2many are new records; check the
+            # users themselves.
+            return self.reviewer_user_ids._origin
         return self.env["res.users"]
 
-    @api.onchange("review_type", "reviewer_id", "reviewer_group_id", "model_id")
+    @api.onchange(
+        "review_type",
+        "reviewer_id",
+        "reviewer_group_id",
+        "reviewer_user_ids",
+        "model_id",
+    )
     def _onchange_warn_reviewer_access(self):
         """Advisory warning when an assigned reviewer cannot read the model.
 
