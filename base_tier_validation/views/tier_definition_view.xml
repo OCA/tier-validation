@@ -64,6 +64,10 @@
                                 invisible="review_type != 'group'"
                             />
                             <field
+                                name="exclude_requester"
+                                invisible="review_type != 'group'"
+                            />
+                            <field
                                 name="reviewer_field_id"
                                 invisible="review_type != 'field'"
                                 options="{'no_create': True}"
@@ -75,7 +79,7 @@
                                 groups="base.group_multi_company"
                                 options="{'no_create': True}"
                             />
-                            <field name="sequence" />
+                            <field name="sequence" class="oe_inline o_input_4ch" />
                             <field name="approve_sequence" />
                             <label
                                 for="approve_sequence_bypass"
@@ -96,10 +100,6 @@
                                 name="restart_group_ids"
                                 widget="many2many_tags"
                                 invisible="not allow_restart"
-                            />
-                            <field
-                                name="exclude_requester"
-                                invisible="review_type != 'group'"
                             />
                         </group>
                     </group>
