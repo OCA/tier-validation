@@ -37,3 +37,13 @@ To configure Tier Validation Exceptions, you need to:
 * If check *Write under Validation*, records will be able to be modified only in the defined fields when the Validation process is ongoing.
 * If check *Write after Validation*, records will be able to be modified only in the defined fields when the Validation process is finished.
 * If check *Write after Validation* and *Write under Validation*, records will be able to be modified defined fields always.
+
+To restrict who can restart a validation, on a tier definition:
+
+- uncheck *Allow Restart* to block it for everyone but Tier Validation
+  administrators, or
+- set *Restart Allowed For* to the groups whose members can restart.
+
+The rules of every tier whose reviews a restart would remove apply.
+Tier Validation administrators (Settings administrators included) can
+always restart.
