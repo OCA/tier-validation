@@ -197,6 +197,17 @@ msgid "Tip: Say why when you reject"
 msgstr ""
 
 #. module: tier_validation_digest
+#: model:digest.tip,name:tier_validation_digest.digest_tip_tier_validation_bulk_approve
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_approve
+msgid "Tip: Validate several reviews at once"
+msgstr ""
+
+#. module: tier_validation_digest
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_approve
+msgid "When a"
+msgstr ""
+
+#. module: tier_validation_digest
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_four_eyes
 msgid "When a group reviews a"
 msgstr ""
@@ -215,6 +226,13 @@ msgid "You have not validated any review yet"
 msgstr ""
 
 #. module: tier_validation_digest
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_approve
+msgid ""
+"allows bulk approval, you can select several of its reviews in the reviews "
+"list and validate them in one go, instead of opening each document."
+msgstr ""
+
+#. module: tier_validation_digest
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_late
 msgid ""
 "filter shows the reviews that have been waiting longer than agreed. Start "
@@ -229,6 +247,7 @@ msgid ""
 msgstr ""
 
 #. module: tier_validation_digest
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_approve
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_four_eyes
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_order
 msgid "tier definition"

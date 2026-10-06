@@ -210,6 +210,17 @@ msgid "Tip: Say why when you reject"
 msgstr "Consejo: explique por qué rechaza"
 
 #. module: tier_validation_digest
+#: model:digest.tip,name:tier_validation_digest.digest_tip_tier_validation_bulk_approve
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_approve
+msgid "Tip: Validate several reviews at once"
+msgstr "Consejo: valide varias revisiones a la vez"
+
+#. module: tier_validation_digest
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_approve
+msgid "When a"
+msgstr "Cuando una"
+
+#. module: tier_validation_digest
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_four_eyes
 msgid "When a group reviews a"
 msgstr "Cuando un grupo revisa una"
@@ -231,6 +242,16 @@ msgid "You have not validated any review yet"
 msgstr "Aún no ha validado ninguna revisión"
 
 #. module: tier_validation_digest
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_approve
+msgid ""
+"allows bulk approval, you can select several of its reviews in the reviews "
+"list and validate them in one go, instead of opening each document."
+msgstr ""
+"permite la aprobación masiva, puede seleccionar varias de sus revisiones en "
+"la lista de revisiones y validarlas de una vez, en lugar de abrir cada "
+"documento."
+
+#. module: tier_validation_digest
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_late
 msgid ""
 "filter shows the reviews that have been waiting longer than agreed. Start "
@@ -249,6 +270,7 @@ msgstr ""
 "reiniciar la revisión."
 
 #. module: tier_validation_digest
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_approve
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_four_eyes
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_order
 msgid "tier definition"

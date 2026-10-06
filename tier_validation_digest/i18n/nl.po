@@ -211,6 +211,17 @@ msgid "Tip: Say why when you reject"
 msgstr "Tip: zeg waarom als je afwijst"
 
 #. module: tier_validation_digest
+#: model:digest.tip,name:tier_validation_digest.digest_tip_tier_validation_bulk_approve
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_approve
+msgid "Tip: Validate several reviews at once"
+msgstr "Tip: valideer meerdere beoordelingen tegelijk"
+
+#. module: tier_validation_digest
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_approve
+msgid "When a"
+msgstr "Als een"
+
+#. module: tier_validation_digest
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_four_eyes
 msgid "When a group reviews a"
 msgstr "Als een groep een"
@@ -232,6 +243,16 @@ msgid "You have not validated any review yet"
 msgstr "Je hebt nog geen beoordeling gevalideerd"
 
 #. module: tier_validation_digest
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_approve
+msgid ""
+"allows bulk approval, you can select several of its reviews in the reviews "
+"list and validate them in one go, instead of opening each document."
+msgstr ""
+"bulkgoedkeuring toestaat, kun je meerdere beoordelingen ervan selecteren in "
+"de lijst met beoordelingen en ze in één keer valideren, in plaats van elk "
+"document te openen."
+
+#. module: tier_validation_digest
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_late
 msgid ""
 "filter shows the reviews that have been waiting longer than agreed. Start "
@@ -250,6 +271,7 @@ msgstr ""
 "dat de beoordeling opnieuw begint."
 
 #. module: tier_validation_digest
+#: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_bulk_approve
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_four_eyes
 #: model_terms:digest.tip,tip_description:tier_validation_digest.digest_tip_tier_validation_order
 msgid "tier definition"
