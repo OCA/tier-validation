@@ -135,4 +135,27 @@
             </div>
         </field>
     </record>
+
+    <!-- Needs Allow Bulk Approve on tier definitions (OCA/tier-validation#46).
+         Drop this tip if that is not merged. -->
+    <record id="digest_tip_tier_validation_bulk_approve" model="digest.tip">
+        <field name="name">Tip: Validate several reviews at once</field>
+        <field name="sequence">1950</field>
+        <field name="group_id" ref="base.group_user" />
+        <field name="tip_description" type="html">
+            <div>
+                <p class="tip_title">Tip: Validate several reviews at once</p>
+                <p class="tip_content">When a <a
+                    t-attf-href="{{ object.get_base_url() }}/odoo/action-base_tier_validation.tier_definition_action"
+                    target="_blank"
+                    style="color: #714B67; text-decoration: none;"
+                >tier definition</a> allows bulk approval, you can select several of its reviews in the reviews list and validate them in one go, instead of opening each document.</p>
+                <img
+                    t-attf-src="{{ object.get_base_url() }}/tier_validation_digest/static/img/tip_bulk_approve.png"
+                    width="540"
+                    class="illustration_border"
+                />
+            </div>
+        </field>
+    </record>
 </odoo>
