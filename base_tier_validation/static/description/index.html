@@ -478,6 +478,15 @@ only in the defined fields when the Validation process is finished.</li>
 <li>If check <em>Write after Validation</em> and <em>Write under Validation</em>,
 records will be able to be modified defined fields always.</li>
 </ul>
+<p>To restrict who can restart a validation, on a tier definition:</p>
+<ul class="simple">
+<li>uncheck <em>Allow Restart</em> to block it for everyone but Tier Validation
+administrators, or</li>
+<li>set <em>Restart Allowed For</em> to the groups whose members can restart.</li>
+</ul>
+<p>The rules of every tier whose reviews a restart would remove apply. Tier
+Validation administrators (Settings administrators included) can always
+restart.</p>
 </div>
 <div class="section" id="known-issues-roadmap">
 <h2><a class="toc-backref" href="#toc-entry-2">Known issues / Roadmap</a></h2>

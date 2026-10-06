@@ -9,7 +9,7 @@ from psycopg2.extensions import AsIs
 
 from odoo import api, fields, models
 from odoo.api import NewId
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Domain
 from odoo.tools import SQL
 from odoo.tools.misc import frozendict
@@ -63,6 +63,10 @@ class TierValidation(models.AbstractModel):
         comodel_name="res.users",
         compute="_compute_reviewer_ids",
         search="_search_reviewer_ids",
+    )
+    can_restart_validation = fields.Boolean(
+        compute="_compute_can_restart_validation",
+        help="Whether the current user may restart the validation.",
     )
     can_review = fields.Boolean(
         compute="_compute_can_review", search="_search_can_review"
@@ -872,7 +876,47 @@ class TierValidation(models.AbstractModel):
                 body=self._notify_restarted_review_body(),
             )
 
+    def _get_reviews_to_restart(self):
+        """The reviews that restarting the validation removes."""
+        self.ensure_one()
+        return self.review_ids
+
+    def _can_restart_validation_value(self):
+        """Whether the current user may restart the validation: every tier
+        whose reviews a restart removes must allow it, and for tiers limited
+        to groups the user must be in one of them. Tier validation
+        administrators (Settings administrators included) always can, so that
+        a stuck document can still be fixed."""
+        self.ensure_one()
+        user = self.env.user
+        if user.has_group("base_tier_validation.group_tier_validation_manager"):
+            return True
+        for definition in self._get_reviews_to_restart().definition_id:
+            if not definition.allow_restart:
+                return False
+            groups = definition.restart_group_ids
+            if groups and not groups & user.all_group_ids:
+                return False
+        return True
+
+    @api.depends(
+        "review_ids.definition_id.allow_restart",
+        "review_ids.definition_id.restart_group_ids",
+    )
+    @api.depends_context("uid")
+    def _compute_can_restart_validation(self):
+        for rec in self:
+            rec.can_restart_validation = rec._can_restart_validation_value()
+
     def restart_validation(self):
+        for rec in self:
+            if not rec._can_restart_validation_value():
+                raise UserError(
+                    self.env._(
+                        "You are not allowed to restart the validation of %s.",
+                        rec.display_name,
+                    )
+                )
         for rec in self:
             partners_to_notify_ids = False
             if getattr(rec, self._state_field) in self._state_from:
@@ -893,7 +937,7 @@ class TierValidation(models.AbstractModel):
                         .ids
                     )
                 can_review = rec.can_review
-                rec.mapped("review_ids").unlink()
+                rec._get_reviews_to_restart().unlink()
                 if to_update_counter and can_review:
                     self._update_counter({"review_deleted": True})
             if partners_to_notify_ids:
