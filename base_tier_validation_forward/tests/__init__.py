@@ -2,3 +2,4 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from . import test_tier_validation
 from . import test_tier_review_widget
+from . import test_forward_any_of_users
