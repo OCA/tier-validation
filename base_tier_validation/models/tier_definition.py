@@ -51,7 +51,20 @@ class TierDefinition(models.Model):
         help="Only internal users: portal users cannot act on tier reviews.",
     )
     reviewer_group_id = fields.Many2one(
-        comodel_name="res.groups", string="Reviewer group"
+        comodel_name="res.groups",
+        string="Reviewer group",
+        # Not the portal or public role, nor a group implying it: their
+        # members cannot act on tier reviews.
+        domain=lambda self: [
+            (
+                "all_implied_ids",
+                "not in",
+                [
+                    self.env.ref("base.group_portal").id,
+                    self.env.ref("base.group_public").id,
+                ],
+            )
+        ],
     )
     reviewer_field_id = fields.Many2one(
         comodel_name="ir.model.fields",
