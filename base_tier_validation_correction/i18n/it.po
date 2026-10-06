@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-01-19 13:50+0000\n"
+"PO-Revision-Date: 2026-10-06 09:46+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -81,7 +81,7 @@ msgstr "Revisioni livello interessate"
 #. module: base_tier_validation_correction
 #: model:res.groups,name:base_tier_validation_correction.group_tier_correction
 msgid "Allowed"
-msgstr ""
+msgstr "Consentito"
 
 #. module: base_tier_validation_correction
 #: model_terms:ir.ui.view,arch_db:base_tier_validation_correction.tier_correction_view_form
@@ -202,7 +202,7 @@ msgstr "Nome visualizzato"
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__document_domain
 msgid "Documents"
-msgstr ""
+msgstr "Documenti"
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields.selection,name:base_tier_validation_correction.selection__tier_correction__state__draft
@@ -369,6 +369,8 @@ msgid ""
 "Only include the documents matching this filter. Documents without a waiting "
 "or pending review are never included."
 msgstr ""
+"Includere solo i documenti che corrispondono a questo filtro. I documenti "
+"senza una revisione in attesa o in sospeso non vengono mai inclusi."
 
 #. module: base_tier_validation_correction
 #: model:ir.model.fields,field_description:base_tier_validation_correction.field_tier_correction__old_reviewer_ids
