@@ -39,7 +39,18 @@ class AccountMove(models.Model):
             "matched_payment_ids",
             "payment_state",
         ]
-        return res + am_exceptions
+        return res + am_exceptions + self._get_ocr_exception_fields()
+
+    def _get_ocr_exception_fields(self):
+        """Fields of the bill digitization (OCR) of Odoo Enterprise.
+
+        Its scheduled actions write the OCR status of a bill also while it
+        is under review, and once it is posted. Without these, the action
+        that reports the posted bills back to the OCR service fails on the
+        first bill that went through a review, and so for all bills.
+        These fields only exist with Enterprise; without it this is empty.
+        """
+        return [name for name in self._fields if name.startswith("extract_")]
 
     def _get_to_validate_message_name(self):
         name = super()._get_to_validate_message_name()
