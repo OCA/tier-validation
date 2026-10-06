@@ -2,52 +2,49 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl-3.0).
 
 from odoo import fields
-from odoo.tests import common
+from odoo.tests import new_test_user, tagged
+
+from odoo.addons.base.tests.common import BaseCommon
 
 
-class TestPurchaseStockTierValidation(common.TransactionCase):
-    def setUp(self):
-        super(TestPurchaseStockTierValidation, self).setUp()
+@tagged("-at_install", "post_install")
+class TestPurchaseStockTierValidation(BaseCommon):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         # Get purchase order model
-        self.po_model = self.env.ref("purchase.model_purchase_order").with_context(
-            tracking_disable=True, no_reset_password=True
-        )
+        cls.po_model = cls.env.ref("purchase.model_purchase_order")
 
         # Create users
-        group_ids = self.env.ref("base.group_system").ids
-        self.test_user_1 = self.env["res.users"].create(
-            {
-                "name": "John",
-                "login": "test1",
-                "groups_id": [(6, 0, group_ids)],
-                "email": "test@examlple.com",
-            }
+        cls.test_user_1 = new_test_user(
+            cls.env, name="John", login="test1", groups="base.group_system"
         )
 
         # Create tier definitions:
-        self.tier_def_obj = self.env["tier.definition"]
-        self.tier_def_obj.create(
+        cls.tier_def_obj = cls.env["tier.definition"]
+        cls.tier_def_obj.create(
             {
-                "model_id": self.po_model.id,
+                "model_id": cls.po_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_id": cls.test_user_1.id,
             }
         )
 
         # Common models
-        self.test_partner = self.env["res.partner"].create({"name": "Partner for test"})
-        self.stock_loc = self.browse_ref("stock.stock_location_stock")
-        self.warehouse = self.browse_ref("stock.warehouse0")
+        cls.test_partner = cls.env["res.partner"].create({"name": "Partner for test"})
+        cls.stock_loc = cls.env.ref("stock.stock_location_stock")
+        cls.warehouse = cls.env.ref("stock.warehouse0")
 
         # Create product
-        route_buy = self.env.ref("purchase_stock.route_warehouse0_buy").id
-        self.test_product = self.env["product.product"].create(
+        route_buy = cls.env.ref("purchase_stock.route_warehouse0_buy").id
+        cls.test_product = cls.env["product.product"].create(
             {
                 "name": "Test Scrap Component 1",
-                "type": "product",
+                "type": "consu",
+                "is_storable": True,
                 "route_ids": [(6, 0, [route_buy])],
                 "seller_ids": [
-                    (0, 0, {"partner_id": self.test_partner.id, "price": 20.0})
+                    (0, 0, {"partner_id": cls.test_partner.id, "price": 20.0})
                 ],
             }
         )
@@ -69,7 +66,7 @@ class TestPurchaseStockTierValidation(common.TransactionCase):
                             "product_id": self.test_product.id,
                             "date_planned": fields.Datetime.now(),
                             "product_qty": 10,
-                            "product_uom": self.test_product.uom_id.id,
+                            "product_uom_id": self.test_product.uom_id.id,
                             "price_unit": 1000,
                         },
                     )
@@ -83,17 +80,13 @@ class TestPurchaseStockTierValidation(common.TransactionCase):
         po.request_validation()
         po.with_user(self.test_user_1).validate_tier()
         date_planned = fields.Datetime.now()
-        group = self.env["procurement.group"].create(
-            {"name": "Test", "move_type": "direct"}
-        )
         values = {
             "company_id": self.warehouse.company_id,
-            "group_id": group,
             "date_planned": date_planned,
             "warehouse_id": self.warehouse,
         }
         procurements = [
-            self.env["procurement.group"].Procurement(
+            self.env["stock.rule"].Procurement(
                 self.test_product,
                 1,
                 self.env.ref("uom.product_uom_unit"),
@@ -104,7 +97,7 @@ class TestPurchaseStockTierValidation(common.TransactionCase):
                 values,
             )
         ]
-        group.run(procurements)
+        self.env["stock.rule"].run(procurements)
         self.assertEqual(len(po.mapped("order_line")), 1)
         rfq_test_partner_after = self.env["purchase.order"].search(
             [("partner_id", "=", self.test_partner.id)]
