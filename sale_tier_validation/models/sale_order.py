@@ -20,3 +20,15 @@ class SaleOrder(models.Model):
 
     def _get_rejected_notification_subtype(self):
         return "sale_tier_validation.sale_order_tier_validation_rejected"
+
+    def _get_under_validation_exceptions(self):
+        """Let the customer sign the quotation from the portal.
+
+        A quotation stays under validation until it is confirmed, also once
+        its reviews are approved, and signing it writes these fields.
+        """
+        return super()._get_under_validation_exceptions() + [
+            "signature",
+            "signed_by",
+            "signed_on",
+        ]
