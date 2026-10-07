@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="tier_review_delegation_log_comp_rule" model="ir.rule">
+        <field name="name">Tier Review Delegation Log Multi-Company</field>
+        <field name="model_id" ref="model_tier_review_delegation_log" />
+        <field
+            name="domain_force"
+        >['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>
