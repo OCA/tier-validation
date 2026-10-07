@@ -32,7 +32,6 @@
     "assets": {
         "web.assets_backend": [
             "base_tier_validation/static/src/components/**/*",
-            "base_tier_validation/static/src/js/**/*",
         ],
     },
 }
