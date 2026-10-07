@@ -7,6 +7,7 @@ from odoo import Command, fields, models
 class TierCorrectionItem(models.Model):
     _name = "tier.correction.item"
     _description = "Tier Correction Detail"
+    _rec_name = "reference"
 
     correction_id = fields.Many2one(
         comodel_name="tier.correction",
@@ -33,6 +34,20 @@ class TierCorrectionItem(models.Model):
         string="Affected Tier Reviews",
         help="Tier reivews that will be affected by this correction.",
     )
+    correction_state = fields.Selection(
+        related="correction_id.state", string="Correction Status"
+    )
+
+    def action_open_document(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": self.res_model,
+            "res_id": self.res_id,
+            "view_mode": "form",
+            "views": [(False, "form")],
+            "target": "current",
+        }
 
     def _notify_reviewer_change(self, ttype="correct"):
         self.ensure_one()
