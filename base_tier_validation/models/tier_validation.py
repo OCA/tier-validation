@@ -841,7 +841,9 @@ class TierValidation(models.AbstractModel):
                 tier_definitions = td_obj.search(
                     Domain("model", "=", self._name)
                     & Domain("company_id", "in", [False] + rec._get_company().ids),
-                    order="sequence desc",
+                    # Definitions with the same sequence come in creation
+                    # order, the same on every document.
+                    order="sequence desc, id",
                 )
                 sequence = 0
                 for td in tier_definitions:
