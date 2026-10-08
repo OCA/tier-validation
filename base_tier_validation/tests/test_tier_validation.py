@@ -919,6 +919,31 @@ class TierTierValidation(CommonTierValidation):
         self.assertNotIn(orphan_model, models)
         self.assertNotIn("res.country", models)
 
+    def test_16g_prefetch_only_open_sequential_reviews(self):
+        """Done reviews return early in ``_can_review_value``: loading their
+        document's reviews would be wasted."""
+        reviews = self.env["tier.review"].create(
+            [
+                {
+                    "definition_id": self.definition_5.id,
+                    "status": status,
+                    "model": self.test_record._name,
+                    "res_id": self.test_record.id,
+                }
+                for status in ("approved", "rejected", "pending", "waiting")
+            ]
+        )
+        TierReview = type(self.env["tier.review"])
+        with mock.patch.object(
+            TierReview,
+            "_prefetch_resource_reviews",
+            autospec=True,
+            side_effect=TierReview._prefetch_resource_reviews,
+        ) as prefetch:
+            reviews._compute_can_review()
+        prefetched = prefetch.call_args.args[0]
+        self.assertEqual(set(prefetched.mapped("status")), {"pending", "waiting"})
+
     def test_16f_orphan_sequential_reviews_still_open(self):
         """Open sequential reviews of a missing document model, or of a model
         without tier validation, do not break the systray count: they cannot
