@@ -648,7 +648,7 @@ class TierTierValidation(CommonTierValidation):
         )
 
     def test_16b_review_user_count_no_model_access(self):
-        """Reviewer without ir.model.access read on the validated model must
+        """Reviewer without ir.access read on the validated model must
         not crash the systray endpoint. Regression: the systray called
         Model.with_user(user).search(...) which raises AccessError when the
         user has no read access (e.g. tier definition on account.move for a
@@ -665,7 +665,7 @@ class TierTierValidation(CommonTierValidation):
         test_record.with_user(self.test_user_1).request_validation()
         self.assertTrue(self.test_user_2.review_ids)
         # Revoke read access on the validated model for non-superadmin users.
-        self.env["ir.model.access"].search(
+        self.env["ir.access"].search(
             Domain("model_id", "=", self.tester_model.id)
         ).unlink()
         # Sanity check: a direct search now raises AccessError.
@@ -677,12 +677,10 @@ class TierTierValidation(CommonTierValidation):
 
     def _revoke_tester_model_access(self):
         """Make the tester model unreadable for non-admin users by
-        unlinking its public ACL and clearing the ACL cache so the next
-        check_access actually re-evaluates against the new state."""
-        self.env["ir.model.access"].search(
+        unlinking its ir.access permission (unlink clears the access cache)."""
+        self.env["ir.access"].search(
             Domain("model_id", "=", self.tester_model.id)
         ).unlink()
-        self.env["ir.model.access"].call_cache_clearing_methods()
 
     def test_definition_onchange_warns_when_reviewer_lacks_access(self):
         """Setting an individual reviewer with no read access on the target
@@ -1501,12 +1499,14 @@ class TierTierValidation(CommonTierValidation):
         record.action_confirm()
         self.assertEqual(record.validation_status, "validated")
         # Unable to write test_validation_field after validation
-        with self.assertRaises(ValidationError):
-            # Simulate there are fields, but not test_validation_field
-            with mock.patch.object(TV, "_get_validation_exceptions", return_value=BEF):
-                self.test_record.with_user(self.test_user_2.id).write(
-                    {"test_validation_field": 3}
-                )
+        # Simulate there are fields, but not test_validation_field
+        with (
+            self.assertRaises(ValidationError),
+            mock.patch.object(TV, "_get_validation_exceptions", return_value=BEF),
+        ):
+            self.test_record.with_user(self.test_user_2.id).write(
+                {"test_validation_field": 3}
+            )
         # Able to write test_validation_field after validation
         with mock.patch.multiple(
             TV,
@@ -1857,7 +1857,7 @@ class TierTierValidation(CommonTierValidation):
         self.assertFalse(new_user.review_ids.ids)
 
 
-@tagged("at_install")
+@tagged("at_install", "-post_install")
 class TierTierValidationView(CommonTierValidation):
     def test_view_manual(self):
         view = self.env[self.test_record._name].get_view(False, "form")

@@ -16,3 +16,4 @@
 - Stefan Rijnhart \<<stefan@opener.amsterdam>\>
 - Kevin Khao \<<kevinkhao@gmail.com>\>
 - Do Anh Duy \<<duyda@trobz.com>\>
+- Panithan k. \<<panithank@ecosoft.co.th>\>

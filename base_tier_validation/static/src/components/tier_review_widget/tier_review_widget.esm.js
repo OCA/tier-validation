@@ -1,12 +1,15 @@
-import {Component, useState} from "@odoo/owl";
+import {Component, proxy, useProps} from "@odoo/owl";
 import {registry} from "@web/core/registry";
+import {standardFieldProps} from "@web/views/fields/standard_field_props";
 import {useService} from "@web/core/utils/hooks";
 
 export class ReviewsTable extends Component {
+    props = useProps(standardFieldProps);
+
     setup() {
         super.setup();
         this.orm = useService("orm");
-        this.state = useState({
+        this.state = proxy({
             collapse: false,
         });
     }

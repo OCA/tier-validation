@@ -4,27 +4,25 @@
 <t t-name="base_tier_validation.TierReviewMenu">
         <Dropdown
             position="'bottom-end'"
-            state="dropdown"
-            beforeOpen.bind="fetchSystrayReviewer"
-            menuClass="discussSystray.menuClass"
+            state="this.dropdown"
+            beforeOpen.bind="this.fetchSystrayReviewer"
+            menuClass="this.discussSystray.menuClass"
         >
             <button>
-                <i
-                    class="fa fa-lg fa-pencil-square-o"
-                    role="img"
-                    aria-label="Reviews"
-                />
+                <i class="oi" data-icon="edit_square" role="img" aria-label="Reviews" />
                 <span
-                    t-if="store.tierReviewCounter"
+                    t-if="this.store.tierReviewCounter"
                     class="o-mail-ActivityMenu-counter badge rounded-pill"
                 >
-                    <t t-out="store.tierReviewCounter" />
+                    <t t-out="this.store.tierReviewCounter" />
                 </span>
             </button>
             <t t-set-slot="content">
-                <div t-att-class="`${discussSystray.contentClass} o-mail-ActivityMenu`">
+                <div
+                    t-att-class="`${this.discussSystray.contentClass} o-mail-ActivityMenu`"
+                >
                     <div
-                        t-if="store.tierReviewCounter === 0"
+                        t-if="this.store.tierReviewCounter === 0"
                         class="o-mail-ActivityMenu-empty align-items-center text-muted p-2 opacity-50 d-flex justify-content-center"
                     >
                         <span>No reviews to do.</span>
@@ -34,7 +32,7 @@
                         name="reviewGroups"
                     >
                         <t
-                            t-foreach="store.tierReviewGroups"
+                            t-foreach="this.store.tierReviewGroups"
                             t-as="review"
                             t-key="review_index"
                             name="reviewGroupLoop"
