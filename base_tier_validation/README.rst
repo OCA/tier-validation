@@ -32,95 +32,171 @@ Base Tier Validation
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-Validating some operations is a common need across different areas in a
-company and sometimes it also involves several people and stages in the
-process. With this module you will be able to define your custom
-validation workflows for any Odoo document.
+This module adds approval workflows, in tiers, to Odoo documents.
 
-This module does not provide a functionality by itself but an abstract
-model to implement a validation process based on tiers on other models
-(e.g. purchase orders, sales orders, budgets, expenses...).
+You define which documents need a review, for example purchase orders
+above 5,000 €, and who has to review them: a specific user, any member
+of a group, or a user taken from the document itself. A document that
+matches one or more of these *tier definitions* gets a review for each
+of them, and cannot move on (for example be confirmed) until every
+review is approved. Reviewers see what waits for them in the systray,
+approve or reject from the document, and can leave a comment.
 
-**Note:** To be able to use this module in a new model you will need
-some development.
+This module only provides the mechanism. To use it on a type of
+document, install the module for that document, for example
+``purchase_tier_validation`` for purchase orders. You find them in the
+`tier-validation <https://github.com/OCA/tier-validation>`__ repository,
+and in other OCA repositories: look for modules named
+``*_tier_validation``.
 
-See
-`purchase_tier_validation <https://github.com/OCA/purchase-workflow>`__
-as an example of implementation.
-
-Additionally, if your state field is a (stored) computed field, you need
-to set ``_tier_validation_state_field_is_computed`` to ``True`` in your
-model Python file, and you will want to add the dependent fields of the
-compute method in ``_get_after_validation_exceptions`` and
-``_get_under_validation_exceptions``.
+**For developers:** to add tier validation to another model, inherit
+from ``tier.validation`` and set ``_state_from`` (the states in which a
+document can be reviewed) and ``_state_to`` (the states it can only
+reach once validated). The existing ``*_tier_validation`` modules are
+short examples. If the state field is a stored computed field, also set
+``_tier_validation_state_field_is_computed = True``, and add the fields
+the compute depends on to ``_get_under_validation_exceptions`` and
+``_get_after_validation_exceptions``.
 
 **Table of contents**
 
 .. contents::
    :local:
 
+Use Cases / Context
+===================
+
+Many companies want a second pair of eyes on some documents before they
+take effect: a manager approves large purchases, finance checks vendor
+bills above a threshold, a director signs off on discounts beyond a
+certain level. Often several people have to agree, in a given order, and
+who they are depends on the document: its amount, its company, its
+department.
+
+Odoo has a few fixed approval steps of its own, such as the purchase
+order double validation, but they cover one level on one model. Tier
+validation lets you describe these rules yourself, for any document that
+supports it, with as many levels as you need, and keeps track of who
+approved what and when.
+
 Configuration
 =============
 
-To configure this module, you need to:
+Tier definitions
+----------------
 
-1. Go to *Settings > Technical > Tier Validations > Tier Definition*.
-2. Create as many tiers as you want for any model having tier validation
-   functionality.
+Go to *Settings > Technical > Tier Validations > Tier Definition* and
+create one definition per approval step. On a definition:
 
-**Note:**
+- **Referenced Model** is the type of document, for example *Purchase
+  Order*. Only models that have a tier validation module installed are
+  listed.
+- **Domain** (*Apply On*) chooses which documents need this review, for
+  example the purchase orders with an untaxed amount above 5,000. Leave
+  it empty to review every document of that model.
+- **Validated by** says who reviews:
 
-- If check *Notify Reviewers on Creation*, all possible reviewers will
-  be notified by email when this definition is triggered.
-- If check *Notify reviewers on reaching pending* if you want to send a
-  notification when pending status is reached. This is usefull in a
-  approve by sequence scenario to only notify reviewers when it is their
-  turn in the sequence.
-- If check *Comment*, reviewers can comment after click Validate or
-  Reject.
-- If check *Approve by sequence*, reviewers is forced to review by
-  specified sequence.
+  - *Specific user*: one user.
+  - *Any user in a specific group*: one member of the group is enough.
+    Tick **Four-eyes Principle** to stop the user who asked for the
+    validation from approving their own request.
+  - *Field in related record*: a user or group field of the document,
+    for example its salesperson.
 
-To configure Tier Validation Exceptions, you need to:
+- **Company**: the definition only applies to documents of that company.
+  Leave it empty to apply it to all companies.
 
-1. Go to *Settings > Technical > Tier Validations > Tier Validation
-   Exceptions*.
-2. Create as many tiers validation exceptions as you want for any model
-   having tier validation functionality.
-3. Add desired fields to be checked in *Fields*.
-4. Add desired groups that can use this Exception in *Groups*.
-5. You must check *Write under Validation*, *Write after Validation* or
-   both.
+A document gets one review for every definition whose domain matches.
+All of them have to be approved; one rejection rejects the document.
 
-**Note:**
+Order of the reviews
+~~~~~~~~~~~~~~~~~~~~
 
-- If you don't create any exception, the Validated record will be
-  readonly and cannot be modified.
-- If check *Write under Validation*, records will be able to be modified
-  only in the defined fields when the Validation process is ongoing.
-- If check *Write after Validation*, records will be able to be modified
-  only in the defined fields when the Validation process is finished.
-- If check *Write after Validation* and *Write under Validation*,
-  records will be able to be modified defined fields always.
+The reviews of a document are ordered by the **Sequence** of their
+definitions, **highest first**. Beware: in the list of definitions you
+can drag them, and dragging a definition to the top gives it the
+*lowest* sequence, so it becomes the *last* tier.
+
+By default the order is only informative: all reviewers can approve at
+the same time, in any order. Tick **Approve by sequence** to make a tier
+wait until the tiers before it are approved; its reviewers are only
+asked to act (and notified, see below) when it is their turn. With
+**Approve Sequence Bypass**, a tier is approved automatically when the
+same user has just approved the tier before it.
+
+Reviewing
+~~~~~~~~~
+
+- **Allow Write For Reviewers**: reviewers can edit the document while
+  it is under validation (see the exceptions below). This applies only
+  when every definition of the document allows it.
+- **Comment**: reviewers are asked for a comment when they approve or
+  reject. **Approve Comment** prefills the comment on approval.
+
+Notifications
+~~~~~~~~~~~~~
+
+Reviewers can be notified by email when a review is created for them,
+when it is their turn (*reaching Pending*, useful with *Approve by
+sequence*), and when a review is approved, rejected or restarted. **Send
+reminder message on pending reviews** posts a reminder on the document
+every so many days, until the review is done (0 means no reminder).
+
+Tier validation exceptions
+--------------------------
+
+From the moment a validation is requested until the document reaches its
+validated state (for example *Purchase Order*), the document is locked:
+only its followers and its access token can change. That is the point of
+the review: what was approved is what goes through. Reviewers can still
+edit it if their definitions *Allow Write For Reviewers*.
+
+A *tier validation exception* lists the fields that stay editable. Go to
+*Settings > Technical > Tier Validations > Tier Validation Exceptions*,
+choose the model and the fields, and when they may be changed:
+
+- **Write under Validation**: while the document waits for its reviews,
+  for example an internal note.
+- **Write after Validation**: once the document is validated. As soon as
+  a model has an exception, its validated documents are locked too,
+  except for the fields of exceptions with this option.
+
+With **Groups**, the exception only applies to the members of those
+groups. With **Company**, only to the documents of that company.
+
+Usage
+=====
+
+Once a tier definition matches a document, the document shows a
+**Request Validation** button. Confirming the document before that stops
+with a message listing the reviews it needs. Only if you are the
+reviewer of every tier yourself is the document approved and confirmed
+right away.
+
+A banner on the document then shows the progress, and a **Reviews**
+table who has to review, with the status of each review:
+
+- **Waiting**: an earlier tier has to be approved first (*Approve by
+  sequence*).
+- **Pending**: the reviewers can approve or reject now.
+- **Approved** / **Rejected**: done, by whom and when.
+
+Reviewers find the documents waiting for them in the reviews menu of the
+systray, and approve or reject with the **Validate** and **Reject**
+buttons on the document. The document can only be confirmed once all its
+reviews are approved.
+
+**Restart Validation** removes all reviews of the document, for example
+after a correction, so that the validation can be requested again.
+Reviews are also removed when the document is cancelled, or set back to
+a state in which it can be reviewed again (for example back to draft).
 
 Known issues / Roadmap
 ======================
 
-This is the list of known issues for this module. Any proposal for
-improvement will be very valuable.
-
-- **Issue:**
-
-  When using approve_sequence option in any tier.definition there can be
-  inconsistencies in the systray notifications.
-
-  **Description:**
-
-  Field can_review in tier.review is used to filter out, in the systray
-  notifications, the reviews a user can approve. This can_review field
-  is updated **in the database** in method review_user_count, this can
-  make it very inconsistent for databases with a lot of users and
-  recurring updates that can change the expected behavior.
+Any proposal for improvement is very welcome: open an issue or a pull
+request on the
+`tier-validation <https://github.com/OCA/tier-validation>`__ repository.
 
 Changelog
 =========
