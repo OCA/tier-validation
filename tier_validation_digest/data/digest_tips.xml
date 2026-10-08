@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <!-- One tip is shown per digest email: the unseen one with the lowest
+         sequence. These sequences sit between the ones of Odoo's own tips,
+         so they mix in rather than fill the first emails. -->
+    <record id="digest_tip_tier_validation_my_reviews" model="digest.tip">
+        <field name="name">Tip: All your reviews in one place</field>
+        <field name="sequence">1150</field>
+        <field name="group_id" ref="base.group_user" />
+        <field name="tip_description" type="html">
+            <div>
+                <p class="tip_title">Tip: All your reviews in one place</p>
+                <p
+                    class="tip_content"
+                >The reviews icon in the top bar shows what is waiting for you. Under <a
+                    t-attf-href="{{ object.get_base_url() }}/odoo/action-base_tier_validation_board.open_my_tier_reviews"
+                    target="_blank"
+                    style="color: #714B67; text-decoration: none;"
+                >Dashboards › Tier Reviews › My Reviews</a> you find all reviews you were asked for, including the ones you already handled.</p>
+                <img
+                    t-attf-src="{{ object.get_base_url() }}/tier_validation_digest/static/img/tip_my_reviews.png"
+                    width="540"
+                    class="illustration_border"
+                />
+            </div>
+        </field>
+    </record>
+
+    <record id="digest_tip_tier_validation_order" model="digest.tip">
+        <field name="name">Tip: Decide the order of the reviews</field>
+        <field name="sequence">1250</field>
+        <field name="group_id" ref="base.group_erp_manager" />
+        <field name="tip_description" type="html">
+            <div>
+                <p class="tip_title">Tip: Decide the order of the reviews</p>
+                <p class="tip_content">On a <a
+                    t-attf-href="{{ object.get_base_url() }}/odoo/action-base_tier_validation.tier_definition_action"
+                    target="_blank"
+                    style="color: #714B67; text-decoration: none;"
+                >tier definition</a>, a higher <i
+                >Sequence</i> is reviewed first. Tick <i
+                >Approve by sequence</i> to make each tier wait for the one before it, and <i
+                >Notify reviewers on reaching Pending</i> so reviewers only get an email when it is their turn.</p>
+                <img
+                    t-attf-src="{{ object.get_base_url() }}/tier_validation_digest/static/img/tip_review_order.png"
+                    width="540"
+                    class="illustration_border"
+                />
+            </div>
+        </field>
+    </record>
+
+    <record id="digest_tip_tier_validation_late" model="digest.tip">
+        <field name="name">Tip: Find the reviews that are late</field>
+        <field name="sequence">1450</field>
+        <field name="group_id" ref="base.group_user" />
+        <field name="tip_description" type="html">
+            <div>
+                <p class="tip_title">Tip: Find the reviews that are late</p>
+                <p class="tip_content">The <a
+                    t-attf-href="{{ object.get_base_url() }}/odoo/action-tier_validation_digest.action_my_late_tier_reviews"
+                    target="_blank"
+                    style="color: #714B67; text-decoration: none;"
+                >Late</a> filter shows the reviews that have been waiting longer than agreed. Start with those: someone is waiting for them to continue their work.</p>
+                <img
+                    t-attf-src="{{ object.get_base_url() }}/tier_validation_digest/static/img/tip_late_reviews.png"
+                    width="540"
+                    class="illustration_border"
+                />
+            </div>
+        </field>
+    </record>
+
+    <record id="digest_tip_tier_validation_exceptions" model="digest.tip">
+        <field name="name">Tip: Keep some fields editable during a review</field>
+        <field name="sequence">1550</field>
+        <field name="group_id" ref="base.group_erp_manager" />
+        <field name="tip_description" type="html">
+            <div>
+                <p class="tip_title">Tip: Keep some fields editable during a review</p>
+                <p
+                    class="tip_content"
+                >A document under review is locked, so what is approved is what goes through. A <a
+                    t-attf-href="{{ object.get_base_url() }}/odoo/action-base_tier_validation.tier_validation_exception_action"
+                    target="_blank"
+                    style="color: #714B67; text-decoration: none;"
+                >Tier Validation Exception</a> names the fields that may still change, such as an internal note, without restarting the review.</p>
+                <img
+                    t-attf-src="{{ object.get_base_url() }}/tier_validation_digest/static/img/tip_exceptions.png"
+                    width="540"
+                    class="illustration_border"
+                />
+            </div>
+        </field>
+    </record>
+
+    <record id="digest_tip_tier_validation_reject_reason" model="digest.tip">
+        <field name="name">Tip: Say why when you reject</field>
+        <field name="sequence">1750</field>
+        <field name="group_id" ref="base.group_user" />
+        <field name="tip_description" type="html">
+            <div>
+                <p class="tip_title">Tip: Say why when you reject</p>
+                <p
+                    class="tip_content"
+                >When you reject a document, a short reason in the comment saves a round of questions: the requester sees it in the chatter of the document and knows what to change.</p>
+                <img
+                    t-attf-src="{{ object.get_base_url() }}/tier_validation_digest/static/img/tip_reject_reason.png"
+                    width="540"
+                    class="illustration_border"
+                />
+            </div>
+        </field>
+    </record>
+
+    <record id="digest_tip_tier_validation_four_eyes" model="digest.tip">
+        <field name="name">Tip: Nobody approves their own request</field>
+        <field name="sequence">1850</field>
+        <field name="group_id" ref="base.group_erp_manager" />
+        <field name="tip_description" type="html">
+            <div>
+                <p class="tip_title">Tip: Nobody approves their own request</p>
+                <p class="tip_content">When a group reviews a <a
+                    t-attf-href="{{ object.get_base_url() }}/odoo/action-base_tier_validation.tier_definition_action"
+                    target="_blank"
+                    style="color: #714B67; text-decoration: none;"
+                >tier definition</a>, tick <i
+                >Four-eyes Principle</i>: the person who requested the validation then cannot approve it, even when they are in that group.</p>
+                <img
+                    t-attf-src="{{ object.get_base_url() }}/tier_validation_digest/static/img/tip_four_eyes.png"
+                    width="540"
+                    class="illustration_border"
+                />
+            </div>
+        </field>
+    </record>
+
+    <!-- Needs Allow Bulk Approve on tier definitions (OCA/tier-validation#46).
+         Drop this tip if that is not merged. -->
+    <record id="digest_tip_tier_validation_bulk_approve" model="digest.tip">
+        <field name="name">Tip: Validate several reviews at once</field>
+        <field name="sequence">1950</field>
+        <field name="group_id" ref="base.group_user" />
+        <field name="tip_description" type="html">
+            <div>
+                <p class="tip_title">Tip: Validate several reviews at once</p>
+                <p class="tip_content">When a <a
+                    t-attf-href="{{ object.get_base_url() }}/odoo/action-base_tier_validation.tier_definition_action"
+                    target="_blank"
+                    style="color: #714B67; text-decoration: none;"
+                >tier definition</a> allows bulk approval, you can select several of its reviews in the reviews list and validate them in one go, instead of opening each document.</p>
+                <img
+                    t-attf-src="{{ object.get_base_url() }}/tier_validation_digest/static/img/tip_bulk_approve.png"
+                    width="540"
+                    class="illustration_border"
+                />
+            </div>
+        </field>
+    </record>
+</odoo>
