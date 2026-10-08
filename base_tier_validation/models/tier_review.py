@@ -94,9 +94,12 @@ class TierReview(models.Model):
 
     @api.depends("status", "approve_sequence", "sequence", "model", "res_id")
     def _compute_can_review(self):
-        # Only sequential definitions reach the branch of ``_can_review_value``
-        # that looks at the document, so only those are worth warming.
-        self.filtered("approve_sequence")._prefetch_resource_reviews()
+        # Only open reviews of sequential definitions reach the branch of
+        # ``_can_review_value`` that looks at the document, so only those are
+        # worth warming.
+        self.filtered(
+            lambda r: r.approve_sequence and r.status in ("waiting", "pending")
+        )._prefetch_resource_reviews()
         for record in self:
             record.can_review = record._can_review_value()
 
