@@ -1522,14 +1522,16 @@ class TierTierValidation(CommonTierValidation):
     def test_28_computed_state_field(self):
         """Test the regular flow on a model where state is a computed field"""
         # The record cannot be confirmed without validation
-        with self.assertRaisesRegex(
-            ValidationError,
-            "This action needs to be validated",
+        with (
+            self.assertRaisesRegex(
+                ValidationError,
+                "This action needs to be validated",
+            ),
+            self.env.cr.savepoint(),
         ):
-            with self.env.cr.savepoint():
-                self.test_record_computed.action_confirm()
-                # Flush manually to trigger the _write
-                self.test_record_computed.flush_recordset()
+            self.test_record_computed.action_confirm()
+            # Flush manually to trigger the _write
+            self.test_record_computed.flush_recordset()
         self.assertEqual(self.test_record_computed.state, "draft")
         # The validation is performed -- the single review is auto-promoted
         # to ``pending`` so the reviewer can act on it.
