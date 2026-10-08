@@ -31,8 +31,8 @@ class TierValidation(models.AbstractModel):
     _tier_validation_company_field = "company_id"
 
     _state_field = "state"
-    _state_from = ["draft"]
-    _state_to = ["confirmed"]
+    _state_from = ["draft"]  # noqa: RUF012
+    _state_to = ["confirmed"]  # noqa: RUF012
     _cancel_state = "cancel"
 
     review_ids = fields.One2many(
@@ -161,14 +161,16 @@ class TierValidation(models.AbstractModel):
         if search_without_validation:
             # Search for records that have not yet been through a validation
             # process.
-            operator = "!="
+            operator, value = "!=", False
             model_operator = "not in"
         reviews_query = self.env["tier.review"]._search(
             Domain("model", "=", self._name)
             & Domain("reviewer_ids", operator, value)
             & Domain("can_review", "=", True)
         )
-        return Domain("id", model_operator, reviews_query.subselect("DISTINCT res_id"))
+        return Domain(
+            "id", model_operator, reviews_query.subselect(SQL("DISTINCT res_id"))
+        )
 
     def _get_to_validate_message_name(self):
         return self._description
@@ -187,7 +189,7 @@ class TierValidation(models.AbstractModel):
         (defensive: e.g. the ``waiting`` edge state, or downstream code
         that calls this on a fresh record).
         """
-        icon = '<i class="fa fa-lg fa-info-circle"></i>'
+        icon = '<i class="oi oi-lg" data-icon="info"></i>'
         pending = self.review_ids.filtered(lambda r: r.status == "pending")[:1]
         if pending and pending.todo_by:
             return self.env._(
@@ -202,13 +204,13 @@ class TierValidation(models.AbstractModel):
         )
 
     def _get_validated_message(self):
-        msg = f"""<i class="fa fa-thumbs-up"></i> {
+        msg = f"""<i class="oi oi-filled" data-icon="thumb_up"></i> {
             self.env._("Operation has been <b>validated</b>!")
         }"""
         return self.validation_status == "validated" and msg or ""
 
     def _get_rejected_message(self):
-        msg = f"""<i class="fa fa-thumbs-down"></i> {
+        msg = f"""<i class="oi oi-filled" data-icon="thumb_down"></i> {
             self.env._("Operation has been <b>rejected</b>.")
         }"""
         return self.validation_status == "rejected" and msg or ""
@@ -280,7 +282,7 @@ class TierValidation(models.AbstractModel):
                     & Domain("company_id", "in", [False] + rec._get_company().ids)
                 )
             )
-            valid_tiers = any([rec.evaluate_tier(tier) for tier in tiers])
+            valid_tiers = any(rec.evaluate_tier(tier) for tier in tiers)
             rec.need_validation = (
                 not rec.review_ids and valid_tiers and rec._check_state_from_condition()
             )
@@ -522,9 +524,7 @@ class TierValidation(models.AbstractModel):
         if state_to in (self._cancel_state):
             return True
         # If it is changed to _state_from and it was not in _state_from
-        if state_to in self._state_from and state_from not in self._state_from:
-            return True
-        return False
+        return state_to in self._state_from and state_from not in self._state_from
 
     def _check_state_from_condition(self):
         return self.env.context.get("skip_check_state_condition") or (

@@ -49,7 +49,7 @@ class Users(models.Model):
                     )
                 except AccessError:
                     # The user is a reviewer on records of a model whose
-                    # ir.model.access does not grant them read access (e.g.
+                    # ir.access does not grant them read access (e.g.
                     # a tier definition pointing at account.move while the
                     # reviewer has no accounting group). Skip silently so
                     # the systray keeps working; the reviewer cannot act on

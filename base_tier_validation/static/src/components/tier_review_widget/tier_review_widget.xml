@@ -10,8 +10,9 @@
                             data-toggle="state.collapse"
                             href="#"
                             data-target="#collapse1"
-                            t-on-click="onToggleCollapse"
+                            t-on-click="this.onToggleCollapse"
                         >
+                            <i class="oi float-end" data-icon="arrow_drop_down" />
                             Reviews
                         </a>
                     </h4>
@@ -45,7 +46,7 @@
                             </thead>
                             <tbody class="sale_tbody">
                                 <t
-                                    t-foreach="_getReviewData()"
+                                    t-foreach="this._getReviewData()"
                                     t-as="review"
                                     t-key="review.id"
                                 >

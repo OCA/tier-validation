@@ -7,7 +7,7 @@ from odoo import api, fields, models
 class TierValidationTester(models.Model):
     _name = "tier.validation.tester"
     _description = "Tier Validation Tester"
-    _inherit = ["tier.validation", "mail.thread"]
+    _inherit = ["tier.validation", "mail.thread"]  # noqa: RUF012
     _tier_validation_manual_config = True
 
     state = fields.Selection(
@@ -33,7 +33,7 @@ class TierValidationTester(models.Model):
 class TierValidationTester2(models.Model):
     _name = "tier.validation.tester2"
     _description = "Tier Validation Tester 2"
-    _inherit = ["tier.validation"]
+    _inherit = ["tier.validation"]  # noqa: RUF012
     _tier_validation_manual_config = False
 
     state = fields.Selection(
@@ -56,7 +56,7 @@ class TierValidationTester2(models.Model):
 class TierValidationTesterComputed(models.Model):
     _name = "tier.validation.tester.computed"
     _description = "Tier Validation Tester Computed"
-    _inherit = ["tier.validation"]
+    _inherit = ["tier.validation"]  # noqa: RUF012
     _tier_validation_manual_config = False
     _tier_validation_state_field_is_computed = True
 

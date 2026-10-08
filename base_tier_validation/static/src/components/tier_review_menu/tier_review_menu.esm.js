@@ -1,4 +1,4 @@
-import {Component, useState} from "@odoo/owl";
+import {Component, proxy} from "@odoo/owl";
 import {Dropdown} from "@web/core/dropdown/dropdown";
 import {registry} from "@web/core/registry";
 import {useDebounced} from "@web/core/utils/timing";
@@ -13,12 +13,12 @@ export class TierReviewMenu extends Component {
 
     setup() {
         super.setup();
-        this.discussSystray = useDiscussSystray();
         this.orm = useService("orm");
-        this.store = useState(useService("mail.store"));
+        this.store = proxy(useService("mail.store"));
         this.action = useService("action");
         this.busService = useService("bus_service");
         this.dropdown = useDropdownState();
+        this.discussSystray = useDiscussSystray(this.dropdown);
         this.fetchPending = false;
         this.fetchRunning = false;
         // Keep the badge live and correct: re-fetch the authoritative count
