@@ -6,9 +6,9 @@ from odoo import api, models
 
 class AccountMove(models.Model):
     _name = "account.move"
-    _inherit = ["account.move", "tier.validation"]
-    _state_from = ["draft"]
-    _state_to = ["posted"]
+    _inherit = ["account.move", "tier.validation"]  # noqa: RUF012
+    _state_from = ["draft"]  # noqa: RUF012
+    _state_to = ["posted"]  # noqa: RUF012
 
     _tier_validation_manual_config = False
 
