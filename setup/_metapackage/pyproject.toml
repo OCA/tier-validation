@@ -1,6 +1,6 @@
 [project]
 name = "odoo-addons-oca-tier-validation"
-version = "19.0.20261006.0"
+version = "19.0.20261008.0"
 dependencies = [
     "odoo-addon-account_move_tier_validation==19.0.*",
     "odoo-addon-account_move_tier_validation_approver==19.0.*",
@@ -11,6 +11,7 @@ dependencies = [
     "odoo-addon-base_tier_validation_forward==19.0.*",
     "odoo-addon-base_tier_validation_server_action==19.0.*",
     "odoo-addon-hr_expense_tier_validation==19.0.*",
+    "odoo-addon-partner_tier_validation==19.0.*",
     "odoo-addon-purchase_request_tier_validation==19.0.*",
     "odoo-addon-purchase_tier_validation==19.0.*",
     "odoo-addon-sale_tier_validation==19.0.*",
