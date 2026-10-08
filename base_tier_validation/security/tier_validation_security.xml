@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo noupdate="0">
     <record id="tier_definition_comp_rule" model="ir.rule">
         <field name="name">Tier Definition multi-company</field>

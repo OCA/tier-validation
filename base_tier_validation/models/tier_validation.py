@@ -81,8 +81,10 @@ class TierValidation(models.AbstractModel):
     def _compute_has_comment(self):
         for rec in self:
             has_comment = rec.review_ids.filtered(
-                lambda r: r.status in ("waiting", "pending")
-                and self.env.user in r.reviewer_ids
+                lambda r: (
+                    r.status in ("waiting", "pending")
+                    and self.env.user in r.reviewer_ids
+                )
             ).mapped("has_comment")
             rec.has_comment = True in has_comment
 
@@ -541,9 +543,11 @@ class TierValidation(models.AbstractModel):
         self.ensure_one()
         tier_reviews = tiers or self.review_ids
         waiting_reviews = tier_reviews.filtered(
-            lambda r: r.status == "waiting"
-            or r.approve_sequence_bypass
-            and self.env.user in r.reviewer_ids
+            lambda r: (
+                r.status == "waiting"
+                or r.approve_sequence_bypass
+                and self.env.user in r.reviewer_ids
+            )
         )
         if waiting_reviews:
             waiting_reviews.write(
@@ -578,8 +582,10 @@ class TierValidation(models.AbstractModel):
         # We need to notify all pending users if there is approve sequence
         if tier_reviews and any(review.approve_sequence for review in tier_reviews):
             reviews_to_notify = self.review_ids.filtered(
-                lambda r: r.status in ("waiting", "pending")
-                and r.definition_id.notify_on_accepted
+                lambda r: (
+                    r.status in ("waiting", "pending")
+                    and r.definition_id.notify_on_accepted
+                )
             )
             # If there are approve sequence, only the following should be
             # considered to notify
@@ -705,8 +711,9 @@ class TierValidation(models.AbstractModel):
         self.ensure_one()
         tier_reviews = tiers or self.review_ids
         user_reviews = tier_reviews.filtered(
-            lambda r: r.status in ("waiting", "pending")
-            and self.env.user in r.reviewer_ids
+            lambda r: (
+                r.status in ("waiting", "pending") and self.env.user in r.reviewer_ids
+            )
         )
         user_reviews.write(
             {
@@ -796,8 +803,9 @@ class TierValidation(models.AbstractModel):
         if hasattr(self, post) and hasattr(self, subscribe):
             for rec in self.sudo():
                 users_to_notify = tier_reviews.filtered(
-                    lambda r, x=rec: r.definition_id.notify_on_create
-                    and r.res_id == x.id
+                    lambda r, x=rec: (
+                        r.definition_id.notify_on_create and r.res_id == x.id
+                    )
                 ).mapped("reviewer_ids")
                 # Subscribe reviewers and notify
                 if len(users_to_notify) > 0:
@@ -1013,8 +1021,9 @@ class TierValidation(models.AbstractModel):
         if hasattr(self, post) and hasattr(self, subscribe):
             for rec in self.sudo():
                 users_to_notify = tier_reviews.filtered(
-                    lambda r, x=rec: r.definition_id.notify_on_pending
-                    and r.res_id == x.id
+                    lambda r, x=rec: (
+                        r.definition_id.notify_on_pending and r.res_id == x.id
+                    )
                 ).mapped("reviewer_ids")
                 # Subscribe reviewers to the tier-validation-requested
                 # subtype explicitly, otherwise ``message_post`` below would
