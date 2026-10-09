@@ -70,6 +70,9 @@ To configure this module, you need to:
 
 **Note:**
 
+- With *Validated by: Any of specific users*, list the users under
+  *Reviewers*: any one of them can validate, like a member of a reviewer
+  group, without creating a group for them.
 - If check *Notify Reviewers on Creation*, all possible reviewers will
   be notified by email when this definition is triggered.
 - If check *Notify reviewers on reaching pending* if you want to send a

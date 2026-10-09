@@ -39,6 +39,9 @@ class TierReview(models.Model):
     review_type = fields.Selection(related="definition_id.review_type")
     reviewer_id = fields.Many2one(related="definition_id.reviewer_id")
     reviewer_group_id = fields.Many2one(related="definition_id.reviewer_group_id")
+    reviewer_user_ids = fields.Many2many(
+        related="definition_id.reviewer_user_ids", string="Listed Reviewers"
+    )
     reviewer_field_id = fields.Many2one(related="definition_id.reviewer_field_id")
     reviewer_ids = fields.Many2many(
         string="Reviewers",
@@ -152,6 +155,8 @@ class TierReview(models.Model):
             "reviewer_id",
             "reviewer_group_id",
             "reviewer_group_id.user_ids",
+            "review_type",
+            "reviewer_user_ids",
             "definition_id.exclude_requester",
             "requested_by",
         ]
@@ -178,7 +183,9 @@ class TierReview(models.Model):
 
     def _get_reviewers(self):
         reviewers = self.env["res.users"]
-        if self.reviewer_id or self.reviewer_group_id.user_ids:
+        if self.review_type == "users":
+            reviewers = self.reviewer_user_ids
+        elif self.reviewer_id or self.reviewer_group_id.user_ids:
             reviewers = self.reviewer_id + self.reviewer_group_id.user_ids
         elif self.reviewer_field_id:
             resource = self.env[self.model].browse(self.res_id)
