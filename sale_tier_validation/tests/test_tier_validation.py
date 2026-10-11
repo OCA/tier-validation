@@ -1,6 +1,6 @@
 # Copyright 2020 Sergio Teruel <sergio.teruel@tecnativa.com>
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
-from odoo import Command
+from odoo import Command, fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import new_test_user
@@ -82,3 +82,18 @@ class TestSaleTierValidation(BaseCommon):
         self.sale_order.with_user(self.test_user_1).validate_tier()
         # Attempt to render the report after validation
         report._get_report_values(docids=[self.sale_order.id])
+
+    def test_sign_under_validation(self):
+        self.sale_order.request_validation()
+        self.sale_order.with_user(self.test_user_1).validate_tier()
+        # What the portal writes when the customer signs
+        self.sale_order.sudo().write(
+            {
+                "signed_by": "Customer",
+                "signed_on": fields.Datetime.now(),
+                "signature": "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
+            }
+        )
+        self.assertEqual(self.sale_order.signed_by, "Customer")
+        with self.assertRaises(ValidationError):
+            self.sale_order.sudo().write({"note": "Changed after approval"})
