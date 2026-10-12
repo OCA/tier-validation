@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template
+        id="tier_validation_label_forward"
+        inherit_id="base_tier_validation.tier_validation_label"
+    >
+        <p position="inside">
+            <button
+                name="view_tier_correction"
+                type="object"
+                string="Change Reviewer"
+                class="oe_right"
+                icon="person"
+                groups="base_tier_validation_correction.group_tier_correction"
+            />
+        </p>
+    </template>
+</odoo>
