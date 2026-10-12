@@ -457,13 +457,18 @@ corrections.</li>
 </ul>
 </li>
 </ul>
-<p>To run the Tier Review Correction by scheduled job</p>
+<p>To apply and revert a correction automatically, e.g. for an interim
+period</p>
 <ul class="simple">
 <li>As user with Tier Review Correction role</li>
-<li>On any Tier Review Correction, open tab “Scheduled Action”</li>
-<li>Setup the datetime to Scheduled Correct and Scheduled Revert. By
-default, scheduled action “Tier Correction Scheduler” will run every 1
-hour.</li>
+<li>On any Tier Review Correction, open tab “Schedule”</li>
+<li>Set “Apply on” and, if the correction should be undone later, “Revert
+on”. The scheduled action “Tier Correction Scheduler” checks every
+hour; administrators can open it with the “Scheduled Action” button on
+that tab.</li>
+<li>A correction only moves the reviews that exist when it is prepared. To
+cover someone’s absence, the Tier Validation Delegation module is
+better suited: it also covers the documents submitted in the meantime.</li>
 </ul>
 </div>
 <div class="section" id="bug-tracker">
