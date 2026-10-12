@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 bosd
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo noupdate="1">
+    <record
+        id="mt_contract_tier_validation_requested"
+        model="mail.message.subtype"
+        forcecreate="1"
+    >
+        <field name="name">Tier Validation Requested</field>
+        <field name="res_model">contract.contract</field>
+        <field name="internal">True</field>
+    </record>
+    <record
+        id="mt_contract_tier_validation_accepted"
+        model="mail.message.subtype"
+        forcecreate="1"
+    >
+        <field name="name">Tier Validation Accepted Notification</field>
+        <field name="res_model">contract.contract</field>
+        <field name="internal">True</field>
+    </record>
+    <record
+        id="mt_contract_tier_validation_rejected"
+        model="mail.message.subtype"
+        forcecreate="1"
+    >
+        <field name="name">Tier Validation Rejected Notification</field>
+        <field name="res_model">contract.contract</field>
+        <field name="internal">True</field>
+    </record>
+</odoo>

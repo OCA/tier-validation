@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 bosd
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="contract.res_config_settings_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='contract']" position="inside">
+                <setting
+                    id="contract_lock_lines_after_validation"
+                    string="Lock contract lines after validation"
+                    help="Once a contract has passed its validation, stop its lines from being added, removed or edited. The invoicing run and the renewal actions keep working."
+                >
+                    <field name="contract_lock_lines_after_validation" />
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>
