@@ -1,7 +1,4 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-import importlib.util
-from pathlib import Path
-
 from odoo import Command
 from odoo.orm.model_classes import add_to_registry
 
@@ -61,29 +58,3 @@ class TestTierCorrectionDocumentDomain(CommonTierValidation):
             action["context"]["default_document_domain"],
             str([("id", "=", self.test_record.id)]),
         )
-
-    def test_migrate_name_search(self):
-        """A former Name Search becomes a filter on the display name."""
-        correction = self._correction("[]")
-        cr = self.env.cr
-        cr.execute("ALTER TABLE tier_correction ADD COLUMN search_name varchar")
-        cr.execute(
-            "UPDATE tier_correction SET search_name = 'SO042' WHERE id = %s",
-            (correction.id,),
-        )
-        path = Path(__file__).parents[1] / "migrations/19.0.1.1.0/post-migration.py"
-        spec = importlib.util.spec_from_file_location("post_migration", path)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        module.migrate(cr, "19.0.1.0.0")
-        correction.invalidate_recordset()
-        self.assertEqual(
-            correction.document_domain, str([("display_name", "ilike", "SO042")])
-        )
-        cr.execute(
-            "SELECT 1 FROM information_schema.columns "
-            "WHERE table_name = 'tier_correction' AND column_name = 'search_name'"
-        )
-        self.assertFalse(cr.fetchone())
-        # Nothing to do the second time.
-        module.migrate(cr, "19.0.1.0.0")

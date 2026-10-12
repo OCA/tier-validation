@@ -10,7 +10,7 @@
                 type="object"
                 string="Change Reviewer"
                 class="oe_right"
-                icon="fa-male"
+                icon="person"
                 groups="base_tier_validation_correction.group_tier_correction"
             />
         </p>

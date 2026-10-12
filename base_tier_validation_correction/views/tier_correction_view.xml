@@ -99,7 +99,7 @@
                             name="search"
                             string="Find documents with pending reviews by"
                         >
-                            <p class="oe_grey" colspan="2">
+                            <p class="text-muted" colspan="2">
                                 This is optional search criteria to find matched document into Correction Details.
                                 Only document with pending reviews will be listed.
                             </p>
@@ -109,15 +109,9 @@
                                 widget="many2many_tags"
                                 string="Reviewer(s)"
                             />
-                            <field
-                                name="document_domain"
-                                widget="domain"
-                                options="{'model': 'model'}"
-                                readonly="state != 'draft'"
-                            />
                         </group>
                         <group name="set_value" string="Reassign to new value">
-                            <p class="oe_grey" colspan="2">
+                            <p class="text-muted" colspan="2">
                                 Default new reviewers to be assigned to the correction. This value can be overwritten in
                                 Correction Detail.
                             </p>
@@ -130,6 +124,14 @@
                                 required="correction_type == 'reviewer'"
                             />
                         </group>
+                    </group>
+                    <group name="document_filter">
+                        <field
+                            name="document_domain"
+                            widget="domain"
+                            options="{'model': 'model'}"
+                            readonly="state != 'draft'"
+                        />
                     </group>
                     <notebook>
                         <page name="correction_item" string="Correction Details">
@@ -148,7 +150,7 @@
                                         name="%(view_affected_tier_reviews_action)d"
                                         string=" Affected Tier Reviews"
                                         type="action"
-                                        icon="fa-list"
+                                        icon="format_list_bulleted"
                                     />
                                 </list>
                                 <form>
@@ -169,13 +171,13 @@
                             </field>
                         </page>
                         <page string="Scheduled Action">
-                            <div class="oe_grey" colspan="4">
+                            <div class="text-muted" colspan="4">
                                 Scheduled date/time to auto correct and/or revert by
                                 <button
                                 name="%(view_affected_tier_reviews_action)d"
                                 string="Scheduled Action"
                                 type="action"
-                                icon="fa-clock-o"
+                                icon="schedule"
                                 class="oe_inline"
                             />
                             </div>

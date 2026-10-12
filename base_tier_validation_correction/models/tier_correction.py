@@ -12,7 +12,7 @@ _logger = logging.getLogger(__name__)
 
 class TierCorrection(models.Model):
     _name = "tier.correction"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin"]  # noqa: RUF012
     _description = "Tier Review Correction"
     _order = "id desc"
 
