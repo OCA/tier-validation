@@ -98,7 +98,7 @@ export class TierReviewMenu extends Component {
         ];
     }
 
-    openReviewGroup(group, bucket = "pending") {
+    openReviewGroup(group, bucket = null) {
         this.dropdown.close();
         // Per-bucket ids are pre-computed server-side so we just hand
         // them to the action's domain. Empty buckets are no-ops.
@@ -107,7 +107,17 @@ export class TierReviewMenu extends Component {
             pending: group.pending_ids || [],
             future: group.future_ids || [],
         };
-        const ids = idsByBucket[bucket] || [];
+        let ids = [];
+        if (bucket) {
+            ids = idsByBucket[bucket] || [];
+        } else {
+            // Clicking the row opens what the reviewer can act on (late +
+            // pending), or the future reviews when there is nothing else.
+            ids = [...idsByBucket.late, ...idsByBucket.pending];
+            if (!ids.length) {
+                ids = idsByBucket.future;
+            }
+        }
         if (!ids.length) {
             return;
         }
@@ -126,7 +136,9 @@ export class TierReviewMenu extends Component {
             {
                 context: {},
                 domain,
-                name: `${group.name} - ${labelByBucket[bucket] || bucket}`,
+                name: bucket
+                    ? `${group.name} - ${labelByBucket[bucket] || bucket}`
+                    : group.name,
                 res_model: group.model,
                 search_view_id: [false],
                 type: "ir.actions.act_window",
