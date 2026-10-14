@@ -1,19 +1,7 @@
-Validating some operations is a common need across different areas in a
-company and sometimes it also involves several people and stages in the
-process. With this module you will be able to define your custom
-validation workflows for any Odoo document.
+This module adds approval workflows, in tiers, to Odoo documents.
 
-This module does not provide a functionality by itself but an abstract
-model to implement a validation process based on tiers on other models
-(e.g. purchase orders, sales orders, budgets, expenses...).
+You define which documents need a review, for example purchase orders above 5,000 €, and who has to review them: a specific user, any member of a group, or a user taken from the document itself. A document that matches one or more of these *tier definitions* gets a review for each of them, and cannot move on (for example be confirmed) until every review is approved. Reviewers see what waits for them in the systray, approve or reject from the document, and can leave a comment.
 
-**Note:** To be able to use this module in a new model you will need
-some development.
+This module only provides the mechanism. To use it on a type of document, install the module for that document, for example `purchase_tier_validation` for purchase orders. You find them in the [tier-validation](https://github.com/OCA/tier-validation) repository, and in other OCA repositories: look for modules named `*_tier_validation`.
 
-See [purchase_tier_validation](https://github.com/OCA/purchase-workflow)
-as an example of implementation.
-
-Additionally, if your state field is a (stored) computed field, you need to
-set `_tier_validation_state_field_is_computed` to `True` in your model Python
-file, and you will want to add the dependent fields of the compute method
-in `_get_after_validation_exceptions` and `_get_under_validation_exceptions`.
+**For developers:** to add tier validation to another model, inherit from `tier.validation` and set `_state_from` (the states in which a document can be reviewed) and `_state_to` (the states it can only reach once validated). The existing `*_tier_validation` modules are short examples. If the state field is a stored computed field, also set `_tier_validation_state_field_is_computed = True`, and add the fields the compute depends on to `_get_under_validation_exceptions` and `_get_after_validation_exceptions`.
