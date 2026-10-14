@@ -56,8 +56,9 @@ class TierValidation(models.AbstractModel):
         self.ensure_one()
         tier_reviews = tiers or self.review_ids
         user_reviews = tier_reviews.filtered(
-            lambda review: review.status != "approved"
-            and (self.env.user in review.reviewer_ids)
+            lambda review: (
+                review.status != "approved" and (self.env.user in review.reviewer_ids)
+            )
         )
         user_reviews.write(
             {
