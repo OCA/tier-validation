@@ -3,14 +3,14 @@
 {
     "name": "Base Tier Validation Forward",
     "summary": "Forward option for base tiers",
-    "version": "19.0.1.0.1",
+    "version": "20.0.1.0.0",
     "category": "Tools",
     "website": "https://github.com/OCA/tier-validation",
     "author": "Ecosoft,Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "depends": ["base_tier_validation"],
     "data": [
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
         "data/mail_data.xml",
         "views/tier_definition_view.xml",
         "wizard/forward_wizard_view.xml",

@@ -11,7 +11,7 @@
                 invisible="not can_forward"
                 type="object"
                 class="oe_inline oe_button btn-warning ms-1"
-                icon="fa-arrow-circle-right"
+                icon="arrow_circle_right"
             />
         </xpath>
     </template>
