@@ -16,6 +16,21 @@ To configure this module, you need to:
 - If check *Approve by sequence*, reviewers is forced to review by
   specified sequence.
 
+To tune when a pending review is flagged as *Late* in the reviewer
+systray, you need to:
+
+1.  Go to *Settings \> Technical \> Parameters \> System Parameters*.
+2.  Create or edit the `base_tier_validation.late_after_days` parameter.
+
+**Note:**
+
+- The tier-review systray splits your reviews into *Late*, *Pending*
+  and *Future* buckets. A pending review is counted as *Late* once it
+  has been waiting for more than `base_tier_validation.late_after_days`
+  days (default `7`). Lower the value to be alerted sooner, raise it to
+  be more tolerant. The parameter is read on each systray refresh, so a
+  change takes effect immediately without restarting.
+
 To configure Tier Validation Exceptions, you need to:
 
 1. Go to *Settings > Technical > Tier Validations > Tier Validation Exceptions*.

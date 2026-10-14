@@ -24,7 +24,7 @@
             <t t-set-slot="content">
                 <div t-att-class="`${discussSystray.contentClass} o-mail-ActivityMenu`">
                     <div
-                        t-if="store.tierReviewCounter === 0"
+                        t-if="!store.tierReviewGroups or !store.tierReviewGroups.length"
                         class="o-mail-ActivityMenu-empty align-items-center text-muted p-2 opacity-50 d-flex justify-content-center"
                     >
                         <span>No reviews to do.</span>
@@ -53,15 +53,37 @@
                                     />
                                     <div class="d-flex">
                                         <span
-                                            t-attf-class="#{review.pending_count ? 'btn btn-link' : 'text-muted'} py-0 px-2 text-truncate"
-                                            t-on-click.stop="() => this.openReviewGroup(review)"
+                                            t-attf-class="#{review.late_count ? 'btn btn-link text-danger' : 'text-muted'} py-0 px-2 text-truncate"
+                                            t-on-click.stop="() => this.openReviewGroup(review, 'late')"
                                         >
-                                        <t t-out="review.pending_count" /> Pending
-                                    </span>
+                                            <t t-out="review.late_count or 0" /> Late
+                                        </span>
+                                        <span
+                                            t-attf-class="#{review.pending_count ? 'btn btn-link' : 'text-muted'} py-0 px-2 text-truncate"
+                                            t-on-click.stop="() => this.openReviewGroup(review, 'pending')"
+                                        >
+                                            <t
+                                            t-out="review.pending_count or 0"
+                                        /> Pending
+                                        </span>
+                                        <span
+                                            t-if="review.future_count"
+                                            class="btn btn-link py-0 px-2 ms-auto text-truncate"
+                                            t-on-click.stop="() => this.openReviewGroup(review, 'future')"
+                                        >
+                                            <t t-out="review.future_count" /> Future
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                         </t>
+                    </div>
+                    <div
+                        t-if="store.tierReviewDashboardAction"
+                        class="list-group-item list-group-item-action text-center py-2 cursor-pointer"
+                        t-on-click="() => this.openDashboard()"
+                    >
+                        Show all reviews
                     </div>
                 </div>
             </t>

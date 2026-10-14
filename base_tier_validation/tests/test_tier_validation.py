@@ -4,9 +4,10 @@
 
 from unittest import mock
 
+from freezegun import freeze_time
 from lxml import etree
 
-from odoo import Command
+from odoo import Command, fields
 from odoo.exceptions import AccessError, ValidationError
 from odoo.fields import Domain
 from odoo.tests import Form
@@ -193,6 +194,129 @@ class TierTierValidation(CommonTierValidation):
             ],
             1,
         )
+
+    def test_systray_counter_late_pending_future_buckets(self):
+        """``review_user_count`` splits the user's reviews into three
+        buckets so the systray can mirror Odoo's activity menu:
+
+        - ``late_count`` -- pending reviews older than the configured
+          ``base_tier_validation.late_after_days`` threshold;
+        - ``pending_count`` -- pending reviews within the threshold;
+        - ``future_count`` -- waiting reviews (sequence-queued).
+
+        Also returns the matching record id lists so the systray click
+        opens exactly those records.
+        """
+        # Two sequenced definitions for the same model: tier 1 = user 1,
+        # tier 2 = user 1 again. Once tier 1 is pending, tier 2 stays in
+        # "waiting". A third tier for user 2 (highest sequence, so it comes
+        # first) applies to records above 5.0, so user 1 only has waiting
+        # reviews there: the future bucket.
+        for sequence in (10, 20):
+            self.tier_def_obj.create(
+                {
+                    "model_id": self.tester_model.id,
+                    "review_type": "individual",
+                    "reviewer_id": self.test_user_1.id,
+                    "definition_domain": "[('test_field', '>', 1.0)]",
+                    "sequence": sequence,
+                    "approve_sequence": True,
+                }
+            )
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_2.id,
+                "definition_domain": "[('test_field', '>', 5.0)]",
+                "sequence": 30,
+                "approve_sequence": True,
+            }
+        )
+        record = self.test_model.create({"test_field": 2.5})
+        record.with_user(self.test_user_2).request_validation()
+        future_record = self.test_model.create({"test_field": 7.0})
+        future_record.with_user(self.test_user_2).request_validation()
+        # The user has 1 pending and 1 waiting review on ``record``, which
+        # counts as one pending document and is left out of Future.
+        docs = self.test_user_1.with_user(self.test_user_1).review_user_count()
+        tester_doc = next(d for d in docs if d["model"] == "tier.validation.tester")
+        self.assertEqual(tester_doc["late_count"], 0)
+        self.assertEqual(tester_doc["pending_count"], 1)
+        self.assertEqual(tester_doc["future_count"], 1)
+        self.assertEqual(tester_doc["pending_ids"], [record.id])
+        self.assertEqual(tester_doc["future_ids"], [future_record.id])
+        # Push "now" past the late threshold (default 7 days) -- the
+        # still-pending review moves from `pending_count` into
+        # `late_count`. The waiting (future) review is unaffected.
+        later = fields.Datetime.add(fields.Datetime.now(), days=14)
+        with freeze_time(later):
+            docs = self.test_user_1.with_user(self.test_user_1).review_user_count()
+        tester_doc = next(d for d in docs if d["model"] == "tier.validation.tester")
+        self.assertEqual(tester_doc["late_count"], 1)
+        self.assertEqual(tester_doc["pending_count"], 0)
+        self.assertEqual(tester_doc["future_count"], 1)
+        self.assertEqual(tester_doc["late_ids"], [record.id])
+        self.assertEqual(tester_doc["future_ids"], [future_record.id])
+
+    def test_systray_counter_invalid_late_after_days(self):
+        """An invalid ``late_after_days`` falls back to the default instead
+        of breaking the systray, a negative one counts as 0."""
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+            }
+        )
+        record = self.test_model.create({"test_field": 2.5})
+        record.with_user(self.test_user_2).request_validation()
+        param = self.env["ir.config_parameter"].sudo()
+        later = fields.Datetime.add(fields.Datetime.now(), days=3)
+        expected = {"abc": (0, 1), "7.5": (0, 1), "": (0, 1), "-1": (1, 0)}
+        for value, (late_count, pending_count) in expected.items():
+            param.set_param("base_tier_validation.late_after_days", value)
+            with freeze_time(later):
+                docs = self.test_user_1.with_user(self.test_user_1).review_user_count()
+            tester_doc = next(d for d in docs if d["model"] == "tier.validation.tester")
+            self.assertEqual(
+                (tester_doc["late_count"], tester_doc["pending_count"]),
+                (late_count, pending_count),
+                value,
+            )
+
+    def test_systray_counter_skips_when_no_acl(self):
+        """When the reviewer has no read access on the validated model,
+        ``review_user_count`` swallows the AccessError and drops the
+        model from the systray rather than crashing the dropdown."""
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_2.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+            }
+        )
+        record = self.test_model.create({"test_field": 2.5})
+        record.with_user(self.test_user_1).request_validation()
+        # Restrict the model's ACL to admins; test_user_2 keeps the
+        # tier review but loses read access on the validated record.
+        self.env["ir.model.access"].search(
+            Domain("model_id", "=", self.tester_model.id)
+        ).write({"group_id": self.env.ref("base.group_system").id})
+        self.env["ir.model.access"].call_cache_clearing_methods()
+        # The endpoint must not raise and must drop the inaccessible
+        # model from its output.
+        docs = self.test_user_2.with_user(self.test_user_2).review_user_count()
+        self.assertNotIn("tier.validation.tester", [d["model"] for d in docs])
+
+    def test_tier_review_dashboard_action_stub(self):
+        """The base module exposes ``tier_review_dashboard_action`` as an
+        optional hook for downstream dashboard modules. Without an
+        override it returns ``False`` so the systray omits its
+        "Show all reviews" footer link."""
+        self.assertFalse(self.env["res.users"].tier_review_dashboard_action())
 
     def test_11_add_comment(self):
         # Create new test record
