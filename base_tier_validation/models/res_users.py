@@ -36,7 +36,8 @@ class Users(models.Model):
           Standard work the reviewer can act on today.
         - ``future_count`` -- waiting reviews where the current user is
           assigned as reviewer but the sequence has not yet promoted the
-          review to pending. "What is incoming for me".
+          review to pending. "What is incoming for me". Records already
+          counted as late or pending are left out.
 
         The per-bucket record ids are returned alongside the counts so
         clicking a bucket in the systray opens exactly those records.
@@ -44,7 +45,7 @@ class Users(models.Model):
         user_reviews = {}
         user = self.env.user
         user.review_ids._update_review_status()
-        late_after_days = int(
+        param = (
             self.env["ir.config_parameter"]
             .sudo()
             .get_param(
@@ -52,6 +53,10 @@ class Users(models.Model):
                 default=str(DEFAULT_LATE_AFTER_DAYS),
             )
         )
+        try:
+            late_after_days = max(0, int(param))
+        except (TypeError, ValueError):
+            late_after_days = DEFAULT_LATE_AFTER_DAYS
         late_cutoff = fields.Datetime.subtract(
             fields.Datetime.now(), days=late_after_days
         )
@@ -79,9 +84,9 @@ class Users(models.Model):
             late_reviews = pending_reviews.filtered(
                 lambda r: r.create_date and r.create_date < late_cutoff
             )
-            records_domain = Domain(
-                "id", "in", tier_reviews.mapped("res_id")
-            ) & Domain("validation_status", "!=", "rejected")
+            records_domain = Domain("id", "in", tier_reviews.mapped("res_id")) & Domain(
+                "validation_status", "!=", "rejected"
+            )
             # Excludes any cancelled records depending on the structure of
             # the model. Let PostgreSQL do it whenever the state field is a
             # real column -- which it is on every model that stores its
@@ -129,10 +134,17 @@ class Users(models.Model):
             # so evaluate the field on those records instead: same answer,
             # one prefetched batch instead of a second search.
             pending_records = records.filtered(
-                lambda x: x.id in pending_res_ids and x.can_review
+                lambda x, ids=pending_res_ids: x.id in ids and x.can_review
             )
-            future_records = records.filtered(lambda x: x.id in future_res_ids)
-            late_records = pending_records.filtered(lambda x: x.id in late_res_ids)
+            # A record the user can already act on is not shown as Future
+            # as well, the buckets count documents.
+            future_records = (
+                records.filtered(lambda x, ids=future_res_ids: x.id in ids)
+                - pending_records
+            )
+            late_records = pending_records.filtered(
+                lambda x, ids=late_res_ids: x.id in ids
+            )
             pending_ontime_records = pending_records - late_records
             if not (late_records or pending_ontime_records or future_records):
                 continue
