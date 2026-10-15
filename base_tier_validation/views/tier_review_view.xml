@@ -10,6 +10,13 @@
                 decoration-danger="status=='rejected'"
                 decoration-success="status=='approved'"
             >
+                <header>
+                    <button
+                        name="action_bulk_validate"
+                        type="object"
+                        string="Validate"
+                    />
+                </header>
                 <field name="sequence" />
                 <field name="requested_by" />
                 <field name="review_type" />
