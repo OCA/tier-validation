@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="group_delegation_administrator" model="res.groups">
+        <field name="name">Delegation Administrator</field>
+        <field
+            name="comment"
+        >The delegation administrator can manage the holiday/delegation settings for any user.</field>
+    </record>
+
+    <record id="base.group_system" model="res.groups">
+        <field
+            name="implied_ids"
+            eval="[Command.link(ref('group_delegation_administrator'))]"
+        />
+    </record>
+</odoo>
