@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_employee_form" model="ir.ui.view">
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='hr_settings']" position="after">
+                <page
+                    string="Delegation"
+                    name="tier_delegation"
+                    groups="base.group_user"
+                    invisible="not user_id"
+                >
+                    <group>
+                        <group string="Tier Validation Delegation">
+                            <field name="tier_on_holiday" />
+
+                            <label
+                                for="tier_holiday_start_date"
+                                string="Holiday Dates"
+                                invisible="not tier_on_holiday"
+                            />
+                            <div
+                                class="o_row"
+                                name="tier_holiday_date_range"
+                                invisible="not tier_on_holiday"
+                            >
+                                <field
+                                name="tier_holiday_start_date"
+                                class="oe_inline"
+                            /> -
+                                <field name="tier_holiday_end_date" class="oe_inline" />
+                            </div>
+
+                            <field
+                                name="tier_validation_replacer_id"
+                                required="tier_on_holiday"
+                                options="{'no_create': True}"
+                            />
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
