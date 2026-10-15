@@ -64,9 +64,16 @@ Configuration
 
 To configure this module, you need to:
 
-1. Go to *Settings > Technical > Tier Validations > Tier Definition*.
+1. Go to *Tier Validations > Tier Definition* (top-level menu, no
+   Settings / Technical access required).
 2. Create as many tiers as you want for any model having tier validation
    functionality.
+
+The *Tier Validations* menu is gated by the **Tier Validation
+Administrator** group. Assign it to trusted key users (Settings > Users
+> *Tier Validation* category) so they can manage definitions and
+exceptions **without** granting them Settings / Technical access. System
+administrators receive this group automatically.
 
 **Note:**
 
@@ -103,6 +110,16 @@ To configure Tier Validation Exceptions, you need to:
 - If check *Write after Validation* and *Write under Validation*,
   records will be able to be modified defined fields always.
 
+To restrict who can restart a validation, on a tier definition:
+
+- uncheck *Allow Restart* to block it for everyone but Tier Validation
+  administrators, or
+- set *Restart Allowed For* to the groups whose members can restart.
+
+The rules of every tier whose reviews a restart would remove apply. Tier
+Validation administrators (Settings administrators included) can always
+restart.
+
 Known issues / Roadmap
 ======================
 
@@ -124,6 +141,18 @@ improvement will be very valuable.
 
 Changelog
 =========
+
+19.0.2.0.0 (2026-05-17)
+-----------------------
+
+Features:
+
+- New **Tier Validation Administrator** security group. Trusted key
+  users can now manage tier definitions and exceptions without being
+  granted Settings / Technical access. System administrators receive the
+  group automatically (back-compat).
+- The *Tier Validations* menu has moved out of *Settings > Technical* to
+  a top-level menu, gated by the new group.
 
 19.0.1.0.4 (2026-05-13)
 -----------------------

@@ -3,6 +3,7 @@
     <template id="tier_validation_buttons">
         <div>
             <field name="validation_status" invisible="1" />
+            <field name="can_restart_validation" invisible="1" />
             <button
                 name="request_validation"
                 string="Request Validation"
@@ -12,7 +13,7 @@
             <button
                 name="restart_validation"
                 string="Restart Validation"
-                invisible="not review_ids or hide_reviews"
+                invisible="not review_ids or hide_reviews or not can_restart_validation"
                 type="object"
             />
         </div>

@@ -64,6 +64,10 @@
                                 invisible="review_type != 'group'"
                             />
                             <field
+                                name="exclude_requester"
+                                invisible="review_type != 'group'"
+                            />
+                            <field
                                 name="reviewer_field_id"
                                 invisible="review_type != 'field'"
                                 options="{'no_create': True}"
@@ -75,7 +79,7 @@
                                 groups="base.group_multi_company"
                                 options="{'no_create': True}"
                             />
-                            <field name="sequence" />
+                            <field name="sequence" class="oe_inline o_input_4ch" />
                             <field name="approve_sequence" />
                             <label
                                 for="approve_sequence_bypass"
@@ -91,9 +95,11 @@
                                 <span
                                 >Bypass, if previous tier was validated by same reviewer</span>
                             </div>
+                            <field name="allow_restart" />
                             <field
-                                name="exclude_requester"
-                                invisible="review_type != 'group'"
+                                name="restart_group_ids"
+                                widget="many2many_tags"
+                                invisible="not allow_restart"
                             />
                         </group>
                     </group>
@@ -168,7 +174,9 @@
     <menuitem
         id="menu_tier_confirmation"
         name="Tier Validations"
-        parent="base.menu_custom"
+        groups="base_tier_validation.group_tier_validation_manager"
+        web_icon="base_tier_validation,static/description/icon.png"
+        sequence="80"
     />
     <menuitem
         id="menu_tier_definition"
