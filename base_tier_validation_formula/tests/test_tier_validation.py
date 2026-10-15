@@ -1,7 +1,7 @@
 # Copyright 2018 ForgeFlow S.L.
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Domain
 from odoo.tests.common import tagged
 
@@ -76,7 +76,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "expression",
-                "reviewer_expression": "raise Exception",
+                "reviewer_expression": "rec.no_such_field",
                 "python_code": "rec.test_field > 1.0",
             }
         )
@@ -94,8 +94,8 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "expression",
-                "reviewer_expression": "raise Exception",
-                "python_code": "raise Exception",
+                "reviewer_expression": "rec.no_such_field",
+                "python_code": "rec.no_such_field",
             }
         )
         # Request validation
@@ -119,3 +119,25 @@ class TierTierValidation(CommonTierValidation):
             self.test_user_3_multi_company.id
         ).request_validation()
         self.assertTrue(reviews)
+
+    def test_invalid_expressions_are_refused_on_save(self):
+        values = {"model_id": self.tester_model.id, "reviewer_id": self.test_user_1.id}
+        with self.assertRaises(ValidationError):
+            self.tier_def_obj.create(
+                dict(values, definition_type="formula", python_code="rec.test_field >")
+            )
+        with self.assertRaises(ValidationError):
+            self.tier_def_obj.create(
+                dict(
+                    values,
+                    review_type="expression",
+                    reviewer_expression="raise Exception",
+                )
+            )
+        tier = self.tier_def_obj.create(dict(values, definition_type="formula"))
+        with self.assertRaises(ValidationError):
+            tier.python_code = "rec.test_field = 2"
+        # The defaults are valid, and a domain definition ignores the formula
+        tier.python_code = "rec.test_field > 1.0"
+        tier.review_type = "expression"
+        self.tier_def_obj.create(dict(values, python_code="not checked >"))
