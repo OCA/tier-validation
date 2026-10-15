@@ -95,6 +95,7 @@
                                 name="exclude_requester"
                                 invisible="review_type != 'group'"
                             />
+                            <field name="allow_reject" />
                         </group>
                     </group>
                     <notebook>
