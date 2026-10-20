@@ -1,7 +1,7 @@
 # Copyright 2017-2020 ForgeFlow S.L.
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl-3.0).
 
-from odoo import fields
+from odoo import Command, fields
 from odoo.tests import new_test_user, tagged
 
 from odoo.addons.base.tests.common import BaseCommon
@@ -31,7 +31,6 @@ class TestPurchaseStockTierValidation(BaseCommon):
         )
 
         # Common models
-        cls.test_partner = cls.env["res.partner"].create({"name": "Partner for test"})
         cls.stock_loc = cls.env.ref("stock.stock_location_stock")
         cls.warehouse = cls.env.ref("stock.warehouse0")
 
@@ -42,9 +41,9 @@ class TestPurchaseStockTierValidation(BaseCommon):
                 "name": "Test Scrap Component 1",
                 "type": "consu",
                 "is_storable": True,
-                "route_ids": [(6, 0, [route_buy])],
+                "route_ids": [Command.set([route_buy])],
                 "seller_ids": [
-                    (0, 0, {"partner_id": cls.test_partner.id, "price": 20.0})
+                    Command.create({"partner_id": cls.partner.id, "price": 20.0})
                 ],
             }
         )
@@ -56,11 +55,9 @@ class TestPurchaseStockTierValidation(BaseCommon):
         """
         po = self.env["purchase.order"].create(
             {
-                "partner_id": self.test_partner.id,
+                "partner_id": self.partner.id,
                 "order_line": [
-                    (
-                        0,
-                        0,
+                    Command.create(
                         {
                             "name": "PO-Product",
                             "product_id": self.test_product.id,
@@ -74,7 +71,7 @@ class TestPurchaseStockTierValidation(BaseCommon):
             }
         )
         rfq_test_partner_before = self.env["purchase.order"].search(
-            [("partner_id", "=", self.test_partner.id)]
+            [("partner_id", "=", self.partner.id)]
         )
         self.assertEqual(len(po.mapped("order_line")), 1)
         po.request_validation()
@@ -100,6 +97,6 @@ class TestPurchaseStockTierValidation(BaseCommon):
         self.env["stock.rule"].run(procurements)
         self.assertEqual(len(po.mapped("order_line")), 1)
         rfq_test_partner_after = self.env["purchase.order"].search(
-            [("partner_id", "=", self.test_partner.id)]
+            [("partner_id", "=", self.partner.id)]
         )
         self.assertEqual(len(rfq_test_partner_after), len(rfq_test_partner_before) + 1)
