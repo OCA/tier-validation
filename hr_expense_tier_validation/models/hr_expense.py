@@ -21,9 +21,7 @@ class HrExpense(models.Model):
     def _get_under_validation_exceptions(self):
         """Extend for more field exceptions."""
         params_exception = (
-            self.env["ir.config_parameter"]
-            .sudo()
-            .get_param("hr_expense.tier_exceptions")
+            self.env["ir.config_parameter"].sudo().get_str("hr_expense.tier_exceptions")
             or []
         )
         # Convert to list

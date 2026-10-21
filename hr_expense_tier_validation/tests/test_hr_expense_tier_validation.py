@@ -71,7 +71,7 @@ class TestHrExpenseTierValidation(TestExpenseCommon):
             expense.write({"name": "Change name"})
 
         # test change field exception in tier, it should allow edit
-        self.env["ir.config_parameter"].sudo().set_param(
+        self.env["ir.config_parameter"].sudo().set_str(
             "hr_expense.tier_exceptions", "['name']"
         )
         expense.write({"name": "Change name"})
