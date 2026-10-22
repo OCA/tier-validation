@@ -7,7 +7,7 @@
     "version": "18.0.1.0.1",
     "license": "AGPL-3",
     "author": "360 ERP,Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/account-invoicing",
+    "website": "https://github.com/OCA/tier-validation",
     "depends": [
         "account_move_tier_validation_approver",
     ],
