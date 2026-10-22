@@ -16,4 +16,17 @@
             </xpath>
         </field>
     </record>
+    <record id="view_account_invoice_filter" model="ir.ui.view">
+        <field name="name">account.move.select - approver group</field>
+        <field name="model">account.move</field>
+        <field
+            name="inherit_id"
+            ref="account_move_tier_validation_approver.view_account_invoice_filter"
+        />
+        <field name="arch" type="xml">
+            <field name="approver_id" position="after">
+                <field name="approver_group_id" />
+            </field>
+        </field>
+    </record>
 </odoo>

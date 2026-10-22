@@ -20,31 +20,36 @@ class AccountMove(models.Model):
     def _compute_approver_group_id(self):
         for rec in self:
             if rec.approver_group_id:
+                # assign a value in any case
                 rec.approver_group_id = rec.approver_group_id
             elif rec.partner_id.approver_group_id:
                 rec.approver_group_id = rec.partner_id.approver_group_id
             else:
-                rec.approver_id = False
-
-    def _post(self, soft=True):
-        for move in self:
-            move._check_has_approver()
-        return super()._post(soft)
+                rec.approver_group_id = False
 
     def _check_has_approver(self):
-        """Overload base function to take into account approver group"""
-        require_approver_in_vendor_bills = (
-            self.company_id.require_approver_in_vendor_bills
+        """Take the approver group into account.
+
+        When an approver (user) or an approver group is required, a vendor
+        bill can be posted if it has a user OR a group responsible for
+        the approval.
+        """
+        self.ensure_one()
+        company = self.company_id
+        approver_required = (
+            company.require_approver_in_vendor_bills
+            or company.require_approver_group_in_vendor_bills
         )
         if (
             self.is_purchase_document(include_receipts=True)
-            and require_approver_in_vendor_bills
+            and approver_required
             and not self.approver_id
             and not self.approver_group_id
         ):
             raise UserError(
                 self.env._(
-                    "It is mandatory to indicate a Responsible for "
-                    "Approval individual or group (in {})"
-                ).format(self.name)
+                    "It is mandatory to indicate a Responsible for Approval "
+                    "(user or group) (in %s)",
+                    self.name,
+                )
             )

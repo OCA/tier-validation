@@ -1,3 +1,7 @@
+.. image:: https://odoo-community.org/readme-banner-image
+   :target: https://odoo-community.org/get-involved?utm_source=readme
+   :alt: Odoo Community Association
+
 ===========================================
 Account Move Tier Validation Approver Group
 ===========================================
@@ -13,23 +17,27 @@ Account Move Tier Validation Approver Group
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
-.. |badge3| image:: https://img.shields.io/badge/github-OCA%2Faccount--invoicing-lightgray.png?logo=github
-    :target: https://github.com/OCA/account-invoicing/tree/18.0/account_move_tier_validation_approver_group
-    :alt: OCA/account-invoicing
+.. |badge3| image:: https://img.shields.io/badge/github-OCA%2Ftier--validation-lightgray.png?logo=github
+    :target: https://github.com/OCA/tier-validation/tree/20.0/account_move_tier_validation_approver_group
+    :alt: OCA/tier-validation
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/account-invoicing-18-0/account-invoicing-18-0-account_move_tier_validation_approver_group
+    :target: https://translation.odoo-community.org/projects/tier-validation-20-0/tier-validation-20-0-account_move_tier_validation_approver_group
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/account-invoicing&target_branch=18.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/tier-validation&target_branch=20.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module is an extension of account_move_tier_validation_approver to
-add groups
+This module extends *Account Move Tier Validation Approver* so that a
+group of users, and not only a single user, can be responsible for
+approving a vendor bill.
+
+You can set a default *Approver of Vendor Bills group* on the vendor.
+New vendor bills take this group as *Group responsible for approval*.
 
 **Table of contents**
 
@@ -39,40 +47,44 @@ add groups
 Configuration
 =============
 
--  NOTE: If you install this module, it is highly likely you will want
-   to configure the domains. Without it, it will require both an
-   individual approver and an approver group
--  Create a tier definition that mirrors the base
-   account_move_tier_validation's (automatic if you activate/deactivate
-   the approver option in settings)
--  Add domains to the approver tier definitions for prioritizing which
-   field takes over. Suggested configuration:
+1. Go to *Invoicing > Configuration > Settings*.
+2. In the *Vendor Bills* section, enable *Require Approver Group In
+   Vendor Bills*. This creates (or activates) the tier definition
+   "Validation with Approver field (group)". This tier only applies to
+   bills that have a *Group responsible for approval*.
+3. On the vendor, in the *Sales & Purchase* tab, set the *Approver of
+   Vendor Bills group*.
 
-   -  Group approver Tier Definition: apply only if the bill has an
-      approver group set
-   -  (Individual) approver Tier Definition: apply only if the bill has
-      no approver group set
+If you also enable *Require Approver In Vendor Bills* (the individual
+approver), a bill can be posted when it has a user OR a group
+responsible for approval. In this case, add a domain to the individual
+tier definition ("Validation with Approver field") so that it only
+applies when no group is set, for example
+``[('move_type', '=', 'in_invoice'), ('approver_group_id', '=', False)]``.
 
 Usage
 =====
 
-Once configured, use this module the same way as
-account_move_tier_validation_approver
+1. Create a vendor bill for a vendor with an *Approver of Vendor Bills
+   group*. The *Group responsible for approval* is filled in. You can
+   change it if needed.
+2. Click on *Request Validation*. Any member of the group can approve
+   the bill.
+3. Once approved, post the bill.
 
 Known issues / Roadmap
 ======================
 
--  Add default valid domains to include/exclude bills depending on
-   whether the approver_id or approver_group_id is set
--  More tests
+-  Add the individual approver tier domain automatically when both
+   options are enabled.
 
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/OCA/account-invoicing/issues>`_.
+Bugs are tracked on `GitHub Issues <https://github.com/OCA/tier-validation/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/account-invoicing/issues/new?body=module:%20account_move_tier_validation_approver_group%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/tier-validation/issues/new?body=module:%20account_move_tier_validation_approver_group%0Aversion:%2020.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -102,6 +114,6 @@ OCA, or the Odoo Community Association, is a nonprofit organization whose
 mission is to support the collaborative development of Odoo features and
 promote its widespread use.
 
-This module is part of the `OCA/account-invoicing <https://github.com/OCA/account-invoicing/tree/18.0/account_move_tier_validation_approver_group>`_ project on GitHub.
+This module is part of the `OCA/tier-validation <https://github.com/OCA/tier-validation/tree/20.0/account_move_tier_validation_approver_group>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
