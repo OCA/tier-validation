@@ -1,0 +1,3 @@
+odoo-addon-base_tier_validation @ git+https://github.com/OCA/tier-validation.git@refs/pull/94/head#subdirectory=base_tier_validation
+odoo-addon-account_move_tier_validation @ git+https://github.com/OCA/tier-validation.git@refs/pull/95/head#subdirectory=account_move_tier_validation
+odoo-addon-account_move_tier_validation_approver @ git+https://github.com/OCA/tier-validation.git@refs/pull/111/head#subdirectory=account_move_tier_validation_approver
