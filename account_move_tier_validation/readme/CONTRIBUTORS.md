@@ -1,0 +1,5 @@
+- Odoo Perú \<<info@odooperu.pe>\>
+- Tharathip Chaweewongphan \<<tharathipc@ecosoft.co.th>\>
+- [360ERP](https://www.360erp.com):
+  - Kevin Khao <<kevinkhao@gmail.com>>
+- Panithan k. \<<panithank@ecosoft.co.th>\>
