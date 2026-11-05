@@ -1,4 +1,4 @@
-import {Component, onWillDestroy, useState} from "@odoo/owl";
+import {Component, onWillDestroy} from "@odoo/owl";
 import {Dropdown} from "@web/core/dropdown/dropdown";
 import {browser} from "@web/core/browser/browser";
 import {registry} from "@web/core/registry";
@@ -11,17 +11,16 @@ export const RECOUNT_INTERVAL = 2000;
 
 export class TierReviewMenu extends Component {
     static components = {Dropdown};
-    static props = [];
     static template = "base_tier_validation.TierReviewMenu";
 
     setup() {
         super.setup();
-        this.discussSystray = useDiscussSystray();
         this.orm = useService("orm");
-        this.store = useState(useService("mail.store"));
+        this.store = useService("mail.store");
         this.action = useService("action");
         this.busService = useService("bus_service");
         this.dropdown = useDropdownState();
+        this.discussSystray = useDiscussSystray(this.dropdown);
         this.fetchPending = false;
         this.fetchRunning = false;
         this.lastFetch = 0;

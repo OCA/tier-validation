@@ -10,7 +10,7 @@ model to implement a validation process based on tiers on other models
 **Note:** To be able to use this module in a new model you will need
 some development.
 
-See [purchase_tier_validation](https://github.com/OCA/purchase-workflow)
+See [purchase_tier_validation](https://github.com/OCA/tier-validation)
 as an example of implementation.
 
 Additionally, if your state field is a (stored) computed field, you need to

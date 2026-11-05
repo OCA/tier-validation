@@ -56,6 +56,6 @@
         forcecreate="1"
     >
         <field name="name">Tier Validation Reminder</field>
-        <field name="icon">fa-bell</field>
+        <field name="icon">notifications</field>
     </record>
 </odoo>

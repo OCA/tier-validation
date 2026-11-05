@@ -30,6 +30,7 @@
                         readonly="1"
                         nolabel="1"
                         widget="html"
+                        class="d-inline-block me-2"
                     />
                     <button
                         name="validate_tier"
@@ -37,7 +38,8 @@
                         invisible="not can_review"
                         type="object"
                         class="btn-icon me-1 btn-success"
-                        icon="fa-thumbs-up"
+                        icon="thumb_up"
+                        icon_class="oi-filled"
                     />
                     <button
                         name="reject_tier"
@@ -45,7 +47,8 @@
                         invisible="not can_review"
                         type="object"
                         class="btn-icon btn-danger"
-                        icon="fa-thumbs-down"
+                        icon="thumb_down"
+                        icon_class="oi-filled"
                     />
                     <br />
                     <field name="next_review" readonly="1" />
@@ -57,7 +60,7 @@
                 t-attf-invisible="validation_status != 'validated' or hide_reviews or not review_ids"
             >
                 <p class="mb-1">
-                <i class="fa fa-lg fa-thumbs-up" />
+                <i class="oi oi-lg oi-filled" data-icon="thumb_up" />
                 Operation has been
                 <b>validated</b>
                 !
@@ -69,7 +72,7 @@
                 t-attf-invisible="validation_status != 'rejected' or hide_reviews or not review_ids"
             >
                 <p class="mb-1">
-                <i class="fa fa-lg fa-thumbs-down" />
+                <i class="oi oi-lg oi-filled" data-icon="thumb_down" />
                 Operation has been
                 <b>rejected</b>
                 .

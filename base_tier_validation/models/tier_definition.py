@@ -44,7 +44,7 @@ class TierDefinition(models.Model):
         string="Allow Write For Reviewers",
         default=False,
     )
-    reviewer_id = fields.Many2one(comodel_name="res.users", string="Reviewer")
+    reviewer_id = fields.Many2one(comodel_name="res.users")
     reviewer_group_id = fields.Many2one(
         comodel_name="res.groups", string="Reviewer group"
     )
@@ -65,7 +65,6 @@ class TierDefinition(models.Model):
     sequence = fields.Integer(default=30)
     company_id = fields.Many2one(
         comodel_name="res.company",
-        string="Company",
         default=lambda self: self.env.company,
     )
     notify_on_create = fields.Boolean(
@@ -134,10 +133,10 @@ class TierDefinition(models.Model):
     def _reviewers_without_model_access(self, model_name, users):
         """Return the subset of ``users`` that cannot read ``model_name``.
 
-        The check is model-level only (``ir.model.access``). It does not
-        evaluate per-record ``ir.rule`` restrictions, so callers should
+        The check is model-level only (``ir.access`` permissions). It does
+        not evaluate per-record ``ir.access`` domains, so callers should
         treat a non-empty result as "*probably* no access" rather than a
-        guarantee -- record rules can grant or revoke access dynamically
+        guarantee -- access domains can grant or revoke access dynamically
         at runtime.
         """
         Model = self.env.get(model_name)
@@ -167,7 +166,7 @@ class TierDefinition(models.Model):
         """Advisory warning when an assigned reviewer cannot read the model.
 
         Non-blocking: legitimate workflows (admin is about to grant the
-        group, ir.rules expose specific records, ...) still save. The
+        group, access domains expose specific records, ...) still save. The
         warning just makes it impossible to misconfigure this silently.
         """
         # Read the model name off the m2o directly rather than via the
