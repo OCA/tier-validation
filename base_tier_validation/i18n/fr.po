@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-06-16 14:14+0000\n"
-"Last-Translator: Vincent Hatakeyama <vincent+github@hatakeyama.fr>\n"
+"PO-Revision-Date: 2026-11-06 13:47+0000\n"
+"Last-Translator: Rémy Lescallier <lescallier1@gmail.com>\n"
 "Language-Team: none\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_validation.py:0
 msgid "%(icon)s Pending validation by %(todo_by)s"
-msgstr ""
+msgstr "%(icon)s En attente de validation par %(todo_by)s"
 
 #. module: base_tier_validation
 #. odoo-python
@@ -172,7 +172,7 @@ msgstr "Ordre d'approbation suivant le numéro de séquence spécifié"
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__comment_approve_default
 msgid "Approve Comment"
-msgstr ""
+msgstr "Commentaire d'approbation"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__approve_sequence_bypass
@@ -362,7 +362,7 @@ msgstr "Champs"
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__exclude_requester
 msgid "Four-eyes Principle"
-msgstr ""
+msgstr "Principe des quatre yeux"
 
 #. module: base_tier_validation
 #. odoo-python
@@ -684,7 +684,7 @@ msgstr "Revue"
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_validation.py:0
 msgid "Review pending for %(assignees)s, requested by %(requester)s."
-msgstr ""
+msgstr "Revue en attente par %(assignees)s, demandée par %(requester)s."
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__reviewer_id
