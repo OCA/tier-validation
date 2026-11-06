@@ -97,6 +97,62 @@ class TierTierValidation(CommonTierValidation):
         res = doc_user1.with_context(**ctx).view_tier_correction()
         self.assertEqual(res["domain"][0][2], [correction.id])
 
+    def test_revert_restores_snapshot_not_current_definition(self):
+        """Reverting a correction must restore the original reviewer_ids
+        captured at correction time, even if the tier.definition was
+        re-pointed at a different reviewer in the meantime.
+        """
+        doc_user2 = self.test_record.with_user(self.test_user_2.id)
+        doc_user2.request_validation()
+        correction = self.env["tier.correction"].create(
+            {
+                "name": "Snapshot test",
+                "model_id": self.tester_model.id,
+                "correction_type": "reviewer",
+                "search_name": self.test_record.display_name,
+                "new_reviewer_ids": [Command.set(self.test_user_2.ids)],
+                "old_reviewer_ids": [Command.set(self.test_user_1.ids)],
+            }
+        )
+        correction.action_prepare()
+        correction.action_done()
+        review = self.test_record.review_ids
+        self.assertEqual(review.reviewer_ids, self.test_user_2)
+        snapshot = correction.item_ids.original_reviewer_data
+        self.assertEqual(snapshot[str(review.id)], self.test_user_1.ids)
+        # Re-point the underlying definition at a different user. A naive
+        # revert that recomputes from the definition would now restore this
+        # user instead of the originally-snapshotted test_user_1.
+        self.definition_1.reviewer_id = self.test_user_3_multi_company
+        correction.action_revert()
+        review.invalidate_recordset()
+        self.assertEqual(review.reviewer_ids, self.test_user_1)
+
+    def test_revert_legacy_item_without_snapshot(self):
+        """An item created before the snapshot field existed has an empty
+        original_reviewer_data; revert must fall back to recomputing from
+        the current definition rather than crashing or wiping reviewers.
+        """
+        doc_user2 = self.test_record.with_user(self.test_user_2.id)
+        doc_user2.request_validation()
+        correction = self.env["tier.correction"].create(
+            {
+                "name": "Legacy revert",
+                "model_id": self.tester_model.id,
+                "correction_type": "reviewer",
+                "search_name": self.test_record.display_name,
+                "new_reviewer_ids": [Command.set(self.test_user_2.ids)],
+            }
+        )
+        correction.action_prepare()
+        correction.action_done()
+        # Simulate an item written by a pre-fix version of the module.
+        correction.item_ids.original_reviewer_data = False
+        correction.action_revert()
+        review = self.test_record.review_ids
+        review.invalidate_recordset()
+        self.assertEqual(review.reviewer_ids, self.test_user_1)
+
     def test_01_tier_correction_by_scheduler(self):
         """With the document in validation,
         - User click on Change Reviewer to creat new correction
