@@ -1,0 +1,6 @@
+id,name,model_id,group_id/id,operation,domain
+access_tier_correction_admin,access.tier.correction.item.admin,tier.correction,group_tier_correction,crud,
+access_tier_correction_item_admin,access.tier.correction.item.admin,tier.correction.item,group_tier_correction,crud,
+access_tier_correction_user,access.tier.correction.item.user,tier.correction,base.group_user,r,
+access_tier_correction_item_user,access.tier.correction.item.user,tier.correction.item,base.group_user,r,
+access_affected_tier_reviews,access_affected_tier_reviews,affected.tier.reviews,base.group_user,r,
