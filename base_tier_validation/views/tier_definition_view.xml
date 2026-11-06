@@ -13,6 +13,11 @@
                 <field name="review_type" />
                 <field name="reviewer_id" widget="many2one_avatar_user" />
                 <field name="reviewer_group_id" />
+                <field
+                    name="reviewer_user_ids"
+                    widget="many2many_avatar_user"
+                    optional="show"
+                />
                 <field name="reviewer_field_id" optional="hide" />
                 <field name="notify_on_create" optional="show" />
                 <field name="notify_on_pending" optional="show" />
@@ -62,8 +67,11 @@
                                 invisible="review_type != 'group'"
                             />
                             <field
-                                name="exclude_requester"
-                                invisible="review_type != 'group'"
+                                name="reviewer_user_ids"
+                                widget="many2many_avatar_user"
+                                invisible="review_type != 'users'"
+                                required="review_type == 'users'"
+                                options="{'no_create': True}"
                             />
                             <field
                                 name="reviewer_field_id"
@@ -93,6 +101,10 @@
                                 <span
                                 >Bypass, if previous tier was validated by same reviewer</span>
                             </div>
+                            <field
+                                name="exclude_requester"
+                                invisible="review_type not in ('group', 'users')"
+                            />
                         </group>
                     </group>
                     <notebook>
