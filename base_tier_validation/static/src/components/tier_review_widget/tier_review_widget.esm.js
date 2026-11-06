@@ -16,6 +16,16 @@ export class ReviewsTable extends Component {
         return records.map((record) => record.data);
     }
 
+    getValidationProgress() {
+        // Compute live from the embedded review data so the bar updates
+        // without re-reading the parent record. The server-side
+        // validation_progress field exists for list-view contexts.
+        const reviews = this._getReviewData();
+        if (!reviews.length) return 0;
+        const done = reviews.filter((r) => r.status === "approved").length;
+        return Math.round((done * 100) / reviews.length);
+    }
+
     onToggleCollapse(ev) {
         const panelHeading = ev.currentTarget.closest(".panel-heading");
         const collapseDiv = panelHeading.nextElementSibling.matches("div#collapse1")
