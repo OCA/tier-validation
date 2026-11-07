@@ -95,6 +95,28 @@ class TierDefinition(models.Model):
         help="If set, reviewers will be notified by email when a reviews related "
         "to this definition are restarted.",
     )
+    allow_restart = fields.Boolean(
+        default=True,
+        help="If unchecked, only Tier Validation administrators can restart the "
+        "validation of a document with a review of this tier.",
+    )
+    restart_group_ids = fields.Many2many(
+        comodel_name="res.groups",
+        relation="tier_definition_restart_group_rel",
+        string="Restart Allowed For",
+        domain=lambda self: [
+            (
+                "all_implied_ids",
+                "not in",
+                [
+                    self.env.ref("base.group_portal").id,
+                    self.env.ref("base.group_public").id,
+                ],
+            )
+        ],
+        help="Only members of one of these groups can restart the validation of "
+        "a document with a review of this tier. Leave empty for no restriction.",
+    )
     has_comment = fields.Boolean(string="Comment", default=False)
     comment_approve_default = fields.Char(
         string="Approve Comment",
