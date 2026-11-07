@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="tier_definition_view_form_multi" model="ir.ui.view">
+        <field name="name">tier.definition.form.multi</field>
+        <field name="model">tier.definition</field>
+        <field name="inherit_id" ref="base_tier_validation.tier_definition_view_form" />
+        <field name="arch" type="xml">
+            <group name="more_option" position="inside">
+                <group name="multi_validate">
+                    <field name="allow_multi_validate" />
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>
