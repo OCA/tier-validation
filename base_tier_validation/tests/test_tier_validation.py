@@ -64,7 +64,7 @@ class TierTierValidation(CommonTierValidation):
         self.tier_definition.write(
             {
                 "review_type": "group",
-                "reviewer_id": False,
+                "reviewer_ids": [Command.clear()],
                 "reviewer_group_id": group.id,
                 "exclude_requester": True,
             }
@@ -96,7 +96,7 @@ class TierTierValidation(CommonTierValidation):
         self.tier_definition.write(
             {
                 "review_type": "group",
-                "reviewer_id": False,
+                "reviewer_ids": [Command.clear()],
                 "reviewer_group_id": group.id,
                 # exclude_requester left at its default of False
             }
@@ -159,7 +159,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
             }
         )
@@ -167,7 +167,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
             }
         )
@@ -175,7 +175,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model_2.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
             }
         )
@@ -231,7 +231,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "has_comment": True,
                 "comment_approve_default": "Approved",
@@ -278,7 +278,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "has_comment": True,
             }
@@ -312,7 +312,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "approve_sequence": True,
                 "sequence": 30,
@@ -322,7 +322,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_2.id,
+                "reviewer_ids": [Command.set([self.test_user_2.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "approve_sequence": True,
                 "sequence": 10,
@@ -357,7 +357,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "approve_sequence": True,
                 "sequence": 30,
@@ -367,7 +367,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_2.id,
+                "reviewer_ids": [Command.set([self.test_user_2.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "approve_sequence": True,
                 "sequence": 20,
@@ -377,7 +377,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_3_multi_company.id,
+                "reviewer_ids": [Command.set([self.test_user_3_multi_company.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "approve_sequence": True,
                 "sequence": 10,
@@ -411,7 +411,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "approve_sequence": True,
                 "sequence": 20,
@@ -421,7 +421,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "approve_sequence": True,
                 "sequence": 10,
@@ -487,7 +487,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "approve_sequence": True,
                 "approve_sequence_bypass": True,
@@ -499,7 +499,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "approve_sequence": True,
                 "approve_sequence_bypass": True,
@@ -511,7 +511,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_2.id,
+                "reviewer_ids": [Command.set([self.test_user_2.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "approve_sequence": True,
                 "approve_sequence_bypass": True,
@@ -523,7 +523,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "approve_sequence": True,
                 "approve_sequence_bypass": True,
@@ -590,30 +590,30 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "approve_sequence": True,
             }
         )
-        self.assertTrue(tier_def_id.reviewer_id)
+        self.assertTrue(tier_def_id.reviewer_ids)
         tier_def_id.review_type = "group"
         tier_def_id.onchange_review_type()
-        self.assertFalse(tier_def_id.reviewer_id)
+        self.assertFalse(tier_def_id.reviewer_ids)
 
     def test_14_onchange_review_type(self):
         tier_def_id = self.tier_def_obj.create(
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "approve_sequence": True,
             }
         )
-        self.assertTrue(tier_def_id.reviewer_id)
+        self.assertTrue(tier_def_id.reviewer_ids)
         tier_def_id.review_type = "group"
         tier_def_id.onchange_review_type()
-        self.assertFalse(tier_def_id.reviewer_id)
+        self.assertFalse(tier_def_id.reviewer_ids)
 
     def test_15_review_user_count(self):
         # Create new test record
@@ -623,7 +623,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "has_comment": True,
             }
@@ -652,7 +652,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_2.id,
+                "reviewer_ids": [Command.set([self.test_user_2.id])],
                 "definition_domain": "[('test_field', '=', 1.0)]",
             }
         )
@@ -687,7 +687,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_2.id,
+                "reviewer_ids": [Command.set([self.test_user_2.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
             }
         )
@@ -721,7 +721,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_2.id,
+                "reviewer_ids": [Command.set([self.test_user_2.id])],
             }
         )
         warning = definition._onchange_warn_reviewer_access()
@@ -786,7 +786,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_2.id,
+                "reviewer_ids": [Command.set([self.test_user_2.id])],
             }
         )
         self.assertIsNone(definition._onchange_warn_reviewer_access())
@@ -816,7 +816,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '=', 2.0)]",
                 "approve_sequence": True,
                 "notify_on_pending": False,
@@ -874,7 +874,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '=', 2.0)]",
                 "name": "Definition for test 16d - unstored state",
             }
@@ -1089,7 +1089,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '=', 2.5)]",
                 "approve_sequence": True,
                 "notify_on_pending": True,
@@ -1101,7 +1101,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_2.id,
+                "reviewer_ids": [Command.set([self.test_user_2.id])],
                 "definition_domain": "[('test_field', '=', 2.5)]",
                 "approve_sequence": True,
                 "notify_on_pending": True,
@@ -1190,7 +1190,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '=', 2.5)]",
                 "approve_sequence": True,
                 "notify_on_pending": True,
@@ -1202,7 +1202,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_2.id,
+                "reviewer_ids": [Command.set([self.test_user_2.id])],
                 "definition_domain": "[('test_field', '=', 2.5)]",
                 "approve_sequence": True,
                 "notify_on_pending": True,
@@ -1247,7 +1247,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '=', 2.5)]",
                 "notify_on_pending": False,
                 "sequence": 10,
@@ -1859,7 +1859,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_2.id,
+                "reviewer_ids": [Command.set([self.test_user_2.id])],
                 "sequence": 20,
                 "approve_sequence": True,
                 "notify_on_create": False,
@@ -1870,7 +1870,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_3_multi_company.id,
+                "reviewer_ids": [Command.set([self.test_user_3_multi_company.id])],
                 "sequence": 10,
                 "approve_sequence": True,
                 "notify_on_create": False,
@@ -1964,7 +1964,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_2.id,
+                "reviewer_ids": [Command.set([self.test_user_2.id])],
                 "sequence": 20,
                 "approve_sequence": True,
                 "notify_on_create": True,
@@ -1975,7 +1975,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_3_multi_company.id,
+                "reviewer_ids": [Command.set([self.test_user_3_multi_company.id])],
                 "sequence": 10,
                 "approve_sequence": True,
                 "notify_on_create": True,
@@ -2062,7 +2062,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_2.id,
+                "reviewer_ids": [Command.set([self.test_user_2.id])],
                 "definition_domain": "[('test_field', '>', 1.0)]",
                 "has_comment": True,
             }

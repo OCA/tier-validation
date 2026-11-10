@@ -3,7 +3,7 @@
 
 from freezegun import freeze_time
 
-from odoo import fields
+from odoo import Command, fields
 from odoo.tests.common import tagged
 from odoo.tools import mute_logger
 
@@ -121,7 +121,7 @@ class TierTierValidation(CommonTierValidation):
             {
                 "model_id": self.tester_model_2.id,
                 "review_type": "individual",
-                "reviewer_id": self.test_user_1.id,
+                "reviewer_ids": [Command.set([self.test_user_1.id])],
                 "definition_domain": "[('test_field', '=', 2.5)]",
                 "notify_reminder_delay": 1,
                 "name": "tester2 reminder -- no mail.thread",

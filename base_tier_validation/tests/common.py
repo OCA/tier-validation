@@ -55,14 +55,14 @@ class CommonTierValidation(BaseCommon):
         self.definition_1 = self.tier_definition = self._create_tier_definition(
             model_id=self.tester_model.id,
             review_type="individual",
-            reviewer_id=self.test_user_1.id,
+            reviewer_ids=[Command.set([self.test_user_1.id])],
             definition_domain="[('test_field', '=', 1.0)]",
             sequence=30,
         )
         self.definition_2 = self._create_tier_definition(
             model_id=self.tester_model.id,
             review_type="individual",
-            reviewer_id=self.test_user_1.id,
+            reviewer_ids=[Command.set([self.test_user_1.id])],
             definition_domain="[('test_field', '>', 3.0)]",
             approve_sequence=True,
             notify_on_pending=False,
@@ -72,7 +72,7 @@ class CommonTierValidation(BaseCommon):
         self.definition_3 = self._create_tier_definition(
             model_id=self.tester_model.id,
             review_type="individual",
-            reviewer_id=self.test_user_2.id,
+            reviewer_ids=[Command.set([self.test_user_2.id])],
             definition_domain="[('test_field', '>', 3.0)]",
             approve_sequence=True,
             notify_on_pending=True,
@@ -82,7 +82,7 @@ class CommonTierValidation(BaseCommon):
         self.definition_4 = self._create_tier_definition(
             model_id=self.tester_model.id,
             review_type="individual",
-            reviewer_id=self.test_user_1.id,
+            reviewer_ids=[Command.set([self.test_user_1.id])],
             definition_domain="[('test_field', '=', 0.9)]",
             approve_sequence=False,
             notify_on_pending=True,
@@ -92,7 +92,7 @@ class CommonTierValidation(BaseCommon):
         self.definition_5 = self._create_tier_definition(
             model_id=self.tester_model_computed.id,
             review_type="individual",
-            reviewer_id=self.test_user_1.id,
+            reviewer_ids=[Command.set([self.test_user_1.id])],
             definition_domain="[]",
             approve_sequence=True,
             notify_on_pending=False,
@@ -102,7 +102,7 @@ class CommonTierValidation(BaseCommon):
         self.definition_6 = self._create_tier_definition(
             model_id=self.tester_model_2.id,
             review_type="individual",
-            reviewer_id=self.test_user_1.id,
+            reviewer_ids=[Command.set([self.test_user_1.id])],
             definition_domain="[('test_field', '>=', 1.0)]",
             approve_sequence=True,
             notify_on_pending=False,
@@ -113,7 +113,7 @@ class CommonTierValidation(BaseCommon):
         self.definition_7 = self._create_tier_definition(
             model_id=self.tester_model_2.id,
             review_type="individual",
-            reviewer_id=self.test_user_3_multi_company.id,
+            reviewer_ids=[Command.set([self.test_user_3_multi_company.id])],
             definition_domain="[('test_field', '>=', 1.0)]",
             approve_sequence=True,
             notify_on_pending=False,
@@ -124,7 +124,7 @@ class CommonTierValidation(BaseCommon):
         self.definition_8 = self._create_tier_definition(
             model_id=self.tester_model_2.id,
             review_type="individual",
-            reviewer_id=self.test_user_3_multi_company.id,
+            reviewer_ids=[Command.set([self.test_user_3_multi_company.id])],
             definition_domain="[('test_field', '>=', 1.0)]",
             approve_sequence=True,
             notify_on_pending=False,

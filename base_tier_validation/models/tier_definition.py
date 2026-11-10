@@ -1,7 +1,7 @@
 # Copyright 2017 ForgeFlow S.L. (https://www.forgeflow.com)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 from odoo.exceptions import AccessError
 from odoo.fields import Domain
 
@@ -44,7 +44,10 @@ class TierDefinition(models.Model):
         string="Allow Write For Reviewers",
         default=False,
     )
-    reviewer_id = fields.Many2one(comodel_name="res.users")
+    reviewer_ids = fields.Many2many(
+        comodel_name="res.users",
+        string="Specific users",
+    )
     reviewer_group_id = fields.Many2one(
         comodel_name="res.groups", string="Reviewer group"
     )
@@ -127,7 +130,7 @@ class TierDefinition(models.Model):
 
     @api.onchange("review_type")
     def onchange_review_type(self):
-        self.reviewer_id = None
+        self.reviewer_ids = [Command.clear()]
         self.reviewer_group_id = None
 
     def _reviewers_without_model_access(self, model_name, users):
@@ -144,10 +147,17 @@ class TierDefinition(models.Model):
             return self.env["res.users"]
         no_access = self.env["res.users"]
         for user in users:
+            # Users set on a new (unsaved) definition can be virtual ids.
+            user_id = user.id
+            if not isinstance(user_id, int):
+                user_id = getattr(user_id, "origin", None)
+            if not user_id:
+                continue
+            real_user = self.env["res.users"].browse(user_id)
             try:
-                Model.with_user(user).check_access("read")
+                Model.with_user(real_user).check_access("read")
             except AccessError:
-                no_access |= user
+                no_access |= real_user
         return no_access
 
     def _reviewers_to_check_for_access(self):
@@ -156,12 +166,12 @@ class TierDefinition(models.Model):
         only resolves at validation time (``field`` reads off the record)."""
         self.ensure_one()
         if self.review_type == "individual":
-            return self.reviewer_id
+            return self.reviewer_ids
         if self.review_type == "group":
             return self.reviewer_group_id.user_ids
         return self.env["res.users"]
 
-    @api.onchange("review_type", "reviewer_id", "reviewer_group_id", "model_id")
+    @api.onchange("review_type", "reviewer_ids", "reviewer_group_id", "model_id")
     def _onchange_warn_reviewer_access(self):
         """Advisory warning when an assigned reviewer cannot read the model.
 
