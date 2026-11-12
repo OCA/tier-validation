@@ -104,6 +104,17 @@ class TierDefinition(models.Model):
         help="Remind the reviewers every this many days until the review is "
         "done. Leave at 0 to send no reminder.",
     )
+    notify_reminder_type = fields.Selection(
+        selection=[("activity", "Activity"), ("message", "Message")],
+        string="Remind by",
+        default="activity",
+        required=True,
+        help="Activity: one to-do per reviewer on the document, refreshed "
+        "until the review is done. Reviews with several reviewers are "
+        "reminded by message.\n"
+        "Message: a message on the document, without adding to the "
+        "reviewer's activities.",
+    )
     approve_sequence = fields.Boolean(
         string="Approve by sequence",
         default=False,
