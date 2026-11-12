@@ -140,6 +140,10 @@
                                         />
                                         <span class="ms-1">days</span>
                                     </div>
+                                    <field
+                                        name="notify_reminder_type"
+                                        invisible="not notify_reminder_delay"
+                                    />
                                     <field name="notify_on_accepted" />
                                     <field name="notify_on_rejected" />
                                     <field name="notify_on_restarted" />

@@ -135,3 +135,21 @@ class TestTierValidationReminderActivity(CommonTierValidation):
                 ]
             )
         )
+
+    def test_validation_reminder_by_message(self):
+        """Remind by message: no activity, a message on the document."""
+        self.tier_definition.notify_reminder_type = "message"
+        self.tier_definition.notify_reminder_delay = 3
+        self.test_record.with_user(self.test_user_2.id).request_validation()
+        subtype = self.env.ref("base_tier_validation.mt_tier_validation_reminder")
+        self._remind_after(4)
+        self.assertFalse(self._reminders())
+        self.assertTrue(
+            self.env["mail.message"].search(
+                [
+                    ("model", "=", self.test_record._name),
+                    ("res_id", "=", self.test_record.id),
+                    ("subtype_id", "=", subtype.id),
+                ]
+            )
+        )
