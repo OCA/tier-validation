@@ -280,11 +280,11 @@ class TierReview(models.Model):
             if not record.exists():  # <-- skip orphaned reviews
                 continue
             # Only schedule activity if reviewer is a single user and model
-            # has activities. Excluded from coverage: exercising it needs a
-            # validated model mixing in ``mail.activity.mixin``, which none of
-            # the base test models do (they are ``mail.thread`` at most).
-            if (  # pragma: no cover
-                len(rev.reviewer_ids) == 1 and hasattr(record, "activity_ids")
+            # has activities.
+            if (
+                rev.definition_id.notify_reminder_type == "activity"
+                and len(rev.reviewer_ids) == 1
+                and hasattr(record, "activity_ids")
             ):
                 rev._schedule_review_reminder_activity(record)
             elif hasattr(record, "message_post"):
@@ -301,8 +301,73 @@ class TierReview(models.Model):
         )
 
     def _schedule_review_reminder_activity(self, record):
+        # One reminder per reviewer and document: refresh the open one
+        # instead of adding another one every time the cron runs. Reminders
+        # this document no longer needs go first: older duplicates, and
+        # those of a reviewer replaced by a recompute, which skips write().
+        pending = self._get_document_reviews().filtered(lambda r: r.status == "pending")
+        reminders = self._get_reminder_activities()
+        mine = reminders.filtered(lambda a: a.user_id == self.reviewer_ids)
+        stale = reminders.filtered(lambda a: a.user_id not in pending.reviewer_ids)
+        (stale | mine[1:]).unlink()
+        activity = mine[:1]
+        if activity:
+            activity.note = self._notify_review_reminder_body()
+            return
         record.activity_schedule(
             act_type_xmlid=self._get_reminder_activity_type(),
             note=self._notify_review_reminder_body(),
             user_id=self.reviewer_ids.id,
         )
+
+    def _get_reminder_activities(self, users=None):
+        """Reminder activities on the document of this review, of ``users``
+        or else of anyone."""
+        self.ensure_one()
+        activity_type = self.env.ref(
+            self._get_reminder_activity_type(), raise_if_not_found=False
+        )
+        if not activity_type or (users is not None and not users):
+            return self.env["mail.activity"]
+        domain = [
+            ("res_model", "=", self.model),
+            ("res_id", "=", self.res_id),
+            ("activity_type_id", "=", activity_type.id),
+        ]
+        if users is not None:
+            domain.append(("user_id", "in", users.ids))
+        return self.env["mail.activity"].sudo().search(domain)
+
+    def _unlink_reminder_activities(self, users=None):
+        """Remove the reminders of these reviews, for ``users`` or else all
+        their reviewers, unless the user still has another pending review on
+        the same document."""
+        for rev in self:
+            still_pending = rev._get_document_reviews().filtered(
+                lambda r: r not in self and r.status == "pending"
+            )
+            to_clear = rev.reviewer_ids if users is None else users
+            rev._get_reminder_activities(to_clear - still_pending.reviewer_ids).unlink()
+
+    def _get_document_reviews(self):
+        self.ensure_one()
+        return self.sudo().search(
+            [("model", "=", self.model), ("res_id", "=", self.res_id)]
+        )
+
+    def write(self, vals):
+        old_reviewers = (
+            {rev: rev.reviewer_ids for rev in self} if "reviewer_ids" in vals else {}
+        )
+        res = super().write(vals)
+        if vals.get("status") and vals["status"] != "pending":
+            self.filtered(lambda r: r.status != "pending")._unlink_reminder_activities()
+        for rev, reviewers in old_reviewers.items():
+            removed = reviewers - rev.reviewer_ids
+            if removed:
+                rev._unlink_reminder_activities(removed)
+        return res
+
+    def unlink(self):
+        self._unlink_reminder_activities()
+        return super().unlink()
