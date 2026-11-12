@@ -27,8 +27,8 @@ Correction
 - As user with Tier Review Correction role
 - On any document, i.e., Purchase Order, with validation already
   started.
-- On the yellow banner (pending state), click on "Change Reviewer" link
-  on its right side.
+- On the yellow banner (pending state), click on the "Change Reviewer"
+  button next to Validate / Reject.
   - If this document has no Correction yet, it will create new.
   - If the document already has some Corrections, it will show those
     corrections.
