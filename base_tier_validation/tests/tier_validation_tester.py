@@ -106,6 +106,13 @@ class TierValidationTesterComputed(models.Model):
         self.write({"cancelled": True})
 
 
+class TierValidationTesterActivity(models.Model):
+    """Only registered by the reminder activity tests."""
+
+    _name = "tier.validation.tester"
+    _inherit = ["tier.validation.tester", "mail.activity.mixin"]
+
+
 class TierDefinition(models.Model):
     _inherit = "tier.definition"
 
