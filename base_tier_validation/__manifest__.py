@@ -33,5 +33,8 @@
         "web.assets_backend": [
             "base_tier_validation/static/src/components/**/*",
         ],
+        "web.assets_unit_tests": [
+            "base_tier_validation/static/tests/**/*",
+        ],
     },
 }
