@@ -1,5 +1,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from . import test_tier_validation
+from . import test_tier_restart
 from . import test_tier_validation_reminder
 from . import test_tier_validation_access
