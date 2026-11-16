@@ -1,6 +1,6 @@
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record model="res.groups" id="group_show_tier_review_board">
+    <record id="group_show_tier_review_board" model="res.groups">
         <field name="name">Show tier review board</field>
         <field
             name="user_ids"

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <record id="tier_review_view_list_board" model="ir.ui.view">
         <field name="name">tier.review.boards.view.list</field>
@@ -340,7 +340,7 @@
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="open_boards_tier_reviews">
+    <record id="open_boards_tier_reviews" model="ir.actions.act_window">
         <field name="name">Tier Reviews</field>
         <field name="res_model">tier.review</field>
         <field name="view_mode">kanban,list,form,pivot,graph</field>
@@ -398,7 +398,7 @@
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="open_review_statistics">
+    <record id="open_review_statistics" model="ir.actions.act_window">
         <field name="name">Review Statistics</field>
         <field name="res_model">tier.review</field>
         <field name="view_mode">pivot,graph</field>
@@ -423,7 +423,7 @@
             &lt;/p&gt;</field>
     </record>
 
-    <record model="ir.actions.act_window" id="open_my_tier_reviews">
+    <record id="open_my_tier_reviews" model="ir.actions.act_window">
         <field name="name">My Tier Reviews</field>
         <field name="res_model">tier.review</field>
         <field name="view_mode">list,kanban,form,pivot,graph</field>
