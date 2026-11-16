@@ -25,9 +25,10 @@ systray, you need to:
 **Note:**
 
 - The tier-review systray splits your reviews into *Late*, *Pending*
-  and *Future* buckets. A pending review is counted as *Late* once it
-  has been waiting for more than `base_tier_validation.late_after_days`
-  days (default `7`). Lower the value to be alerted sooner, raise it to
+  and *Future* buckets. A review is counted as *Late* once it
+  has been pending for more than `base_tier_validation.late_after_days`
+  days (default `7`). With *Approve by sequence*, that counts from when
+  the previous tier was validated. Lower the value to be alerted sooner, raise it to
   be more tolerant. The parameter is read on each systray refresh, so a
   change takes effect immediately without restarting.
 

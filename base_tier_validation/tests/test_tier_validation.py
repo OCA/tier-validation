@@ -311,6 +311,56 @@ class TierTierValidation(CommonTierValidation):
         self.assertEqual(tester_doc["late_ids"], [record.id])
         self.assertEqual(tester_doc["future_ids"], [future_record.id])
 
+    def test_systray_counter_late_counts_from_pending(self):
+        """With Approve by sequence, a later tier is late only once it has
+        been pending for longer than the threshold, not from the request."""
+        first = self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_2.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+                "sequence": 20,
+                "approve_sequence": True,
+            }
+        )
+        self.tier_def_obj.create(
+            {
+                "model_id": self.tester_model.id,
+                "review_type": "individual",
+                "reviewer_id": self.test_user_1.id,
+                "definition_domain": "[('test_field', '>', 1.0)]",
+                "sequence": 10,
+                "approve_sequence": True,
+            }
+        )
+        record = self.test_model.create({"test_field": 2.5})
+        record.with_user(self.test_user_2).request_validation()
+        review_1 = record.review_ids.filtered(lambda r: r.definition_id == first)
+        review_2 = record.review_ids - review_1
+        self.assertEqual(review_1.status, "pending")
+        self.assertTrue(review_1.pending_date)
+        self.assertEqual(review_2.status, "waiting")
+        self.assertFalse(review_2.pending_date)
+        # The first tier takes 10 days: the second one only starts then.
+        validated_at = fields.Datetime.add(fields.Datetime.now(), days=10)
+        with freeze_time(validated_at):
+            record.with_user(self.test_user_2).validate_tier()
+            docs = self.test_user_1.with_user(self.test_user_1).review_user_count()
+        self.assertEqual(review_2.status, "pending")
+        self.assertEqual(review_2.pending_date, validated_at)
+        tester_doc = next(d for d in docs if d["model"] == "tier.validation.tester")
+        self.assertEqual(
+            (tester_doc["late_count"], tester_doc["pending_count"]), (0, 1)
+        )
+        # Eight days after it became pending, it is late.
+        with freeze_time(fields.Datetime.add(validated_at, days=8)):
+            docs = self.test_user_1.with_user(self.test_user_1).review_user_count()
+        tester_doc = next(d for d in docs if d["model"] == "tier.validation.tester")
+        self.assertEqual(
+            (tester_doc["late_count"], tester_doc["pending_count"]), (1, 0)
+        )
+
     def test_systray_counter_invalid_late_after_days(self):
         """An invalid ``late_after_days`` falls back to the default instead
         of breaking the systray, a negative one counts as 0."""

@@ -29,7 +29,7 @@ class Users(models.Model):
         the current user and reports three buckets so the dropdown can
         mirror Odoo's activity systray layout:
 
-        - ``late_count`` -- pending reviews older than the configured
+        - ``late_count`` -- reviews pending for longer than the configured
           *late* threshold (``base_tier_validation.late_after_days``,
           default ``7``). The reviewer should prioritise these.
         - ``pending_count`` -- pending reviews within the threshold.
@@ -81,8 +81,12 @@ class Users(models.Model):
                 lambda r: r.status == "pending" and r.can_review
             )
             future_reviews = tier_reviews.filtered(lambda r: r.status == "waiting")
+            # Late counts from when the review became pending, so a later
+            # tier of an Approve by sequence validation is not late as soon
+            # as it reaches its reviewer. Reviews pending from before that
+            # date was stored fall back to their creation date.
             late_reviews = pending_reviews.filtered(
-                lambda r: r.create_date and r.create_date < late_cutoff
+                lambda r: (r.pending_date or r.create_date) < late_cutoff
             )
             records_domain = Domain("id", "in", tier_reviews.mapped("res_id")) & Domain(
                 "validation_status", "!=", "rejected"

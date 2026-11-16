@@ -38,6 +38,9 @@ export class TierReviewMenu extends Component {
         // the document. The server sends one notification per reviewer per
         // transaction, and ``scheduleRecount`` throttles what is left.
         this.fetchSystrayReviewer();
+        // The footer link's action does not change while the page is open:
+        // read it once, not on every recount.
+        this.loadDashboardAction();
         this.busService.subscribe("base.tier.validation/updated", () =>
             this.scheduleRecount()
         );
@@ -73,10 +76,7 @@ export class TierReviewMenu extends Component {
         this.fetchRunning = true;
         this.lastFetch = Date.now();
         try {
-            const [groups, dashboardAction] = await Promise.all([
-                this.orm.call("res.users", "review_user_count"),
-                this.orm.call("res.users", "tier_review_dashboard_action"),
-            ]);
+            const groups = await this.orm.call("res.users", "review_user_count");
             let total = 0;
             for (const group of groups) {
                 // Headline counter mirrors what the reviewer must act on
@@ -86,10 +86,6 @@ export class TierReviewMenu extends Component {
             }
             this.store.tierReviewCounter = total;
             this.store.tierReviewGroups = groups;
-            // ``dashboardAction`` is False when no downstream module exposes
-            // a global review dashboard (default); a serialised action dict
-            // when one does (e.g. ``base_tier_validation_board``).
-            this.store.tierReviewDashboardAction = dashboardAction || null;
         } finally {
             this.fetchRunning = false;
         }
@@ -97,6 +93,14 @@ export class TierReviewMenu extends Component {
             this.fetchPending = false;
             await this.fetchSystrayReviewer();
         }
+    }
+
+    async loadDashboardAction() {
+        // False when no downstream module exposes a global review dashboard
+        // (default); a serialised action dict when one does (e.g.
+        // ``base_tier_validation_board``).
+        const action = await this.orm.call("res.users", "tier_review_dashboard_action");
+        this.store.tierReviewDashboardAction = action || null;
     }
 
     openDashboard() {
