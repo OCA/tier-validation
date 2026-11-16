@@ -91,6 +91,8 @@ Contributors
 
   - Jasmin Solanki (jasmin.solanki@forgeflow.com)
 
+- Panithan k. <panithank@ecosoft.co.th>
+
 Maintainers
 -----------
 

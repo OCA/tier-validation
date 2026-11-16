@@ -126,8 +126,8 @@ class TierValidationBoard(CommonTierValidation):
         """The late threshold is read from
         ``base_tier_validation.late_after_days`` so an admin can tune it
         without a code change."""
-        self.env["ir.config_parameter"].sudo().set_param(
-            "base_tier_validation.late_after_days", "30"
+        self.env["ir.config_parameter"].sudo().set_int(
+            "base_tier_validation.late_after_days", 30
         )
         # 14 days old is late at the default 7 but not at 30.
         later = fields.Datetime.add(fields.Datetime.now(), days=14)
@@ -175,11 +175,10 @@ class TierValidationBoard(CommonTierValidation):
             .search(Domain("id", "=", self.review.id))
         )
         self.assertEqual(visible, self.review)
-        # Restrict the model's ACL to admins; test_user_2 loses access.
-        self.env["ir.model.access"].search(
+        # Revoke the model's access; test_user_2 loses access.
+        self.env["ir.access"].search(
             Domain("model_id", "=", self.tester_model.id)
-        ).write({"group_id": self.env.ref("base.group_system").id})
-        self.env["ir.model.access"].call_cache_clearing_methods()
+        ).unlink()
         hidden = (
             self.env["tier.review"]
             .with_user(self.test_user_2)

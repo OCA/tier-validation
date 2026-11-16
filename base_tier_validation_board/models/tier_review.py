@@ -86,13 +86,10 @@ class TierReview(models.Model):
         admin-configurable value drives both. Falls back to
         ``DEFAULT_LATE_AFTER_DAYS`` when the parameter is unset.
         """
-        return int(
+        return (
             self.env["ir.config_parameter"]
             .sudo()
-            .get_param(
-                "base_tier_validation.late_after_days",
-                default=str(DEFAULT_LATE_AFTER_DAYS),
-            )
+            .get_int("base_tier_validation.late_after_days", DEFAULT_LATE_AFTER_DAYS)
         )
 
     @api.depends("create_date", "reviewed_date")
