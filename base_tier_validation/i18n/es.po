@@ -633,8 +633,8 @@ msgstr ""
 #. module: base_tier_validation
 #: model:ir.model.fields,help:base_tier_validation.field_tier_definition__notify_reminder_delay
 msgid ""
-"Remind the reviewers every this many days until the review is done. Leave at "
-"0 to send no reminder."
+"Remind the reviewers every this many days while their review is pending. "
+"Leave at 0 to send no reminder."
 msgstr ""
 
 #. module: base_tier_validation

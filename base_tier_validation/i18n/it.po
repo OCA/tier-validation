@@ -647,11 +647,9 @@ msgstr "Ricorda ogni"
 #. module: base_tier_validation
 #: model:ir.model.fields,help:base_tier_validation.field_tier_definition__notify_reminder_delay
 msgid ""
-"Remind the reviewers every this many days until the review is done. Leave at "
-"0 to send no reminder."
+"Remind the reviewers every this many days while their review is pending. "
+"Leave at 0 to send no reminder."
 msgstr ""
-"Invia un promemoria ai revisori ogni tot giorni, finché la revisione non è "
-"completata. Imposta su 0 per non inviare alcun promemoria."
 
 #. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_validation_buttons
@@ -1102,6 +1100,13 @@ msgstr "es. Validazione livello per ..."
 #: code:addons/base_tier_validation/models/tier_validation.py:0
 msgid "the assigned reviewer"
 msgstr "il revisore assegnato"
+
+#~ msgid ""
+#~ "Remind the reviewers every this many days until the review is done. Leave "
+#~ "at 0 to send no reminder."
+#~ msgstr ""
+#~ "Invia un promemoria ai revisori ogni tot giorni, finché la revisione non "
+#~ "è completata. Imposta su 0 per non inviare alcun promemoria."
 
 #~ msgid ""
 #~ "<i class=\"fa fa-lg fa-thumbs-down\"/>\n"
