@@ -821,6 +821,15 @@ msgid "Tier Validations"
 msgstr ""
 
 #. module: base_tier_validation
+#. odoo-python
+#: code:addons/base_tier_validation/models/tier_validation.py:0
+msgid ""
+"Tier validation was requested but the following reviewer(s) may not be able "
+"to read this document and so cannot act on it: %(reviewers)s. The workflow "
+"will remain pending until they get access or are replaced."
+msgstr ""
+
+#. module: base_tier_validation
 #: model_terms:ir.actions.act_window,help:base_tier_validation.tier_definition_action
 msgid ""
 "Tiers can be chained -- enable\n"
