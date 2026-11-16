@@ -24,6 +24,9 @@
         "web.assets_backend": [
             "base_tier_validation_forward/static/src/xml/tier_review_template.xml",
         ],
+        "web.assets_unit_tests": [
+            "base_tier_validation_forward/static/tests/**/*",
+        ],
     },
     "uninstall_hook": "uninstall_hook",
 }
