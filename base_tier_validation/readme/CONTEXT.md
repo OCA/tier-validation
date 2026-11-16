@@ -1,0 +1,3 @@
+Many companies want a second pair of eyes on some documents before they take effect: a manager approves large purchases, finance checks vendor bills above a threshold, a director signs off on discounts beyond a certain level. Often several people have to agree, in a given order, and who they are depends on the document: its amount, its company, its department.
+
+Odoo has a few fixed approval steps of its own, such as the purchase order double validation, but they cover one level on one model. Tier validation lets you describe these rules yourself, for any document that supports it, with as many levels as you need, and keeps track of who approved what and when.
