@@ -11,6 +11,19 @@
                 >
                         · requested by <t t-out="singleRequester" />
                     </span>
+                    <span
+                    t-if="_getReviewData().length"
+                    class="progress o_tier_validation_progress"
+                    role="progressbar"
+                    t-att-aria-valuenow="validationProgress"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                >
+                    <span
+                        class="progress-bar bg-success"
+                        t-att-style="`width: ${validationProgress}%;`"
+                    ><t t-out="validationProgress" />%</span>
+                </span>
                 </summary>
                 <div class="o_tier_review_body o_review">
                     <table class="mt-4 table table-sm">

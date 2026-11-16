@@ -45,3 +45,15 @@ ul.o_review {
     width: 2rem;
     white-space: nowrap;
 }
+
+/* Progress bar next to the heading, so how far the validation got shows
+   even with the table collapsed. */
+.o_tier_review_details > summary .o_tier_validation_progress {
+    display: inline-flex;
+    vertical-align: middle;
+    width: 12rem;
+    max-width: 40%;
+    height: 1rem;
+    margin-left: 16px;
+    font-weight: normal;
+}
