@@ -731,8 +731,6 @@ msgid "Send Tier Review Reminder"
 msgstr "Enviar recordatorio de validación de nivel"
 
 #. module: base_tier_validation
-#. odoo-javascript
-#: code:addons/base_tier_validation/static/src/components/tier_review_widget/tier_review_widget.xml:0
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__sequence
 msgid "Sequence"
 msgstr "Secuencia"
@@ -1060,6 +1058,12 @@ msgstr "ej. Validación de Nivel por..."
 #. odoo-python
 #: code:addons/base_tier_validation/models/tier_validation.py:0
 msgid "the assigned reviewer"
+msgstr ""
+
+#. module: base_tier_validation
+#. odoo-javascript
+#: code:addons/base_tier_validation/static/src/components/tier_review_widget/tier_review_widget.xml:0
+msgid "· requested by"
 msgstr ""
 
 #~ msgid ""
