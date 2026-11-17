@@ -522,7 +522,7 @@ class TierValidation(models.AbstractModel):
                     lambda r: r.status in ("waiting", "pending")
                 ):
                     rec._update_counter({"review_deleted": True})
-                rec.mapped("review_ids").unlink()
+                rec.review_ids.with_context(tier_review_unlink=True).unlink()
 
     def _allow_to_remove_reviews(self, values):
         """Method for deciding whether the elimination of revisions is necessary."""
@@ -965,7 +965,7 @@ class TierValidation(models.AbstractModel):
                 # notification itself is only sent at commit.
                 if to_update_counter:
                     rec._update_counter({"review_deleted": True})
-                rec.mapped("review_ids").unlink()
+                rec.review_ids.with_context(tier_review_unlink=True).unlink()
             if partners_to_notify_ids:
                 subscribe = "message_subscribe"
                 reviews_to_notify = rec.review_ids.filtered(
@@ -1014,7 +1014,7 @@ class TierValidation(models.AbstractModel):
         pending["message"].update(review_counter)
 
     def unlink(self):
-        self.mapped("review_ids").unlink()
+        self.review_ids.with_context(tier_review_unlink=True).unlink()
         return super().unlink()
 
     def _add_tier_validation_buttons(self, node, params):

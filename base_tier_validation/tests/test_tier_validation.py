@@ -9,7 +9,7 @@ from freezegun import freeze_time
 from lxml import etree
 
 from odoo import Command, fields
-from odoo.exceptions import AccessError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.fields import Domain
 from odoo.tests import Form
 from odoo.tests.common import tagged
@@ -1724,6 +1724,24 @@ class TierTierValidation(CommonTierValidation):
             )
         )
         self.assertEqual(notifications_no_2, notifications_no_1)
+
+    def test_review_cannot_be_deleted_or_duplicated(self):
+        """Reviews are the audit trail: not deleted or copied by hand, only
+        removed by the validation itself."""
+        self.test_record.with_user(self.test_user_2).request_validation()
+        review = self.test_record.review_ids
+        self.assertTrue(review)
+        with self.assertRaises(UserError):
+            review.unlink()
+        with self.assertRaises(UserError):
+            review.copy()
+        self.assertTrue(review.exists())
+        self.test_record.with_user(self.test_user_2).restart_validation()
+        self.assertFalse(review.exists())
+        self.test_record.with_user(self.test_user_2).request_validation()
+        review = self.test_record.review_ids
+        self.test_record.unlink()
+        self.assertFalse(review.exists())
 
     def test_24_notify_on_restarted(self):
         self.test_user_2.write(
