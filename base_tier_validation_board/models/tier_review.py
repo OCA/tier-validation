@@ -3,9 +3,18 @@
 from odoo import api, fields, models
 from odoo.tools import SQL, split_every
 
+# Fallback for the ``base_tier_validation.late_after_days`` system parameter:
+# the number of days after which a still-pending/waiting review counts as
+# "late". Shared with base_tier_validation's reviewer systray (the "Late"
+# bucket), so the board's ``is_late`` indicator/filter and the systray agree
+# on one admin-configurable threshold (Settings > Technical > System
+# Parameters). Used by the kanban "rotten" colour and the "Late" search filter.
+DEFAULT_LATE_AFTER_DAYS = 7
+
 
 class TierReview(models.Model):
-    _inherit = "tier.review"
+    _name = "tier.review"
+    _inherit = ["tier.review", "mail.thread", "mail.activity.mixin"]
 
     @api.depends("model", "res_id")
     def _compute_res_name(self):
@@ -25,6 +34,135 @@ class TierReview(models.Model):
     res_name = fields.Char(
         "Resource Name", compute="_compute_res_name", compute_sudo=True
     )
+    # Stored m2o to ir.model (rather than the base `model` char) so the
+    # list/pivot/graph show and group by the model's human-friendly
+    # description (e.g. "Journal Entry") instead of its technical name
+    # ("account.move"). The help below is what the user sees on hover, so
+    # keep it plain.
+    model_id = fields.Many2one(
+        comodel_name="ir.model",
+        related="definition_id.model_id",
+        store=True,
+        string="Model",
+        help="The kind of document this review is for (e.g. Journal Entry, Contract).",
+    )
+    response_days = fields.Float(
+        string="Response time (days)",
+        compute="_compute_response_days",
+        store=True,
+        # Aggregate as an AVERAGE, not a sum: the useful KPI is "reviews
+        # took N days on average", whereas a sum of everyone's turnaround
+        # is a meaningless total. Drives the "avg days" measure in the
+        # Review Statistics pivot/graph.
+        aggregator="avg",
+        help="Days between the review being created and it being done "
+        "(0 until it is approved or rejected). Averaged in pivot/graph "
+        "views, so the measure reads as the mean review turnaround.",
+    )
+    age_display = fields.Char(
+        compute="_compute_age_display",
+        string="Waiting",
+        help="How long an open (pending/waiting) review has been waiting, in "
+        "a short relative form (e.g. 3d, 2w, 4mo). Empty once the review is "
+        "done. Used on the kanban card so aging stands out.",
+    )
+    is_late = fields.Boolean(
+        compute="_compute_is_late",
+        search="_search_is_late",
+        string="Late",
+        help="Set when the review is still waiting for a decision and has "
+        "been pending longer than the configured threshold "
+        "(base_tier_validation.late_after_days, default 7 days). Shown on "
+        "the kanban with a 'rotten' colour and available as the 'Late' "
+        "filter.",
+    )
+
+    @api.model
+    def _late_after_days(self):
+        """Days before a pending/waiting review counts as late.
+
+        Read from the ``base_tier_validation.late_after_days`` system
+        parameter (the same one the reviewer systray uses) so a single,
+        admin-configurable value drives both. Falls back to
+        ``DEFAULT_LATE_AFTER_DAYS`` when the parameter is unset.
+        """
+        return int(
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param(
+                "base_tier_validation.late_after_days",
+                default=str(DEFAULT_LATE_AFTER_DAYS),
+            )
+        )
+
+    @api.depends("create_date", "reviewed_date")
+    def _compute_response_days(self):
+        for rec in self:
+            if rec.create_date and rec.reviewed_date:
+                rec.response_days = (
+                    rec.reviewed_date - rec.create_date
+                ).total_seconds() / 86400.0
+            else:
+                rec.response_days = 0.0
+
+    @api.depends("status", "create_date")
+    def _compute_is_late(self):
+        cutoff = fields.Datetime.subtract(
+            fields.Datetime.now(), days=self._late_after_days()
+        )
+        for rec in self:
+            rec.is_late = (
+                rec.status in ("waiting", "pending")
+                and rec.create_date
+                and rec.create_date < cutoff
+            )
+
+    @api.depends("status", "create_date")
+    def _compute_age_display(self):
+        now = fields.Datetime.now()
+        for rec in self:
+            if rec.status in ("waiting", "pending") and rec.create_date:
+                days = (now - rec.create_date).days
+                if days < 1:
+                    rec.age_display = self.env._("today")
+                elif days < 14:
+                    rec.age_display = f"{days}d"
+                elif days < 60:
+                    rec.age_display = f"{days // 7}w"
+                else:
+                    rec.age_display = f"{days // 30}mo"
+            else:
+                rec.age_display = False
+
+    @api.model
+    def _search_is_late(self, operator, value):
+        # Odoo 19 hands search methods normalized operators: a filter on
+        # ``is_late = True`` arrives as ``in [True]``. Accept both forms.
+        if operator in ("=", "!="):
+            operator = "in" if operator == "=" else "not in"
+            value = [value]
+        if operator not in ("in", "not in"):
+            return [("id", "=", False)]
+        values = {bool(v) for v in value}
+        wanted = values if operator == "in" else {True, False} - values
+        if not wanted:
+            return [("id", "=", False)]
+        if wanted == {True, False}:
+            return [("id", "!=", False)]
+        cutoff = fields.Datetime.subtract(
+            fields.Datetime.now(), days=self._late_after_days()
+        )
+        late_ids = (
+            self.sudo()
+            .search(
+                [
+                    ("status", "in", ["waiting", "pending"]),
+                    ("create_date", "<", cutoff),
+                ]
+            )
+            .ids
+        )
+        return [("id", "in" if True in wanted else "not in", late_ids)]
 
     @api.depends("res_id", "model")
     def _compute_related_model_instance(self):
