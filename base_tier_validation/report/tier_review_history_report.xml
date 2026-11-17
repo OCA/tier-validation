@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="action_report_tier_review_history" model="ir.actions.report">
+        <field name="name">Validation History</field>
+        <field name="model">tier.review</field>
+        <field name="report_type">qweb-pdf</field>
+        <field
+            name="report_name"
+        >base_tier_validation.report_tier_review_history</field>
+        <field
+            name="report_file"
+        >base_tier_validation.report_tier_review_history</field>
+        <field name="print_report_name">'Validation History'</field>
+        <field name="binding_model_id" ref="model_tier_review" />
+        <field name="binding_type">report</field>
+    </record>
+    <template id="report_tier_review_history">
+        <t t-call="web.html_container">
+            <t t-foreach="docs._get_history_by_document()" t-as="group">
+                <t t-set="o" t-value="group['reviews'][:1]" />
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <t
+                            t-set="first"
+                            t-value="group['reviews'].sorted('create_date')[:1]"
+                        />
+                        <h2>Validation History</h2>
+                        <h4>
+                            <t t-out="group['document']" />
+                            <small class="text-muted">
+                                (<t t-out="group['model_name']" />)
+                            </small>
+                        </h4>
+                        <div id="informations" class="row mt-3 mb-4">
+                            <div class="col">
+                                <strong>Requested by</strong>
+                                <div t-field="first.requested_by" />
+                            </div>
+                            <div class="col">
+                                <strong>Requested on</strong>
+                                <div t-field="first.create_date" />
+                            </div>
+                            <div
+                                class="col"
+                                t-if="group['record'] and 'validation_status' in group['record']"
+                            >
+                                <strong>Validation</strong>
+                                <div t-field="group['record'].validation_status" />
+                            </div>
+                        </div>
+                        <table class="table o_main_table table-borderless">
+                            <thead>
+                                <tr>
+                                    <th>Tier</th>
+                                    <th>Description</th>
+                                    <th>To be done by</th>
+                                    <th>Status</th>
+                                    <th>Done by</th>
+                                    <th>Date</th>
+                                    <th>Comment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="group['reviews']" t-as="review">
+                                    <td>
+                                        <span t-field="review.sequence" />
+                                    </td>
+                                    <td>
+                                        <span t-field="review.name" />
+                                    </td>
+                                    <td>
+                                        <span t-field="review.todo_by" />
+                                    </td>
+                                    <td>
+                                        <span t-field="review.status" />
+                                    </td>
+                                    <td>
+                                        <span t-field="review.done_by" />
+                                    </td>
+                                    <td>
+                                        <span t-field="review.reviewed_date" />
+                                    </td>
+                                    <td>
+                                        <span t-field="review.comment" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="text-muted small">
+                            Printed by <t t-out="user.name" /> on
+                            <t
+                            t-out="datetime.datetime.now()"
+                            t-options="{'widget': 'datetime'}"
+                        />
+                        </p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

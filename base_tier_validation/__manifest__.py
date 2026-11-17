@@ -28,6 +28,8 @@
         "wizard/comment_wizard_view.xml",
         # Templates
         "templates/tier_validation_templates.xml",
+        # Reports
+        "report/tier_review_history_report.xml",
     ],
     "assets": {
         "web.assets_backend": [

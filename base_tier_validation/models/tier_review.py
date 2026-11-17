@@ -316,3 +316,27 @@ class TierReview(models.Model):
             note=self._notify_review_reminder_body(),
             user_id=self.reviewer_ids.id,
         )
+
+    def _get_history_by_document(self):
+        """Group the reviews by their document for the Validation History
+        report: one entry per document, in the order of the selection."""
+        groups = {}
+        for review in self.sorted(lambda r: (r.model, r.res_id, r.sequence, r.id)):
+            key = (review.model, review.res_id)
+            if key not in groups:
+                record = (
+                    self.env[review.model].browse(review.res_id).exists()
+                    if review.model in self.env
+                    else False
+                )
+                groups[key] = {
+                    "record": record.sudo() if record else False,
+                    "document": record.sudo().display_name
+                    if record
+                    else f"{review.model},{review.res_id}",
+                    "model_name": self.env["ir.model"]._get(review.model).name
+                    or review.model,
+                    "reviews": self.browse(),
+                }
+            groups[key]["reviews"] |= review
+        return list(groups.values())
