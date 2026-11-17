@@ -607,6 +607,47 @@ class TierTierValidation(CommonTierValidation):
         )
         self.assertEqual(record1.validation_status, "validated")
 
+    def _validate_with_comment(self, defs_vals):
+        for vals in defs_vals:
+            self.tier_def_obj.create(
+                dict(
+                    vals,
+                    model_id=self.tester_model.id,
+                    review_type="individual",
+                    reviewer_id=self.test_user_1.id,
+                    definition_domain="[('test_field', '>', 1.0)]",
+                    has_comment=True,
+                )
+            )
+        test_record = self.test_model.create({"test_field": 2.5})
+        test_record.with_user(self.test_user_2).request_validation()
+        record = test_record.with_user(self.test_user_1)
+        action = record.validate_tier()
+        self.env[action["res_model"]].with_user(self.test_user_1).with_context(
+            **action["context"]
+        ).create({"comment": "Looks good"}).add_comment()
+        return test_record
+
+    def test_12_approve_sequence_bypass_comment_once(self):
+        """One approval covering several tiers by bypass comments only the
+        last of them."""
+        bypass = {"approve_sequence": True, "approve_sequence_bypass": True}
+        test_record = self._validate_with_comment(
+            [dict(bypass, sequence=40), dict(bypass, sequence=30)]
+        )
+        reviews = test_record.review_ids
+        self.assertEqual(reviews.mapped("status"), ["approved", "approved"])
+        self.assertEqual(
+            reviews.sorted("sequence").mapped("comment"), [False, "Looks good"]
+        )
+
+    def test_12_validate_several_reviews_comment_all(self):
+        """Without bypass, every review validated at once gets the comment."""
+        test_record = self._validate_with_comment([{"sequence": 40}, {"sequence": 30}])
+        reviews = test_record.review_ids
+        self.assertEqual(reviews.mapped("status"), ["approved", "approved"])
+        self.assertEqual(reviews.mapped("comment"), ["Looks good", "Looks good"])
+
     def test_13_onchange_review_type(self):
         tier_def_id = self.tier_def_obj.create(
             {
