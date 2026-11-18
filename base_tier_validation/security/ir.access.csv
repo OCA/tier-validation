@@ -1,0 +1,13 @@
+id,name,model_id,group_id/id,operation,domain
+access_tier_review_group_public,access_tier_review_group_public,tier.review,base.group_public,r,
+access_tier_definition_group_public,access_tier_definition_group_public,tier.definition,base.group_public,r,
+access_tier_review_group_portal,access_tier_review_group_portal,tier.review,base.group_portal,r,
+access_tier_definition_group_portal,access_tier_definition_group_portal,tier.definition,base.group_portal,r,
+access_tier_review,access.tier.review,tier.review,base.group_user,crud,
+access_tier_definition_all,tier.definition.all,tier.definition,base.group_user,r,
+access_tier_definition_settings,tier.definition.settings,tier.definition,base.group_erp_manager,crud,
+access_comment_wizard,access.comment.wizard,comment.wizard,base.group_user,crud,
+access_tier_validation_exceptions_all,tier.validation.exceptions,tier.validation.exception,base.group_user,r,
+access_tier_validation_exceptions_settings,tier.validation.exceptions,tier.validation.exception,base.group_system,crud,
+tier_definition_comp_rule,Tier Definition multi-company,tier.definition,,crud,"[('company_id', 'in', company_ids + [False])]"
+tier_review_comp_rule,Tier Review multi-company,tier.review,,crud,"[('company_id', 'in', company_ids + [False])]"
