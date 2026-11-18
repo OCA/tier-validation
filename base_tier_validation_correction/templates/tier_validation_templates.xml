@@ -3,15 +3,15 @@
         id="tier_validation_label_forward"
         inherit_id="base_tier_validation.tier_validation_label"
     >
-        <p position="inside">
+        <xpath expr="//button[@name='reject_tier']" position="after">
             <button
                 name="view_tier_correction"
                 type="object"
                 string="Change Reviewer"
-                class="oe_right"
-                icon="fa-male"
+                class="btn-secondary ms-1"
+                icon="fa-exchange"
                 groups="base_tier_validation_correction.group_tier_correction"
             />
-        </p>
+        </xpath>
     </template>
 </odoo>

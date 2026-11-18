@@ -80,6 +80,10 @@ class TierCorrection(models.Model):
         compute="_compute_reference",
         store=True,
     )
+    document_count = fields.Integer(
+        string="Number of Documents",
+        compute="_compute_document_count",
+    )
     date_schedule_correct = fields.Datetime(
         string="Scheduled Correction Date",
         copy=False,
@@ -229,3 +233,20 @@ class TierCorrection(models.Model):
         )
         to_revert.action_revert()
         _logger.info("Tier Correction - Reversion: %s", to_revert)
+
+    @api.depends("item_ids.res_id")
+    def _compute_document_count(self):
+        for rec in self:
+            rec.document_count = len(set(rec.item_ids.mapped("res_id")))
+
+    def action_view_documents(self):
+        """The documents of this correction, in the list view of their model."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": self.model_id.name,
+            "res_model": self.model,
+            "view_mode": "list,form",
+            "views": [(False, "list"), (False, "form")],
+            "domain": [("id", "in", self.item_ids.mapped("res_id"))],
+        }
