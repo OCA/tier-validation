@@ -80,6 +80,11 @@ To configure this module, you need to:
   Reject.
 - If check *Approve by sequence*, reviewers is forced to review by
   specified sequence.
+- If check *Allow Bulk Validation*, reviewers can validate or reject
+  several reviews at once from the Tier Review list. A bulk reject asks
+  for one comment for all of them. Reviews on definitions without this
+  flag are skipped, and so are reviews that require a comment when
+  validating in bulk.
 
 To tune when a pending review is flagged as *Late* in the reviewer
 systray, you need to:

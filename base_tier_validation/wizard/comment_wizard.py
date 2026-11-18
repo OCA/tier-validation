@@ -13,9 +13,17 @@ class CommentWizard(models.TransientModel):
     res_id = fields.Integer()
     review_ids = fields.Many2many(comodel_name="tier.review")
     comment = fields.Char(required=True)
+    bulk_skipped = fields.Integer(
+        help="Reviews of a bulk selection that cannot be processed in bulk."
+    )
 
     def add_comment(self):
         self.ensure_one()
+        if self.validate_reject == "bulk_reject":
+            reviews = self.review_ids._filter_bulk_reviewable()
+            reviews._bulk_process("reject", self.comment)
+            skipped = self.bulk_skipped + len(self.review_ids - reviews)
+            return reviews._bulk_result("reject", skipped)
         rec = self.env[self.res_model].browse(self.res_id)
         commented = self.review_ids
         if self.validate_reject == "validate" and commented.filtered(

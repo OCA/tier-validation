@@ -8,6 +8,15 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Comment">
+                <field name="validate_reject" invisible="1" />
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    invisible="not bulk_skipped"
+                >
+                    <field name="bulk_skipped" class="oe_inline" readonly="1" />
+                    selected reviews cannot be rejected in bulk and will be skipped.
+                </div>
                 <group>
                     <field colspan="2" name="comment" nolabel="1" />
                 </group>
