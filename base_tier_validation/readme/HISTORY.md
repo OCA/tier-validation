@@ -6,6 +6,16 @@
 
   Tier validation exceptions can be archived; archived exceptions no longer apply. Their form groups the write permissions and the groups they apply to. ([#23](https://github.com/OCA/tier-validation/issues/23))
 
+## 19.0.2.0.0 (2026-05-17)
+
+Features:
+
+- New **Tier Validation Administrator** security group. Trusted key
+  users can now manage tier definitions and exceptions without being
+  granted Settings / Technical access. System administrators receive
+  the group automatically (back-compat).
+- The *Tier Validations* menu has moved out of *Settings > Technical*
+  to a top-level menu, gated by the new group.
 
 ## 19.0.1.0.4 (2026-05-13)
 
