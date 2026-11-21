@@ -10,6 +10,7 @@
                 <field name="sequence" widget="handle" />
                 <field name="model_id" />
                 <field name="name" decoration-bf="1" />
+                <field name="tier_summary" optional="show" />
                 <field name="review_type" />
                 <field name="reviewer_id" widget="many2one_avatar_user" />
                 <field name="reviewer_group_id" />
@@ -20,7 +21,7 @@
                 <field
                     name="company_id"
                     groups="base.group_multi_company"
-                    optional="hide"
+                    optional="show"
                 />
             </list>
         </field>
@@ -47,6 +48,13 @@
                             />
                         </h1>
                     </div>
+                    <div
+                        class="alert alert-info"
+                        role="status"
+                        invisible="not tier_summary"
+                    >
+                        <field name="tier_summary" />
+                    </div>
                     <group>
                         <group name="left">
                             <field name="model_id" options="{'no_create': True}" />
@@ -56,10 +64,12 @@
                                 name="reviewer_id"
                                 widget="many2one_avatar_user"
                                 invisible="review_type != 'individual'"
+                                required="review_type == 'individual'"
                             />
                             <field
                                 name="reviewer_group_id"
                                 invisible="review_type != 'group'"
+                                required="review_type == 'group'"
                             />
                             <field
                                 name="exclude_requester"
@@ -68,6 +78,7 @@
                             <field
                                 name="reviewer_field_id"
                                 invisible="review_type != 'field'"
+                                required="review_type == 'field'"
                                 options="{'no_create': True}"
                             />
                         </group>
@@ -175,7 +186,7 @@
                 <group>
                     <filter
                         string="Model"
-                        name="model_id"
+                        name="group_by_model"
                         domain="[]"
                         context="{'group_by':'model_id'}"
                     />
