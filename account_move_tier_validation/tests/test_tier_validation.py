@@ -1,6 +1,9 @@
 # Copyright 2018 ForgeFlow S.L.
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
+from types import MappingProxyType
+from unittest.mock import patch
+
 from odoo import Command, fields
 from odoo.exceptions import ValidationError
 from odoo.tests import Form
@@ -140,3 +143,18 @@ class TestAccountTierValidation(BaseCommon):
                 "Could not find a 'action_send_and_print' "
                 "action on the account.move.send.wizard."
             )
+
+    def test_ocr_fields_are_exceptions(self):
+        """The OCR of Odoo Enterprise can write its fields on reviewed bills.
+
+        Enterprise is not available here, so a stand-in field takes the
+        place of its ``extract_state``.
+        """
+        Move = self.env["account.move"]
+        with_ocr = MappingProxyType(
+            dict(Move._fields, extract_state=Move._fields["ref"])
+        )
+        with patch.object(type(Move), "_fields", with_ocr):
+            self.assertIn("extract_state", Move._get_under_validation_exceptions())
+            self.assertIn("extract_state", Move._get_after_validation_exceptions())
+        self.assertNotIn("extract_state", Move._get_after_validation_exceptions())
