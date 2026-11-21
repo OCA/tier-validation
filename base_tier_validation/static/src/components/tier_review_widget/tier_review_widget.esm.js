@@ -27,6 +27,19 @@ export class ReviewsTable extends Component {
         }
         return first.display_name;
     }
+
+    /**
+     * Share of approved reviews, in percent. Computed from the reviews
+     * already loaded, so the bar follows the table without another read.
+     */
+    get validationProgress() {
+        const reviews = this._getReviewData();
+        if (!reviews.length) {
+            return 0;
+        }
+        const done = reviews.filter((review) => review.status === "approved").length;
+        return Math.round((done * 100) / reviews.length);
+    }
 }
 
 ReviewsTable.template = "base_tier_validation.Collapse";

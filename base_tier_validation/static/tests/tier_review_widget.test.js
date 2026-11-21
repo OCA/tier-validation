@@ -140,3 +140,14 @@ test("status shown as a badge", async () => {
     expect("tbody tr:last .badge").toHaveClass("text-bg-warning");
     expect("tbody tr:last .badge").toHaveText("Pending");
 });
+
+test("progress bar: share of approved reviews", async () => {
+    await mountReviews(1);
+    expect(".o_tier_validation_progress").toHaveAttribute("aria-valuenow", "50");
+    expect(".o_tier_validation_progress .progress-bar").toHaveText("50%");
+});
+
+test("progress bar: nothing approved yet", async () => {
+    await mountReviews(2);
+    expect(".o_tier_validation_progress").toHaveAttribute("aria-valuenow", "0");
+});
