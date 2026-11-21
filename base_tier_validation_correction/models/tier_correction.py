@@ -3,7 +3,7 @@
 import logging
 
 from odoo import Command, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Domain
 from odoo.tools.safe_eval import datetime, dateutil, safe_eval
 
@@ -54,6 +54,7 @@ class TierCorrection(models.Model):
     new_reviewer_ids = fields.Many2many(
         comodel_name="res.users",
         relation="tier_correction_new_reviewer_rel",
+        domain=[("share", "=", False)],
         string="Reassign Reviewer(s)",
         help="Reassign these reviewers to the tier reviews of the found document",
     )
@@ -108,6 +109,39 @@ class TierCorrection(models.Model):
                 raise ValidationError(
                     self.env._("Revert Date should be after Correct Date")
                 )
+
+    def _warn_new_reviewers_access(self, model_name, users):
+        """Onchange warning when new reviewers may not be able to read the
+        documents. Advisory only: same model-level check as on tier
+        definitions, so record rules may still change the outcome."""
+        no_access = self.env["tier.definition"]._reviewers_without_model_access(
+            model_name, users
+        )
+        if not no_access:
+            return {}
+        model = self.env["ir.model"]._get(model_name)
+        return {
+            "warning": {
+                "title": self.env._("Reviewer may lack access"),
+                "message": self.env._(
+                    "The following reviewer(s) may not be able to read "
+                    "'%(model)s' records and so cannot act on the reviews "
+                    "reassigned to them: %(reviewers)s.\n\n"
+                    "This is a best-effort check against model-level access "
+                    "rights only -- record rules may still grant or revoke "
+                    "access at runtime.",
+                    model=model.name or model_name,
+                    reviewers=", ".join(no_access.mapped("display_name")),
+                ),
+            }
+        }
+
+    @api.onchange("model_id", "new_reviewer_ids")
+    def _onchange_warn_new_reviewers_access(self):
+        if self.model_id and self.new_reviewer_ids:
+            return self._warn_new_reviewers_access(
+                self.model_id.model, self.new_reviewer_ids._origin
+            )
 
     def search_document(self):
         for rec in self:
@@ -192,6 +226,14 @@ class TierCorrection(models.Model):
 
     def action_prepare(self):
         self.search_document()
+        for rec in self.filtered(lambda rec: not rec.item_ids):
+            raise UserError(
+                self.env._(
+                    "No %(model)s has open reviews matching these criteria, so "
+                    "there is nothing to correct. Check the search criteria.",
+                    model=rec.model_id.name,
+                )
+            )
         self.write({"state": "prepare"})
 
     def action_done(self):

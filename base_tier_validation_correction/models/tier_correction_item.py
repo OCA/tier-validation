@@ -1,7 +1,7 @@
 # Copyright 2020 Ecosoft Co., Ltd. (http://ecosoft.co.th)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import Command, fields, models
+from odoo import Command, api, fields, models
 
 
 class TierCorrectionItem(models.Model):
@@ -25,6 +25,7 @@ class TierCorrectionItem(models.Model):
     new_reviewer_ids = fields.Many2many(
         comodel_name="res.users",
         relation="tier_correction_item_new_reviewer_rel",
+        domain=[("share", "=", False)],
         string="New Reviewers",
         help="These reviewers will overwrite the existing reviewer_ids in tier.review",
     )
@@ -33,6 +34,13 @@ class TierCorrectionItem(models.Model):
         string="Affected Tier Reviews",
         help="Tier reivews that will be affected by this correction.",
     )
+
+    @api.onchange("new_reviewer_ids")
+    def _onchange_warn_new_reviewers_access(self):
+        if self.res_model and self.new_reviewer_ids:
+            return self.env["tier.correction"]._warn_new_reviewers_access(
+                self.res_model, self.new_reviewer_ids._origin
+            )
 
     def _notify_reviewer_change(self, ttype="correct"):
         self.ensure_one()
