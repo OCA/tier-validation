@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <!-- Where the digest tiles lead. They reuse the views of the review
+         board; each one opens on the filter that matches its tile. Pending
+         and team pending use the board's own actions. -->
+    <record id="action_my_waiting_tier_reviews" model="ir.actions.act_window">
+        <field name="name">My Queued Reviews</field>
+        <field name="res_model">tier.review</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[("reviewer_ids", "in", uid)]</field>
+        <field
+            name="context"
+        >{"create": False, "search_default_state_waiting": 1, "search_default_group_model": 1}</field>
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'view_mode': 'list', 'view_id': ref('base_tier_validation_board.tier_review_view_list_board')}),
+                   (0, 0, {'view_mode': 'kanban', 'view_id': ref('base_tier_validation_board.tier_review_view_kanban')}),
+                   (0, 0, {'view_mode': 'form', 'view_id': ref('base_tier_validation_board.tier_review_view_form_board')})]"
+        />
+        <field
+            name="search_view_id"
+            ref="base_tier_validation_board.tier_review_view_search"
+        />
+    </record>
+
+    <record id="action_my_late_tier_reviews" model="ir.actions.act_window">
+        <field name="name">My Late Reviews</field>
+        <field name="res_model">tier.review</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[("reviewer_ids", "in", uid)]</field>
+        <field
+            name="context"
+        >{"create": False, "search_default_late": 1, "search_default_group_model": 1}</field>
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'view_mode': 'list', 'view_id': ref('base_tier_validation_board.tier_review_view_list_board')}),
+                   (0, 0, {'view_mode': 'kanban', 'view_id': ref('base_tier_validation_board.tier_review_view_kanban')}),
+                   (0, 0, {'view_mode': 'form', 'view_id': ref('base_tier_validation_board.tier_review_view_form_board')})]"
+        />
+        <field
+            name="search_view_id"
+            ref="base_tier_validation_board.tier_review_view_search"
+        />
+    </record>
+
+    <record id="action_my_validated_tier_reviews" model="ir.actions.act_window">
+        <field name="name">Reviews I Validated</field>
+        <field name="res_model">tier.review</field>
+        <field name="view_mode">list,kanban,form,pivot,graph</field>
+        <field name="domain">[("done_by", "=", uid)]</field>
+        <field
+            name="context"
+        >{"create": False, "search_default_state_approved": 1}</field>
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'view_mode': 'list', 'view_id': ref('base_tier_validation_board.tier_review_view_list_board')}),
+                   (0, 0, {'view_mode': 'kanban', 'view_id': ref('base_tier_validation_board.tier_review_view_kanban')}),
+                   (0, 0, {'view_mode': 'form', 'view_id': ref('base_tier_validation_board.tier_review_view_form_board')}),
+                   (0, 0, {'view_mode': 'pivot', 'view_id': ref('base_tier_validation_board.tier_review_view_pivot')}),
+                   (0, 0, {'view_mode': 'graph', 'view_id': ref('base_tier_validation_board.tier_review_view_graph')})]"
+        />
+        <field
+            name="search_view_id"
+            ref="base_tier_validation_board.tier_review_view_search"
+        />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                You have not validated any review yet
+            </p>
+            <p>
+                The reviews you approved, across every model that uses tier
+                validation. Clear the
+                <em>Approved</em>
+                filter to see the ones you rejected too.
+            </p>
+        </field>
+    </record>
+</odoo>
