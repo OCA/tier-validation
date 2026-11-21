@@ -1,0 +1,1 @@
+odoo-addon-purchase_work_acceptance @ git+https://github.com/OCA/purchase-workflow.git@refs/pull/3190/head#subdirectory=purchase_work_acceptance
