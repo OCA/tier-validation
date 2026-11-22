@@ -2,6 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
+from odoo.tools.safe_eval import test_python_expr
 
 
 class TierDefinition(models.Model):
@@ -26,6 +28,38 @@ class TierDefinition(models.Model):
         "#  - Expects a recordset of res.users\nrec.env.user",
     )
     review_type = fields.Selection(selection_add=[("expression", "Python Expression")])
+
+    @api.constrains(
+        "definition_type", "python_code", "review_type", "reviewer_expression"
+    )
+    def _check_python_expressions(self):
+        """Refuse expressions that cannot run, on save.
+
+        Otherwise a typo only shows when someone requests a validation, on
+        their document. Like server actions, this catches syntax errors and
+        forbidden code; a wrong field name still shows at evaluation.
+        """
+        for tier in self:
+            to_check = []
+            if tier.definition_type in ("formula", "domain_formula"):
+                to_check.append(
+                    (tier.python_code, self.env._("Tier Definition Expression"))
+                )
+            if tier.review_type == "expression":
+                to_check.append(
+                    (tier.reviewer_expression, self.env._("Review Expression"))
+                )
+            for expression, label in to_check:
+                msg = test_python_expr(expr=(expression or "").strip(), mode="eval")
+                if msg:
+                    raise ValidationError(
+                        self.env._(
+                            "%(label)s of %(tier)s is not valid:\n%(error)s",
+                            label=label,
+                            tier=tier.display_name,
+                            error=msg,
+                        )
+                    )
 
     @api.onchange("review_type")
     def onchange_review_type(self):
