@@ -36,7 +36,7 @@ addon | version | maintainers | summary
 [purchase_request_tier_validation](purchase_request_tier_validation/) | 19.0.1.0.0 |  | Extends the functionality of Purchase Requests to support a tier validation process.
 [purchase_tier_validation](purchase_tier_validation/) | 19.0.1.1.0 |  | Extends the functionality of Purchase Orders to support a tier validation process.
 [sale_tier_validation](sale_tier_validation/) | 19.0.1.1.0 |  | Extends the functionality of Sale Orders to support a tier validation process.
-[stock_picking_tier_validation](stock_picking_tier_validation/) | 19.0.1.0.0 |  | Extends the functionality of Transfers to support a tier validation process.
+[stock_picking_tier_validation](stock_picking_tier_validation/) | 19.0.1.0.1 |  | Extends the functionality of Transfers to support a tier validation process.
 
 [//]: # (end addons)
 
