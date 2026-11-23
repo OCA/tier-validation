@@ -30,8 +30,11 @@ class AccountMove(models.Model):
         # sent at save, and will override the values set by the user
         # The other exclusions are needed to be able to generate the pdf
         # and send the invoice by email
+        # "name" is excluded so that journal entries can still be resequenced
+        # (account.resequence.wizard writes the name of already posted moves)
         am_exceptions = [
             "amount_total",
+            "name",
             "needed_terms_dirty",
             "is_manually_modified",
             "is_move_sent",
