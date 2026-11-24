@@ -13,5 +13,5 @@
     "depends": ["stock", "base_tier_validation"],
     "data": ["views/stock_picking_views.xml"],
     "installable": True,
-    "development_status": "Alpha",
+    "development_status": "Beta",
 }
