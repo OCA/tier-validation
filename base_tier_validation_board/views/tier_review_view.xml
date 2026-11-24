@@ -11,6 +11,7 @@
             <list
                 create="false"
                 edit="false"
+                delete="false"
                 decoration-info="status == 'waiting'"
                 decoration-success="status == 'approved'"
                 decoration-danger="status == 'rejected'"
