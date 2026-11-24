@@ -4,6 +4,8 @@
 import logging
 from collections import defaultdict
 
+from markupsafe import Markup
+
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -242,9 +244,19 @@ class TierReview(models.Model):
             "requested_by",
         ]
 
+    def _is_closed_review(self):
+        """Approved, rejected or cancelled: who was asked to review is part of
+        the history of the validation, and no longer follows the definition."""
+        self.ensure_one()
+        return self.status not in ("waiting", "pending")
+
     @api.depends(lambda self: self._get_reviewer_fields())
     def _compute_reviewer_ids(self):
         for rec in self:
+            if rec._is_closed_review() and rec.reviewer_ids:
+                # Keep the stored reviewers
+                rec.reviewer_ids = rec.reviewer_ids
+                continue
             rec.reviewer_ids = rec._get_reviewers()
 
     @api.depends("reviewer_ids")
@@ -252,6 +264,9 @@ class TierReview(models.Model):
         """Show by group or by abbrev list of names"""
         num_show = 3  # Max number of users to display
         for rec in self:
+            if rec._is_closed_review() and rec.todo_by:
+                rec.todo_by = rec.todo_by
+                continue
             todo_by = False
             if rec.reviewer_group_id:
                 todo_by = self.env._("Group %s", rec.reviewer_group_id.name)
@@ -261,6 +276,41 @@ class TierReview(models.Model):
                 if num_users > num_show:
                     todo_by = f"{todo_by} (and {num_users - num_show} more)"
             rec.todo_by = todo_by
+
+    def _notify_reviewers_changed(self, before):
+        """Log on each document which of these reviews got other reviewers.
+
+        ``before`` maps each review to its reviewers and ``todo_by`` from
+        before the change. One note per document, not per review.
+        """
+        changed = self.filtered(lambda r: r.reviewer_ids != before[r][0])
+        documents = defaultdict(lambda: self.browse())
+        for review in changed:
+            documents[(review.model, review.res_id)] |= review
+        for (model, res_id), reviews in documents.items():
+            record = self.env[model].sudo().browse(res_id)
+            if not hasattr(record, "message_post") or not record.exists():
+                continue
+            lines = Markup().join(
+                Markup("<li>%s: %s &rarr; %s</li>")
+                % (
+                    review.name or review.definition_id.display_name,
+                    before[review][1] or "-",
+                    review.todo_by or "-",
+                )
+                for review in reviews.sorted("sequence")
+            )
+            record.message_post(
+                body=Markup("<p>%s</p><ul>%s</ul>")
+                % (
+                    self.env._(
+                        "A change of the tier definition changed the reviewers "
+                        "of this document:"
+                    ),
+                    lines,
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
 
     def _get_reviewers(self):
         reviewers = self.env["res.users"]
