@@ -696,3 +696,13 @@ class TestTierValidationDelegation(CommonTierValidation):
         domain = self.env["res.users"]._fields["validation_replacer_id"].domain
         self.assertFalse(portal.filtered_domain(domain))
         self.assertTrue(self.user_replacer_b.filtered_domain(domain))
+
+    def test_33_reviewer_change_without_chatter(self):
+        """Documents without chatter get no message when their reviewers
+        change."""
+        self.test_record_2.with_user(self.test_user_2).request_validation()
+        review = self.test_record_2.review_ids.filtered(
+            lambda r: r.definition_id == self.definition_7
+        )
+        self.definition_7.reviewer_id = self.test_user_2
+        self.assertEqual(review.reviewer_ids, self.test_user_2)
