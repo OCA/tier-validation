@@ -125,6 +125,31 @@ class TierDefinition(models.Model):
         "field for the other review types.",
     )
 
+    def _get_reviewer_change_fields(self):
+        """Fields of the definition that change who reviews its reviews."""
+        return {
+            "review_type",
+            "reviewer_id",
+            "reviewer_group_id",
+            "reviewer_field_id",
+            "exclude_requester",
+        }
+
+    def write(self, vals):
+        reviews = self.env["tier.review"]
+        if self._get_reviewer_change_fields() & set(vals):
+            reviews = reviews.sudo().search(
+                [
+                    ("definition_id", "in", self.ids),
+                    ("status", "in", ("waiting", "pending")),
+                ]
+            )
+        before = {review: (review.reviewer_ids, review.todo_by) for review in reviews}
+        res = super().write(vals)
+        if reviews:
+            reviews._notify_reviewers_changed(before)
+        return res
+
     @api.onchange("review_type")
     def onchange_review_type(self):
         self.reviewer_id = None

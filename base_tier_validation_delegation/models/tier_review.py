@@ -52,7 +52,7 @@ class TierReview(models.Model):
                 removed = old_reviewers - final_reviewers
                 if added and removed:
                     record = self.env[rec.model].browse(rec.res_id)
-                    if record:
+                    if record and hasattr(record, "message_post"):
                         from_names = ", ".join(removed.mapped("name"))
                         to_names = ", ".join(added.mapped("name"))
                         body = Markup(
