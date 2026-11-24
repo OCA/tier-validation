@@ -1,0 +1,1 @@
+To print the validation history of documents, for an audit for example, select their reviews in a tier review list and use *Print > Validation History*. It shows per document each tier: who requested it and when, who had to review it, the outcome, who reviewed it and when, and the comment.

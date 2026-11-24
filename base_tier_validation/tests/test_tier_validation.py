@@ -1725,6 +1725,32 @@ class TierTierValidation(CommonTierValidation):
         )
         self.assertEqual(notifications_no_2, notifications_no_1)
 
+    def test_report_validation_history(self):
+        """The Validation History report prints, per document, its reviews
+        with who did what, when, and the comment."""
+        self.test_record.with_user(self.test_user_2).request_validation()
+        self.test_record_2.with_user(self.test_user_2).request_validation()
+        review = self.test_record.review_ids
+        review.comment = "Checked against the contract"
+        self.test_record.with_user(self.test_user_1).validate_tier()
+        reviews = self.test_record.review_ids | self.test_record_2.review_ids
+        groups = reviews._get_history_by_document()
+        self.assertEqual(
+            [g["reviews"] for g in groups],
+            [self.test_record.review_ids, self.test_record_2.review_ids],
+        )
+        html = (
+            self.env["ir.actions.report"]
+            ._render_qweb_html(
+                "base_tier_validation.action_report_tier_review_history", reviews.ids
+            )[0]
+            .decode()
+        )
+        self.assertIn(self.test_record.display_name, html)
+        self.assertIn(self.test_record_2.display_name, html)
+        self.assertIn("Checked against the contract", html)
+        self.assertIn(self.test_user_1.name, html)
+
     def test_24_notify_on_restarted(self):
         self.test_user_2.write(
             {
