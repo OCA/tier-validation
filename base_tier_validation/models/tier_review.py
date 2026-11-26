@@ -5,7 +5,7 @@ import logging
 from collections import defaultdict
 
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -345,3 +345,21 @@ class TierReview(models.Model):
             note=self._notify_review_reminder_body(),
             user_id=self.reviewer_ids.id,
         )
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_audit_trail(self):
+        """Reviews are the audit trail of a validation: they are only removed
+        by the validation itself (restart, reset of the document, deletion of
+        the document), which passes ``tier_review_unlink``."""
+        if not self.env.context.get("tier_review_unlink"):
+            raise UserError(
+                self.env._(
+                    "Tier reviews cannot be deleted. They are removed when the "
+                    "validation is restarted or the document is deleted."
+                )
+            )
+
+    def copy(self, default=None):
+        if not self.env.context.get("tier_review_copy"):
+            raise UserError(self.env._("Tier reviews cannot be duplicated."))
+        return super().copy(default=default)
